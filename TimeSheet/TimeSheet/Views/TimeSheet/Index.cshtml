@@ -1,0 +1,50 @@
+﻿@model IEnumerable<TimeSheet.Models.TimeRecord>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <div>
+        @Html.DropDownList("year", "Year")
+    </div>
+    <div id="periodDiv">
+        @{Html.RenderAction("SelectDefaultYear");}
+    </div>
+
+    <div id="timesheet">
+
+    </div>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#year").on("change", function () {
+            var val = $('#year').val();
+            $.ajax({
+                url: "/TimeSheet/SelectYear",
+                type: "GET",
+                data: { year: val }
+            })
+            .done(function(partialViewResult) {
+                $("#periodDiv").html(partialViewResult);
+            });
+        });
+
+        $("#periodDiv").on("change", function () {
+            var year = $('#year').val();
+            var period = $('#period').val();
+            $.ajax({
+                url: "/TimeSheet/Create",
+                type: "GET",
+                data: { year: year, period: period }
+            })
+            .done(function (partialViewResult) {
+                $("#timesheet").html(partialViewResult);
+            });
+        });
+    });
+</script>

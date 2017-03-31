@@ -131,6 +131,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Spatial, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Spatial.5.8.1\lib\net40\System.Spatial.dll</HintPath>
       <Private>True</Private>
@@ -223,12 +224,16 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TimeSheetController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\PayPeriod.cs" />
+    <Compile Include="Models\TimeRecord.cs" />
+    <Compile Include="Models\TimeSheetContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -254,6 +259,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="ClassDiagram1.cd" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -290,6 +296,10 @@
     <Content Include="Views\Account\SignOutCallback.cshtml" />
     <Content Include="Views\UserProfile\Index.cshtml" />
     <Content Include="Views\UserProfile\Relogin.cshtml" />
+    <Content Include="Views\TimeSheet\Create.cshtml" />
+    <Content Include="Views\TimeSheet\Index.cshtml" />
+    <Content Include="Views\TimeSheet\SelectYear.cshtml" />
+    <Content Include="Views\TimeSheet\_CreateTimeSheet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -299,6 +309,9 @@
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
