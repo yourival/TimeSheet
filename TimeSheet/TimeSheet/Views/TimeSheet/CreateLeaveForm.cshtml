@@ -1,0 +1,57 @@
+﻿@model List<TimeSheet.Models.TimeRecord>
+
+@{
+    ViewBag.Title = "Create";
+    int i = 0;
+}
+
+
+@using (Html.BeginForm())
+{
+    //@Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Leave Time</th>
+            <th>Leave Type</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <th class="form-group">
+                    @String.Format("{0:ddd, dd/MM/yyyy}", item.StartTime)
+                </th>
+
+                <th class="form-group">
+                    @Html.EditorFor(model => item.LeaveTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => item.LeaveTime, "", new { @class = "text-danger" })
+                </th>
+
+                <th class="form-group">
+                    @Html.DropDownListFor(model => item.lt, new SelectList(
+                  new List<Object>{
+                       new { value = 0 , text = "Sick Leave"  },
+                       new { value = 1 , text = "Flexi Leave" },
+                       new { value = 2 , text = "Annual Leave"}
+                    },
+                  "value",
+                  "text",
+                   2))
+                    @Html.ValidationMessageFor(model => item.lt, "", new { @class = "text-danger" })
+                </th>
+            </tr>
+            i++;
+        }
+
+    </table>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

@@ -48,12 +48,44 @@ namespace TimeSheet.Controllers
                 newTimeRecords.Add(new TimeRecord(firstPayDay.AddDays(i)));
             }
             //List<TimeRecord> newTimeRecords = new List<TimeRecord>(1) {new TimeRecord(DateTime.Today), new TimeRecord(DateTime.Today) };
-            return PartialView(newTimeRecords);
+            return PartialView(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", newTimeRecords);
         }
 
         // POST: TimeSheet/Create
         [HttpPost]
         public ActionResult Create(List<TimeRecord> records)
+        {
+            try
+            {
+                foreach (TimeRecord record in records)
+                {
+                    contextDB.TimeRecords.Add(record);
+                }
+                contextDB.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: TimeSheet/Create
+        public ActionResult CreateLeaveForm(DateTime start, DateTime end)
+        {
+            List<TimeRecord> newTimeRecords = new List<TimeRecord>();
+            for (int i = 0; i <= (end-start).Days; i++)
+            {
+                newTimeRecords.Add(new TimeRecord(start.AddDays(i)));
+            }
+            //List<TimeRecord> newTimeRecords = new List<TimeRecord>(1) {new TimeRecord(DateTime.Today), new TimeRecord(DateTime.Today) };
+            return PartialView(newTimeRecords);
+        }
+
+        // POST: TimeSheet/Create
+        [HttpPost]
+        public ActionResult CreateLeaveForm(List<TimeRecord> records)
         {
             try
             {

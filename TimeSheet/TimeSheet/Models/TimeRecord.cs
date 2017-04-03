@@ -29,12 +29,16 @@ namespace TimeSheet.Models
         public DateTime EndTime { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Time)]
+        ////[DataType(DataType.Time)]
         public TimeSpan LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
         public leaveType lt { get; set; }
 
+
+        //[DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        //[DataType(DataType.Time)]
+        public TimeSpan LeaveTime { get; set; }
 
         public TimeSpan GetWorkHours ()
         {
