@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
 {
     public class LeaveApplicationController : Controller
     {
+        private TimeSheetContext contextDB = new TimeSheetContext();
+
         // GET: LeaveApplication
         public ActionResult Index()
         {
@@ -17,7 +20,7 @@ namespace TimeSheet.Controllers
         // GET: LeaveApplication/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(contextDB.LeaveApplications);
         }
 
         // GET: LeaveApplication/Create
@@ -28,11 +31,12 @@ namespace TimeSheet.Controllers
 
         // POST: LeaveApplication/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(LeaveApplication newLeaveApplication)
         {
             try
             {
-                // TODO: Add insert logic here
+                contextDB.LeaveApplications.Add(newLeaveApplication);
+                contextDB.SaveChanges();
 
                 return RedirectToAction("Index");
             }

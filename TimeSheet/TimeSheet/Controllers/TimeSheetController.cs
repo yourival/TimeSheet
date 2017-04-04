@@ -47,7 +47,6 @@ namespace TimeSheet.Controllers
             {
                 newTimeRecords.Add(new TimeRecord(firstPayDay.AddDays(i)));
             }
-            //List<TimeRecord> newTimeRecords = new List<TimeRecord>(1) {new TimeRecord(DateTime.Today), new TimeRecord(DateTime.Today) };
             return PartialView(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", newTimeRecords);
         }
 
@@ -72,14 +71,15 @@ namespace TimeSheet.Controllers
         }
 
         // GET: TimeSheet/Create
-        public ActionResult CreateLeaveForm(DateTime start, DateTime end)
+        public ActionResult CreateLeaveForm(DateTime start, DateTime end, _leaveType leaveType)
         {
             List<TimeRecord> newTimeRecords = new List<TimeRecord>();
             for (int i = 0; i <= (end-start).Days; i++)
             {
-                newTimeRecords.Add(new TimeRecord(start.AddDays(i)));
+                TimeRecord newTimeRecord = new TimeRecord(start.AddDays(i));
+                newTimeRecord.leaveType = leaveType;
+                newTimeRecords.Add(newTimeRecord);
             }
-            //List<TimeRecord> newTimeRecords = new List<TimeRecord>(1) {new TimeRecord(DateTime.Today), new TimeRecord(DateTime.Today) };
             return PartialView(newTimeRecords);
         }
 

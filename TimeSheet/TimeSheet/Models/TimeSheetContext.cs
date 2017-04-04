@@ -8,6 +8,9 @@ namespace TimeSheet.Models
 {
     public class TimeSheetContext : DbContext
     {
+        public TimeSheetContext() : base("TimeSheetContext")
+        {
+        }
         public DbSet<TimeRecord> TimeRecords { get; set; }
         public DbSet<LeaveApplication> LeaveApplications { get; set; }
     }

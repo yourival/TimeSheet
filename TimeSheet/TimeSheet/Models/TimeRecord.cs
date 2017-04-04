@@ -8,8 +8,6 @@ namespace TimeSheet.Models
 {
     public class TimeRecord
     {
-        public enum leaveType {sick, flexi, annual}
-
         public TimeRecord (DateTime date)
         {
             StartTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
@@ -33,7 +31,7 @@ namespace TimeSheet.Models
         public TimeSpan LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
-        public leaveType lt { get; set; }
+        public _leaveType leaveType { get; set; }
 
 
         //[DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]

@@ -6,17 +6,11 @@ using System.Web;
 
 namespace TimeSheet.Models
 {
+    public enum _leaveType { sick, flexi, annual }
+    public enum _status { approved, rejected, submited }
+
     public class LeaveApplication
     {
-        public enum _leaveType { sick, flexi, annual }
-        public enum _status { approved, rejected, submited }
-        
-        public LeaveApplication(DateTime date)
-        {
-            StartTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
-            EndTime = new DateTime(date.Year, date.Month, date.Day, 17, 0, 0);
-        }
-
         [Key]
         public int id { get; set; }
         public string UserID { get; set; }

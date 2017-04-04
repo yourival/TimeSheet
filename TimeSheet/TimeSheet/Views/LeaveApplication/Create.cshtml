@@ -4,8 +4,6 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Create</h2>
-
 
 @using (Html.BeginForm())
 {
@@ -15,14 +13,6 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.id)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.UserID, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UserID, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UserID, "", new { @class = "text-danger" })
-            </div>
-        </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -43,7 +33,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.leaveType, htmlAttributes: new { @class = "form-control" })
+                @Html.EnumDropDownListFor(model => model.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
                 @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -56,34 +46,17 @@
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.status, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
         <div id="leave-form">
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="button" onclick="renderLeaveForm()" value="Apply" class="btn btn-default" />
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Submit" class="btn btn-default" />
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -94,13 +67,46 @@
     function renderLeaveForm() {
         var start = $('#start').val();
         var end = $('#end').val();
+        var leaveType = $('#leaveType').val();
         $.ajax({
             url: "/TimeSheet/CreateLeaveForm",
             type: "GET",
-            data: { start: start, end: end }
+            data: { start: start, end: end, leaveType: leaveType }
         })
         .done(function (partialViewResult) {
             $("#leave-form").html(partialViewResult);
         });
     }
+
+    function getFormattedDate(date) {
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return year + '-' + month + '-' + day;
+    }
+
+    $(document).ready(function () {
+        var fullDate = new Date();
+
+        $("#start").val(getFormattedDate(new Date()));
+        $("#end").val(getFormattedDate(new Date()));
+        //renderLeaveForm();
+
+        $("#start").on("change", function () {
+            if ($("#start").val() > $("#end").val())
+                $("#end").val($("#start").val());
+                
+            renderLeaveForm();
+        });
+        $("#end").on("change", function () {
+            if ($("#start").val() > $("#end").val())
+                $("#start").val($("#end").val());
+            renderLeaveForm();
+        });
+        $("#leaveType").on("change", function () {
+            renderLeaveForm();
+        });
+    });
 </script>
