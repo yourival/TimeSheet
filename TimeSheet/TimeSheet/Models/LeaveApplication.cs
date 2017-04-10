@@ -6,7 +6,7 @@ using System.Web;
 
 namespace TimeSheet.Models
 {
-    public enum _leaveType { sick, flexi, annual }
+    public enum _leaveType { none, sick, flexi, annual }
     public enum _status { approved, rejected, submited }
 
     public class LeaveApplication

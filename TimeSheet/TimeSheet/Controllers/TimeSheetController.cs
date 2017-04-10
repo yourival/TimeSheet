@@ -77,7 +77,18 @@ namespace TimeSheet.Controllers
             for (int i = 0; i <= (end-start).Days; i++)
             {
                 TimeRecord newTimeRecord = new TimeRecord(start.AddDays(i));
-                newTimeRecord.leaveType = leaveType;
+
+                //options for weekend and weekdays
+                if ((int)start.AddDays(i).DayOfWeek == 6 || (int)start.AddDays(i).DayOfWeek == 0)
+                {
+                    newTimeRecord.LeaveTime = new TimeSpan(0, 0, 0);
+                    newTimeRecord.leaveType = _leaveType.none;
+                }
+                else
+                {
+                    newTimeRecord.LeaveTime = new TimeSpan(7, 30, 0);
+                    newTimeRecord.leaveType = leaveType;
+                }
                 newTimeRecords.Add(newTimeRecord);
             }
             return PartialView(newTimeRecords);

@@ -57,7 +57,7 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.DropDownListFor(model => item.lt, new SelectList(
+                    @Html.DropDownListFor(model => item.leaveType, new SelectList(
                   new List<Object>{
                        new { value = 0 , text = "Sick Leave"  },
                        new { value = 1 , text = "Flexi Leave" },
@@ -66,7 +66,7 @@
                   "value",
                   "text",
                    2))
-                    @Html.ValidationMessageFor(model => item.lt, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => item.leaveType, "", new { @class = "text-danger" })
                 </th>
             </tr>
             i++;
