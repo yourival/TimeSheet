@@ -1,0 +1,52 @@
+﻿@model IEnumerable<TimeSheet.Models.Holiday>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <h3>Holidays</h3>
+    <p>
+        <div>
+            @Html.DropDownList("year", "Year")
+        </div>
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.HolidayName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HolidayDate)
+            </th>
+            <th></th>
+        </tr>
+
+        <div id="holidayListDiv"></div>
+    
+    </table>
+</body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#year").on("change", function () {
+            var val = $('#year').val();
+            $.ajax({
+                url: "/TimeSheet/SelectYear",
+                type: "GET",
+                data: { year: val }
+            })
+            .done(function(partialViewResult) {
+                $("#holidayListDiv").html(partialViewResult);
+            });
+        });
+</script>

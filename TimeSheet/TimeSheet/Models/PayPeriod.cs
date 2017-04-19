@@ -1,8 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Web;
+using System.Net;
+using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
@@ -94,5 +99,48 @@ namespace TimeSheet.Models
             }
             return listItems;
         }
+
+        public static void SetPublicHoliday(List<TimeRecord> records)
+        {
+            List<DateTime> holidayLists = GetHoliday();
+            DateTime startDate = records.First().StartTime;
+            DateTime endDate = records.Last().EndTime;
+            foreach (DateTime holidayDate in holidayLists)
+            {
+                foreach (TimeRecord record in records)
+                {
+                    if (holidayDate.Date == record.StartTime.Date)
+                    {
+                        record.isHoliday = true;
+                    }
+                    if ((int)record.StartTime.DayOfWeek == 6 || (int)record.StartTime.DayOfWeek == 7)
+                    {
+                        record.isHoliday = true;
+                    }
+                }
+            }
+        }
+
+        public static List<DateTime> GetHoliday()
+        {
+            String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";
+            List<DateTime> holidayDateList = new List<DateTime>();
+            using (WebClient webClient = new System.Net.WebClient())
+            {
+                WebClient n = new WebClient();
+                var json = n.DownloadString(RequestString);
+                var jo = JObject.Parse(json);
+                var jsonRecords= jo["result"]["records"].ToString();
+                //Debug.WriteLine(jsonRecords);
+                List<Dictionary<string,string>> results = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonRecords);
+                foreach (Dictionary<string,string> item in results)
+                {
+                    DateTime holiday = DateTime.ParseExact(item["Date"], "yyyyMMdd", CultureInfo.InvariantCulture);//convert string to datetime
+                    holidayDateList.Add(holiday);
+                }
+            }
+            return holidayDateList;
+        }
+
     }
 }
