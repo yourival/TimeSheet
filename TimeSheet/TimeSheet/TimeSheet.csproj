@@ -236,7 +236,6 @@
     <Compile Include="Models\AdminDb.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\Holiday.cs" />
-    <Compile Include="Models\JsonHoliday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
@@ -354,8 +353,6 @@
     <Content Include="Views\TimeSheet\CreateLeaveForm.cshtml" />
     <Content Include="Views\LeaveApplication\Index.cshtml" />
     <Content Include="Views\LeaveApplication\Details.cshtml" />
-    <Content Include="Views\Holidays\Create.cshtml" />
-    <Content Include="Views\Holidays\Edit.cshtml" />
     <Content Include="Views\Holidays\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
   </ItemGroup>

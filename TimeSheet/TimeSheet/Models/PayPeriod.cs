@@ -102,14 +102,14 @@ namespace TimeSheet.Models
 
         public static void SetPublicHoliday(List<TimeRecord> records)
         {
-            List<DateTime> holidayLists = GetHoliday();
+            List<Holiday> holidayLists = GetHoliday();
             DateTime startDate = records.First().StartTime;
             DateTime endDate = records.Last().EndTime;
-            foreach (DateTime holidayDate in holidayLists)
+            foreach (Holiday holiday in holidayLists)
             {
                 foreach (TimeRecord record in records)
                 {
-                    if (holidayDate.Date == record.StartTime.Date)
+                    if (holiday.HolidayDate.Date == record.StartTime.Date)
                     {
                         record.isHoliday = true;
                     }
@@ -121,10 +121,10 @@ namespace TimeSheet.Models
             }
         }
 
-        public static List<DateTime> GetHoliday()
+        public static List<Holiday> GetHoliday()
         {
             String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";
-            List<DateTime> holidayDateList = new List<DateTime>();
+            List<Holiday> holidayList = new List<Holiday>();
             using (WebClient webClient = new System.Net.WebClient())
             {
                 WebClient n = new WebClient();
@@ -136,10 +136,10 @@ namespace TimeSheet.Models
                 foreach (Dictionary<string,string> item in results)
                 {
                     DateTime holiday = DateTime.ParseExact(item["Date"], "yyyyMMdd", CultureInfo.InvariantCulture);//convert string to datetime
-                    holidayDateList.Add(holiday);
+                    holidayList.Add(new Holiday { HolidayDate = holiday, HolidayName =  item["HolidayName"] });
                 }
             }
-            return holidayDateList;
+            return holidayList;
         }
 
     }
