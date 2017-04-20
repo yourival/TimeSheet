@@ -102,23 +102,28 @@ namespace TimeSheet.Models
 
         public static void SetPublicHoliday(List<TimeRecord> records)
         {
-            List<Holiday> holidayLists = GetHoliday();
+            AdminDb adminDb = new AdminDb();
+            List<Holiday> holidayLists = adminDb.Holidays.ToList();
             DateTime startDate = records.First().StartTime;
             DateTime endDate = records.Last().EndTime;
-            foreach (Holiday holiday in holidayLists)
+            if (holidayLists.Count != 0)
             {
-                foreach (TimeRecord record in records)
+                foreach (Holiday holiday in holidayLists)
                 {
-                    if (holiday.HolidayDate.Date == record.StartTime.Date)
+                    foreach (TimeRecord record in records)
                     {
-                        record.isHoliday = true;
-                    }
-                    if ((int)record.StartTime.DayOfWeek == 6 || (int)record.StartTime.DayOfWeek == 7)
-                    {
-                        record.isHoliday = true;
+                        if (holiday.HolidayDate.Date == record.StartTime.Date)
+                        {
+                            record.isHoliday = true;
+                        }
+                        if ((int)record.StartTime.DayOfWeek == 6 || (int)record.StartTime.DayOfWeek == 7)
+                        {
+                            record.isHoliday = true;
+                        }
                     }
                 }
             }
+            
         }
 
         public static List<Holiday> GetHoliday()

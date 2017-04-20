@@ -17,14 +17,27 @@ namespace TimeSheet.Controllers
         // GET: Holidays
         public ActionResult Index()
         {
-            return View();
+            List<Holiday> holidayList = db.Holidays.ToList();
+            return View(holidayList);
         }
 
 
         // GET: Holidays/Update
         public ActionResult Update()
         {
-            return View();
+            List<Holiday> holidayList = db.Holidays.ToList();
+            foreach(Holiday item in holidayList)
+            {
+                db.Holidays.Remove(item);
+            }
+            db.SaveChanges();
+            holidayList = PayPeriod.GetHoliday();
+            foreach(Holiday item in holidayList)
+            {
+                db.Holidays.Add(item);
+            }
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
     }

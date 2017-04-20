@@ -353,8 +353,8 @@
     <Content Include="Views\TimeSheet\CreateLeaveForm.cshtml" />
     <Content Include="Views\LeaveApplication\Index.cshtml" />
     <Content Include="Views\LeaveApplication\Details.cshtml" />
-    <Content Include="Views\Holidays\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Holidays\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

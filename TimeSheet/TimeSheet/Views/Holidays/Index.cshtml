@@ -2,52 +2,32 @@
 
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
+<h2>Index</h2>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <h3>Holidays</h3>
-    <p>
-        <div>
-            @Html.DropDownList("year", "Year")
-        </div>
-    </p>
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.HolidayName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HolidayDate)
-            </th>
-            <th></th>
-        </tr>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.HolidayDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HolidayName)
+        </th>
+        <th></th>
+    </tr>
 
-        <div id="holidayListDiv"></div>
-    
-    </table>
-    <input type="button" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("Update", "Holidays")'" />
-</body>
-</html>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.HolidayDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.HolidayName)
+        </td>
+    </tr>
+}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $("#year").on("change", function () {
-            var val = $('#year').val();
-            $.ajax({
-                url: "/TimeSheet/SelectYear",
-                type: "GET",
-                data: { year: val }
-            })
-            .done(function(partialViewResult) {
-                $("#holidayListDiv").html(partialViewResult);
-            });
-        });
-</script>
+</table>
+<input type="button" value="Update" class="btn btn-default" onclick="location.href='@Url.Action("Update", "Holidays")'" />

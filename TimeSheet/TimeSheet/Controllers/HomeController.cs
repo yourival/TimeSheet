@@ -12,7 +12,6 @@ namespace TimeSheet.Controllers
     {
         public ActionResult Index()
         {
-            PayPeriod.GetHoliday();
             return View();
         }
 
