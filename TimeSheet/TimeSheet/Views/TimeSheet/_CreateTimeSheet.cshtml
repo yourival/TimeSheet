@@ -28,8 +28,8 @@
             <tr>
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                <th class="form-group">
-                    @item.StartTime.Date.ToString()
+                <th class="form-group"                                            }>
+                    @item.StartTime.Date.ToString("dd/MM/yyy ddd")
                 </th>
 
                 <th class="form-group">

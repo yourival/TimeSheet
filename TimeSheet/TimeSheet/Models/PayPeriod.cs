@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Linq;
+using System.Net;
+using System.Diagnostics;
 using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Globalization;
+using Newtonsoft.Json.Linq;
 
 namespace TimeSheet.Models
 {
@@ -94,5 +100,27 @@ namespace TimeSheet.Models
             }
             return listItems;
         }
+
+        public static List<DateTime> GetHoliday()
+        {
+            String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";
+            List<DateTime> holidayDateList = new List<DateTime>();
+            using (WebClient webClient = new System.Net.WebClient())
+            {
+                WebClient n = new WebClient();
+                var json = n.DownloadString(RequestString);
+                var jo = JObject.Parse(json);
+                var jsonRecords = jo["result"]["records"].ToString();
+                //Debug.WriteLine(jsonRecords);
+                List<Dictionary<string, string>> results = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonRecords);
+                foreach (Dictionary<string, string> item in results)
+                {
+                    DateTime holiday = DateTime.ParseExact(item["Date"], "yyyyMMdd", CultureInfo.InvariantCulture);//convert string to datetime
+                    holidayDateList.Add(holiday);
+                }
+            }
+            return holidayDateList;
+        }
+
     }
 }

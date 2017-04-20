@@ -13,10 +13,12 @@ namespace TimeSheet.Models
             StartTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
             LunchBreak = new TimeSpan(0, 30, 0);
             EndTime = new DateTime(date.Year, date.Month, date.Day, 17, 0, 0);
+            IsHoliday = false;
         }
 
         public int id { get; set; }
         public string UserID { get; set; }
+        public bool IsHoliday { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Time)]
@@ -27,7 +29,7 @@ namespace TimeSheet.Models
         public DateTime EndTime { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        ////[DataType(DataType.Time)]
+        //[DataType(DataType.Time)]
         public TimeSpan LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
