@@ -9,7 +9,7 @@ namespace TimeSheet.Controllers
 {
     public class TimeSheetController : Controller
     {
-        private TimeSheetContext contextDB = new TimeSheetContext();
+        private TimeSheetDb contextDB = new TimeSheetDb();
 
         // GET: TimeSheet
         public ActionResult Index()
@@ -53,50 +53,6 @@ namespace TimeSheet.Controllers
         // POST: TimeSheet/Create
         [HttpPost]
         public ActionResult Create(List<TimeRecord> records)
-        {
-            try
-            {
-                foreach (TimeRecord record in records)
-                {
-                    contextDB.TimeRecords.Add(record);
-                }
-                contextDB.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TimeSheet/Create
-        public ActionResult CreateLeaveForm(DateTime start, DateTime end, _leaveType leaveType)
-        {
-            List<TimeRecord> newTimeRecords = new List<TimeRecord>();
-            for (int i = 0; i <= (end-start).Days; i++)
-            {
-                TimeRecord newTimeRecord = new TimeRecord(start.AddDays(i));
-
-                //options for weekend and weekdays
-                if ((int)start.AddDays(i).DayOfWeek == 6 || (int)start.AddDays(i).DayOfWeek == 0)
-                {
-                    newTimeRecord.LeaveTime = new TimeSpan(0, 0, 0);
-                    newTimeRecord.leaveType = _leaveType.none;
-                }
-                else
-                {
-                    newTimeRecord.LeaveTime = new TimeSpan(7, 30, 0);
-                    newTimeRecord.leaveType = leaveType;
-                }
-                newTimeRecords.Add(newTimeRecord);
-            }
-            return PartialView(newTimeRecords);
-        }
-
-        // POST: TimeSheet/Create
-        [HttpPost]
-        public ActionResult CreateLeaveForm(List<TimeRecord> records)
         {
             try
             {

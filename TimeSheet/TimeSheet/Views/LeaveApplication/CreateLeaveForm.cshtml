@@ -1,0 +1,53 @@
+﻿@model List<TimeSheet.Models.TimeRecord>
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Leave Time</th>
+        <th>Leave Type</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr class="@(item.IsHoliday ? "th-holiday" : "th-weekday")">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <th class="form-group">
+                @String.Format("{0:ddd, dd/MM/yyyy}", item.StartTime)
+            </th>
+
+            <th class="form-group">
+                @Html.EditorFor(model => item.LeaveTime, new { htmlAttributes = getHtmlAttributes(item.IsHoliday) })
+                @Html.ValidationMessageFor(model => item.LeaveTime, "", new { @class = "text-danger" })
+            </th>
+
+            <th class="form-group">
+
+                @Html.EnumDropDownListFor(model => item.LeaveType, htmlAttributes: getHtmlAttributes(item.IsHoliday))
+                @Html.ValidationMessageFor(model => item.LeaveType, "", new { @class = "text-danger" })
+            </th>
+        </tr>
+    }
+
+</table>
+
+@functions {
+    object getHtmlAttributes(bool isHoliday)
+    {
+        if (isHoliday)
+        {
+            return new { @class = "form-control", @disabled = "disabled" };
+        }
+        return new { @class = "form-control" };
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

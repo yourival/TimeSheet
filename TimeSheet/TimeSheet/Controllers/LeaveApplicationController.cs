@@ -9,7 +9,7 @@ namespace TimeSheet.Controllers
 {
     public class LeaveApplicationController : Controller
     {
-        private TimeSheetContext contextDB = new TimeSheetContext();
+        private TimeSheetDb contextDB = new TimeSheetDb();
 
         // GET: LeaveApplication
         public ActionResult Index()
@@ -81,6 +81,41 @@ namespace TimeSheet.Controllers
             try
             {
                 // TODO: Add delete logic here
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: LeaveApplication/CreateLeaveForm
+        public ActionResult CreateLeaveForm(DateTime start, DateTime end, _leaveType leaveType)
+        {
+            List<TimeRecord> newTimeRecords = new List<TimeRecord>();
+            for (int i = 0; i <= (end - start).Days; i++)
+            {
+                TimeRecord newTimeRecord = new TimeRecord(start.AddDays(i));
+                newTimeRecord.LeaveType = leaveType;
+                newTimeRecords.Add(newTimeRecord);
+            }
+            PayPeriod.SetPublicHoliday(newTimeRecords);
+
+            return PartialView(newTimeRecords);
+        }
+
+        // POST: LeaveApplication/CreateLeaveForm
+        [HttpPost]
+        public ActionResult CreateLeaveForm(List<TimeRecord> records)
+        {
+            try
+            {
+                foreach (TimeRecord record in records)
+                {
+                    contextDB.TimeRecords.Add(record);
+                }
+                contextDB.SaveChanges();
 
                 return RedirectToAction("Index");
             }

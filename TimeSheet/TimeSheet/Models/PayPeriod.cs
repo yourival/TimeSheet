@@ -100,6 +100,7 @@ namespace TimeSheet.Models
             return listItems;
         }
 
+        // Set holiday status for TimeRecords
         public static void SetPublicHoliday(List<TimeRecord> records)
         {
             AdminDb adminDb = new AdminDb();
@@ -108,17 +109,18 @@ namespace TimeSheet.Models
             DateTime endDate = records.Last().EndTime;
             if (holidayLists.Count != 0)
             {
-                foreach (Holiday holiday in holidayLists)
+                foreach (TimeRecord record in records)
                 {
-                    foreach (TimeRecord record in records)
+                    record.LeaveTime = new TimeSpan(7, 30, 0);
+                    foreach (Holiday holiday in holidayLists)
                     {
-                        if (holiday.HolidayDate.Date == record.StartTime.Date)
+                        if (holiday.HolidayDate.Date == record.StartTime.Date ||
+                            record.StartTime.DayOfWeek == DayOfWeek.Saturday ||
+                            record.StartTime.DayOfWeek == DayOfWeek.Sunday)
                         {
-                            record.isHoliday = true;
-                        }
-                        if ((int)record.StartTime.DayOfWeek == 6 || (int)record.StartTime.DayOfWeek == 7)
-                        {
-                            record.isHoliday = true;
+                            record.IsHoliday = true;
+                            record.LeaveTime = new TimeSpan(0, 0, 0);
+                            record.LeaveType = _leaveType.none;
                         }
                     }
                 }
@@ -126,6 +128,7 @@ namespace TimeSheet.Models
             
         }
 
+        // Get holiday list from online source
         public static List<Holiday> GetHoliday()
         {
             String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";

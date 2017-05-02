@@ -30,7 +30,7 @@ namespace TimeSheet
 
         public void ConfigureAuth(IAppBuilder app)
         {
-            ApplicationDbContext db = new ApplicationDbContext();
+            ApplicationDb db = new ApplicationDb();
 
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
