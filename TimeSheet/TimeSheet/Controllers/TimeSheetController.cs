@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using TimeSheet.Models;
@@ -9,13 +10,14 @@ namespace TimeSheet.Controllers
 {
     public class TimeSheetController : Controller
     {
-        private TimeSheetContext contextDB = new TimeSheetContext();
+        private TimeSheetDb contextDB = new TimeSheetDb();
 
         // GET: TimeSheet
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             ViewBag.Year = PayPeriod.GetYearItems();
-            return View();
+            TimeSheetContainer model = await this.GetTimeSheetModel(2017,1);
+            return View(model);
         }
 
         // GET: Year
@@ -32,11 +34,62 @@ namespace TimeSheet.Controllers
             return PartialView(year);
         }
 
-        // GET: TimeSheet/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> GetTimeRecords(string year, string period)
         {
-            return View();
+            var y = int.Parse(year);
+            var p = int.Parse(period);
+            var model = await this.GetTimeSheetModel(y, p);
+            return PartialView(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", model);
         }
+
+        private async Task<TimeSheetContainer> GetTimeSheetModel(int year , int period )
+        {
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.TimeRecordForm = new TimeRecordForm();
+            model.TimeRecords = new List<TimeRecord>();
+
+            DateTime firstPayDay = PayPeriod.GetStartDay(year, period);
+
+            TimeRecordForm form = (from f in contextDB.TimeRecordForm
+                                 where f.Year == year
+                                 where f.Period == period
+                                 where f.UserID == User.Identity.Name
+                                 select f) as TimeRecordForm;
+            if (form == null)
+            {
+                model.TimeRecordForm.Year = year;
+                model.TimeRecordForm.Period = period;
+                model.TimeRecordForm.UserID = User.Identity.Name;
+
+                
+                for (int i = 0; i < 14; i++)
+                {
+                    model.TimeRecords.Add(new TimeRecord(firstPayDay.AddDays(i)));
+                }
+            }
+            else
+            {
+                model.TimeRecordForm = form;
+                for (int i = 0; i < 14; i++)
+                {
+                    TimeRecord record = (from r in contextDB.TimeRecords
+                                         where r.StartTime.Date == firstPayDay.AddDays(i).Date
+                                         where r.UserID == User.Identity.Name
+                                         select r) as TimeRecord;
+
+                    model.TimeRecords.Add(record);
+                }
+
+            }
+
+            return model;
+        }
+
+
+
+
+
+
 
         // GET: TimeSheet/Create
         public ActionResult Create(int year, int period)
@@ -74,7 +127,7 @@ namespace TimeSheet.Controllers
         public ActionResult CreateLeaveForm(DateTime start, DateTime end, _leaveType leaveType)
         {
             List<TimeRecord> newTimeRecords = new List<TimeRecord>();
-            for (int i = 0; i <= (end-start).Days; i++)
+            for (int i = 0; i <= (end - start).Days; i++)
             {
                 TimeRecord newTimeRecord = new TimeRecord(start.AddDays(i));
 
@@ -105,50 +158,6 @@ namespace TimeSheet.Controllers
                     contextDB.TimeRecords.Add(record);
                 }
                 contextDB.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TimeSheet/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TimeSheet/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TimeSheet/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: TimeSheet/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
 
                 return RedirectToAction("Index");
             }
