@@ -13,6 +13,6 @@ namespace TimeSheet.Models
         }
         public DbSet<TimeRecord> TimeRecords { get; set; }
         public DbSet<LeaveApplication> LeaveApplications { get; set; }
-        public DbSet<TimeRecordForm> TimeRecordForm { get; set; }
+        public DbSet<TimeRecordForm> TimeRecordForms { get; set; }
     }
 }
