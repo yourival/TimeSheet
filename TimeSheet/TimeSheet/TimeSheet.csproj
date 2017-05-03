@@ -237,6 +237,7 @@
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
+    <Compile Include="Models\LeaveApplicationViewModel.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
     <Compile Include="Models\TimeSheetDb.cs" />

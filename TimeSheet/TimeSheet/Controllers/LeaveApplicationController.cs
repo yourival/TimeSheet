@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TimeSheet.Models;
+using System.Data.Entity;
 
 namespace TimeSheet.Controllers
 {
@@ -31,12 +32,41 @@ namespace TimeSheet.Controllers
 
         // POST: LeaveApplication/Create
         [HttpPost]
-        public ActionResult Create(LeaveApplication newLeaveApplication)
+        public ActionResult Create(LeaveApplicationViewModel applicationVM)
         {
             try
             {
-                contextDB.LeaveApplications.Add(newLeaveApplication);
+                LeaveApplication application = (from a in contextDB.LeaveApplications
+                                                 where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
+                                                       DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
+                                                       a.UserID == User.Identity.Name
+                                                 select a) as LeaveApplication;
+                if(application == null)
+                {
+                    contextDB.LeaveApplications.Add(applicationVM.LeaveApplication);
+                }
+                else
+                {
+                    contextDB.Entry(application).State = EntityState.Modified;
+                }
                 contextDB.SaveChanges();
+
+                foreach(var r in applicationVM.Records)
+                {
+                    TimeRecord record = (from a in contextDB.TimeRecords
+                                         where DbFunctions.TruncateTime(a.StartTime) == r.StartTime.Date &&
+                                                 a.UserID == r.UserID
+                                         select a) as TimeRecord;
+                    if (record == null)
+                    {
+                        contextDB.TimeRecords.Add(r);
+                    }
+                    else
+                    {
+                        contextDB.Entry(record).CurrentValues.SetValues(r);
+                    }
+                    contextDB.SaveChanges();
+                }
 
                 return RedirectToAction("Index");
             }
@@ -93,16 +123,39 @@ namespace TimeSheet.Controllers
         // GET: LeaveApplication/CreateLeaveForm
         public ActionResult CreateLeaveForm(DateTime start, DateTime end, _leaveType leaveType)
         {
-            List<TimeRecord> newTimeRecords = new List<TimeRecord>();
+            // Try to fetch Leaveapplication from DB if it exists
+            LeaveApplicationViewModel newApplicationVM = new LeaveApplicationViewModel();
+            newApplicationVM.LeaveApplication = (from a in contextDB.LeaveApplications
+                                                    where DbFunctions.TruncateTime(a.StartTime) == start.Date &&
+                                                            DbFunctions.TruncateTime(a.EndTime) == end.Date &&
+                                                            a.UserID == User.Identity.Name
+                                                    select a) as LeaveApplication;
+            List < TimeRecord > newTimeRecords = new List<TimeRecord>();
+            
+            // Initialise if it doesn't exist in DB
+            if (newApplicationVM.LeaveApplication == null)
+            {
+                newApplicationVM.LeaveApplication = new LeaveApplication();
+            }
+
             for (int i = 0; i <= (end - start).Days; i++)
             {
-                TimeRecord newTimeRecord = new TimeRecord(start.AddDays(i));
-                newTimeRecord.LeaveType = leaveType;
-                newTimeRecords.Add(newTimeRecord);
+                // Fetch each timerecord in DB if it exists
+                TimeRecord record = (from r in contextDB.TimeRecords
+                                            where DbFunctions.TruncateTime(r.StartTime) == start.Date &&
+                                                  r.UserID == User.Identity.Name
+                                            select r).First() as TimeRecord;
+                if (record == null)
+                {
+                    record = new TimeRecord(start.AddDays(i).Date);
+                    record.LeaveType = leaveType;
+                }
+                newTimeRecords.Add(record);
             }
             PayPeriod.SetPublicHoliday(newTimeRecords);
+            newApplicationVM.Records = newTimeRecords;
 
-            return PartialView(newTimeRecords);
+            return PartialView(newApplicationVM);
         }
 
         // POST: LeaveApplication/CreateLeaveForm
