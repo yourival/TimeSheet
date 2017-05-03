@@ -12,10 +12,10 @@ namespace TimeSheet.Models
         public TimeRecordForm()
         {
             ManagerID = "00000";
-            status = _status.submited;
+            status = _formstatus.submited;
         }
 
-        public enum _status { approved, rejected, submited }
+        public enum _formstatus { approved, rejected, submited }
 
         [Key]
         public int Year { get; set; }
@@ -24,6 +24,6 @@ namespace TimeSheet.Models
 
         public string ManagerID { get; set; }
 
-        public _status status { get; set; }
+        public _formstatus status { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -16,7 +17,9 @@ namespace TimeSheet.Controllers
         public async Task<ActionResult> Index()
         {
             ViewBag.Year = PayPeriod.GetYearItems();
-            TimeSheetContainer model = await this.GetTimeSheetModel(2017,1);
+            int year = DateTime.Now.Year;
+            int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
+            TimeSheetContainer model = await this.GetTimeSheetModel(year, period);
             return View(model);
         }
 
@@ -34,10 +37,11 @@ namespace TimeSheet.Controllers
             return PartialView(year);
         }
 
-        public async Task<ActionResult> GetTimeRecords(string year, string period)
+        public async Task<ActionResult> GetTimeRecords(string text)
         {
-            var y = int.Parse(year);
-            var p = int.Parse(period);
+            string[] words = text.Split('.');
+            var y = int.Parse(words[0]);
+            var p = int.Parse(words[1]);
             var model = await this.GetTimeSheetModel(y, p);
             return PartialView(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", model);
         }

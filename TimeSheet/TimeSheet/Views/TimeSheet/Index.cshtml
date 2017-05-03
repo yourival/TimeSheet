@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TimeSheet.Models.TimeRecord>
+﻿@model TimeSheet.Models.TimeSheetContainer
 
 @{
     ViewBag.Title = "Index";
@@ -14,8 +14,8 @@
         @{Html.RenderAction("SelectDefaultYear");}
     </div>
 
-    <div id="timesheet">
-
+    <div id="timesheetDiv">
+        @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model);
     </div>
 </p>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -24,26 +24,20 @@
         $("#year").on("change", function () {
             var val = $('#year').val();
             $.ajax({
-                url: "/TimeSheet/SelectYear",
-                type: "GET",
+                url: "/timesheet/selectyear",
+                type: "get",
                 data: { year: val }
             })
-            .done(function(partialViewResult) {
-                $("#periodDiv").html(partialViewResult);
-            });
+                .done(function (partialviewresult) {
+                    $("#perioddiv").html(partialviewresult);
+                });
         });
 
         $("#periodDiv").on("change", function () {
             var year = $('#year').val();
             var period = $('#period').val();
-            $.ajax({
-                url: "/TimeSheet/Create",
-                type: "GET",
-                data: { year: year, period: period }
-            })
-            .done(function (partialViewResult) {
-                $("#timesheet").html(partialViewResult);
-            });
+            var yp = year + "." + period;
+            $("#timesheetDiv").load('@Url.Action("GetTimeRecords","TimeSheet",null,Request.Url.Scheme)?text=' + yp);
         });
     });
 </script>
