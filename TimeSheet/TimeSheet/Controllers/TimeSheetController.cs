@@ -56,11 +56,11 @@ namespace TimeSheet.Controllers
 
             DateTime firstPayDay = PayPeriod.GetStartDay(year, period);
 
-            TimeRecordForm form = (from f in contextDB.TimeRecordForms
-                                 where f.Year == year
-                                 where f.Period == period
-                                 where f.UserID == User.Identity.Name
-                                 select f) as TimeRecordForm;
+            var form = (from f in contextDB.TimeRecordForms
+                                   where f.Year == year
+                                   where f.Period == period
+                                   where f.UserID == User.Identity.Name
+                                   select f).FirstOrDefault();
             if (form == null)
             {
                 model.TimeRecordForm.Year = year;
@@ -71,6 +71,7 @@ namespace TimeSheet.Controllers
                 for (int i = 0; i < 14; i++)
                 {
                     TimeRecord record = new TimeRecord(firstPayDay.AddDays(i));
+                    Debug.WriteLine(record.StartTime);
                     record.UserID = User.Identity.Name;
                     model.TimeRecords.Add(record);
                 }
@@ -78,70 +79,73 @@ namespace TimeSheet.Controllers
             else
             {
                 firstTimeLoaded = false;
+
                 model.TimeRecordForm = form;
+
                 for (int i = 0; i < 14; i++)
                 {
-                    TimeRecord record = (from r in contextDB.TimeRecords
-                                         where r.StartTime.Date == firstPayDay.AddDays(i).Date
+                    DateTime date = firstPayDay.AddDays(i);
+                    var record = (from r in contextDB.TimeRecords
+                                         where DbFunctions.TruncateTime(r.StartTime) == date
                                          where r.UserID == User.Identity.Name
-                                         select r) as TimeRecord;
+                                         select r).FirstOrDefault();
 
                     model.TimeRecords.Add(record);
-                }
 
+                    
+                }
             }
 
             return model;
         }
 
 
-        public void SaveTimeSheet(TimeSheetContainer model)
+        public ActionResult SaveTimeSheet(TimeSheetContainer model)
         {
-            Debug.WriteLine(model.TimeRecordForm.UserID);
-
-            //if(firstTimeLoaded == true)
-            //{
-            //    firstTimeLoaded = false;
-            //    try
-            //    {
-            //        if (ModelState.IsValid)
-            //        {
-            //            foreach (TimeRecord record in model.TimeRecords)
-            //            {
-            //                contextDB.TimeRecords.Add(record);
-            //            }
-            //            contextDB.TimeRecordForms.Add(model.TimeRecordForm);
-            //            contextDB.SaveChanges();
-            //        }
-            //        return RedirectToAction("Index");
-            //    }
-            //    catch
-            //    {
-            //        return RedirectToAction("Index");
-            //    }
-            //}
-            //else
-            //{
-            //    try
-            //    {
-            //        if (ModelState.IsValid)
-            //        {
-            //            foreach (TimeRecord record in model.TimeRecords)
-            //            {
-            //                contextDB.TimeRecords.Attach(record);
-            //                contextDB.Entry(record).State = EntityState.Modified;
-            //            }
-            //            contextDB.TimeRecordForms.Attach(model.TimeRecordForm);
-            //            contextDB.Entry(model.TimeRecordForm).State = EntityState.Modified;
-            //            contextDB.SaveChanges();
-            //        }
-            //        return RedirectToAction("Index");
-            //    }
-            //    catch
-            //    {
-            //        return RedirectToAction("Index");
-            //    }
-            //}
+            if (firstTimeLoaded == true)
+            {
+                firstTimeLoaded = false;
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        for (int i = 0; i < model.TimeRecords.Count; i++)
+                        {
+                            contextDB.TimeRecords.Add(model.TimeRecords[i]);
+                            Debug.WriteLine(model.TimeRecords[i].StartTime);
+                        }
+                        contextDB.TimeRecordForms.Add(model.TimeRecordForm);
+                        contextDB.SaveChanges();
+                    }
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        for (int i = 0; i < model.TimeRecords.Count; i++)
+                        {
+                            contextDB.TimeRecords.Attach(model.TimeRecords[i]);
+                            contextDB.Entry(model.TimeRecords[i]).State = EntityState.Modified;
+                        }
+                        contextDB.TimeRecordForms.Attach(model.TimeRecordForm);
+                        contextDB.Entry(model.TimeRecordForm).State = EntityState.Modified;
+                        contextDB.SaveChanges();
+                    }
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return RedirectToAction("Index");
+                }
+            }
         }
 
 

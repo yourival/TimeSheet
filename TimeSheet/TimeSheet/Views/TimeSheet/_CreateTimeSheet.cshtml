@@ -22,6 +22,14 @@
             <th>Leave Type</th>
         </tr>
 
+        <tr hidden>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.Year)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.Period)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.UserID)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.ManagerID)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.status)</td>
+        </tr>
+
         @for (int i = 0; i < Model.TimeRecords.Count; i++)
         {
             <tr>
@@ -68,6 +76,11 @@
                    2))
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].leaveType, "", new { @class = "text-danger" })
                 </th>
+
+                <th hidden>
+                    @Html.EditorFor(model => model.TimeRecords[i].UserID)
+                </th>
+
             </tr>
         }
         <div class="form-group">

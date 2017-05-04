@@ -9,15 +9,12 @@ namespace TimeSheet.Models
 {
     public class TimeRecordForm
     {
-        public TimeRecordForm()
-        {
-            ManagerID = "00000";
-            status = _formstatus.submited;
-        }
 
         public enum _formstatus { approved, rejected, submited }
 
         [Key]
+        public int TimeRecordFormID { get; set; }
+
         public int Year { get; set; }
         public int Period { get; set; }
         public string UserID { get; set; }
