@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "Create";
 }
+<head>
+    @Styles.Render("~/Content/css")
+</head>
 
 <table>
     <tr>
@@ -11,24 +14,32 @@
         <th>Leave Type</th>
     </tr>
 
-    @foreach (var item in Model)
+    @for (int i=0; i<Model.Records.Count; i++)
     {
-        <tr class="@(item.IsHoliday ? "th-holiday" : "th-weekday")">
+        <tr class="@(Model.Records[i].IsHoliday ? "th-holiday" : "th-weekday")">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
+            @Html.HiddenFor(m => m.Records[i].id)
+            @Html.HiddenFor(m => m.Records[i].UserID)
+            @Html.HiddenFor(m => m.Records[i].StartTime)
+            @Html.HiddenFor(m => m.Records[i].EndTime)
+            @Html.HiddenFor(m => m.Records[i].LunchBreak)
+            @Html.HiddenFor(m => m.Records[i].IsHoliday)
+            @Html.HiddenFor(m => m.Records[i].Flexi)
+
             <th class="form-group">
-                @String.Format("{0:ddd, dd/MM/yyyy}", item.StartTime)
+                @String.Format("{0:ddd, dd/MM/yyyy}", Model.Records[i].StartTime)
             </th>
 
             <th class="form-group">
-                @Html.EditorFor(model => item.LeaveTime, new { htmlAttributes = getHtmlAttributes(item.IsHoliday) })
-                @Html.ValidationMessageFor(model => item.LeaveTime, "", new { @class = "text-danger" })
+                @Html.EditorFor(m => m.Records[i].LeaveTime, new { htmlAttributes = getHtmlAttributes(Model.Records[i].IsHoliday) })
+                @Html.ValidationMessageFor(m => m.Records[i].LeaveTime, "", new { @class = "text-danger" })
             </th>
 
             <th class="form-group">
 
-                @Html.EnumDropDownListFor(model => item.LeaveType, htmlAttributes: getHtmlAttributes(item.IsHoliday))
-                @Html.ValidationMessageFor(model => item.LeaveType, "", new { @class = "text-danger" })
+                @Html.EnumDropDownListFor(m => m.Records[i].LeaveType, htmlAttributes: getHtmlAttributes(Model.Records[i].IsHoliday))
+                @Html.ValidationMessageFor(m => m.Records[i].LeaveType, "", new { @class = "text-danger" })
             </th>
         </tr>
     }

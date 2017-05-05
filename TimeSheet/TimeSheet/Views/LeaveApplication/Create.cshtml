@@ -14,6 +14,7 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.LeaveApplication.id)
+        @Html.HiddenFor(model => model.LeaveApplication.UserID)
 
         <div class="form-group">
             @Html.LabelFor(model => model.LeaveApplication.StartTime, htmlAttributes: new { @class = "control-label" })
@@ -51,59 +52,61 @@
     <div id="leave-form">
     </div>
 
-    <div class="form-group">
-            <input type="submit" value="Submit" class="btn btn-default" />
+    <div class="form-inline">
+        <div class="form-group">
+            <input type="submit" value="Submit" class="btn btn-default"/>
+        </div>
     </div>
-    }
+}
 
 
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script>
-        function renderLeaveForm() {
-            var start = $('#start').val();
-            var end = $('#end').val();
-            var leaveType = $('#leaveType').val();
-            $.ajax({
-                url: "/LeaveApplication/CreateLeaveForm",
-                type: "GET",
-                data: { start: start, end: end, leaveType: leaveType }
-            })
-                .done(function (partialViewResult) {
-                    $("#leave-form").html(partialViewResult);
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script>
+            function renderLeaveForm() {
+                var start = $('#start').val();
+                var end = $('#end').val();
+                var leaveType = $('#leaveType').val();
+                $.ajax({
+                    url: "/LeaveApplication/CreateLeaveForm",
+                    type: "GET",
+                    data: { start: start, end: end, leaveType: leaveType }
+                })
+                    .done(function (partialViewResult) {
+                        $("#leave-form").html(partialViewResult);
+                    });
+            }
+
+            function getFormattedDate(date) {
+                var year = date.getFullYear();
+                var month = (1 + date.getMonth()).toString();
+                month = month.length > 1 ? month : '0' + month;
+                var day = date.getDate().toString();
+                day = day.length > 1 ? day : '0' + day;
+                return year + '-' + month + '-' + day;
+            }
+
+            $(document).ready(function () {
+                var fullDate = new Date();
+
+                $("#start").val(getFormattedDate(new Date()));
+                $("#end").val(getFormattedDate(new Date()));
+
+                $("#start").on("change", function () {
+                    if ($("#start").val() > $("#end").val())
+                        $("#end").val($("#start").val());
+                    renderLeaveForm();
                 });
-        }
-
-        function getFormattedDate(date) {
-            var year = date.getFullYear();
-            var month = (1 + date.getMonth()).toString();
-            month = month.length > 1 ? month : '0' + month;
-            var day = date.getDate().toString();
-            day = day.length > 1 ? day : '0' + day;
-            return year + '-' + month + '-' + day;
-        }
-
-        $(document).ready(function () {
-            var fullDate = new Date();
-
-            $("#start").val(getFormattedDate(new Date()));
-            $("#end").val(getFormattedDate(new Date()));
-
-            $("#start").on("change", function () {
-                if ($("#start").val() > $("#end").val())
-                    $("#end").val($("#start").val());
-                renderLeaveForm();
+                $("#end").on("change", function () {
+                    if ($("#start").val() > $("#end").val())
+                        $("#start").val($("#end").val());
+                    renderLeaveForm();
+                });
+                $("#leaveType").on("change", function () {
+                    renderLeaveForm();
+                });
             });
-            $("#end").on("change", function () {
-                if ($("#start").val() > $("#end").val())
-                    $("#start").val($("#end").val());
-                renderLeaveForm();
-            });
-            $("#leaveType").on("change", function () {
-                renderLeaveForm();
-            });
-        });
-    </script>
+        </script>

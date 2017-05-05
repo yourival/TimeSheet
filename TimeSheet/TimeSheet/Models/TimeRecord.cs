@@ -8,6 +8,7 @@ namespace TimeSheet.Models
 {
     public class TimeRecord
     {
+        public TimeRecord() { }
         public TimeRecord (DateTime date)
         {
             StartTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
