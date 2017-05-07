@@ -66,33 +66,26 @@ namespace TimeSheet.Controllers
                 model.TimeRecordForm.Year = year;
                 model.TimeRecordForm.Period = period;
                 model.TimeRecordForm.UserID = User.Identity.Name;
-
-                
-                for (int i = 0; i < 14; i++)
-                {
-                    TimeRecord record = new TimeRecord(firstPayDay.AddDays(i));
-                    Debug.WriteLine(record.StartTime);
-                    record.UserID = User.Identity.Name;
-                    model.TimeRecords.Add(record);
-                }
             }
             else
             {
-                firstTimeLoaded = false;
-
                 model.TimeRecordForm = form;
+            }
 
-                for (int i = 0; i < 14; i++)
+            for (int i = 0; i < 14; i++)
+            {
+                DateTime date = firstPayDay.AddDays(i);
+                var record = (from r in contextDB.TimeRecords
+                              where DbFunctions.TruncateTime(r.StartTime) == date
+                              where r.UserID == User.Identity.Name
+                              select r).FirstOrDefault();
+                if(record == null)
                 {
-                    DateTime date = firstPayDay.AddDays(i);
-                    var record = (from r in contextDB.TimeRecords
-                                         where DbFunctions.TruncateTime(r.StartTime) == date
-                                         where r.UserID == User.Identity.Name
-                                         select r).FirstOrDefault();
-
+                    model.TimeRecords.Add(new TimeRecord(date));
+                }
+                else
+                {
                     model.TimeRecords.Add(record);
-
-                    
                 }
             }
 
@@ -147,6 +140,9 @@ namespace TimeSheet.Controllers
                 }
             }
         }
+
+
+
 
 
 

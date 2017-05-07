@@ -20,6 +20,7 @@ namespace TimeSheet.Models
         public int id { get; set; }
         public string UserID { get; set; }
 
+
         [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Time)]
         public DateTime StartTime { get; set; }

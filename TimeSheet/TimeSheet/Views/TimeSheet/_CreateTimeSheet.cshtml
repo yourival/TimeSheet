@@ -36,7 +36,7 @@
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <th class="form-group">
-                    @Model.TimeRecords[i].StartTime.Date.ToString()
+                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].StartTime)
                 </th>
 
                 <th class="form-group">
@@ -79,6 +79,7 @@
 
                 <th hidden>
                     @Html.EditorFor(model => model.TimeRecords[i].UserID)
+                    @Html.EditorFor(model => model.TimeRecords[i].RecordDate)
                 </th>
 
             </tr>
@@ -89,8 +90,4 @@
             </div>
         </div>
     </table>
-}
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
 }
