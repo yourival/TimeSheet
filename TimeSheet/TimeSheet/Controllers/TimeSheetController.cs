@@ -13,8 +13,6 @@ namespace TimeSheet.Controllers
     public class TimeSheetController : Controller
     {
         private TimeSheetDb contextDB = new TimeSheetDb();
-        private bool firstTimeLoaded = true;
-
         // GET: TimeSheet
         public async Task<ActionResult> Index()
         {
@@ -63,12 +61,14 @@ namespace TimeSheet.Controllers
                                    select f).FirstOrDefault();
             if (form == null)
             {
+                Startup.NoRecords = true;
                 model.TimeRecordForm.Year = year;
                 model.TimeRecordForm.Period = period;
                 model.TimeRecordForm.UserID = User.Identity.Name;
             }
             else
             {
+                Startup.NoRecords = false;
                 model.TimeRecordForm = form;
             }
 
@@ -76,12 +76,14 @@ namespace TimeSheet.Controllers
             {
                 DateTime date = firstPayDay.AddDays(i);
                 var record = (from r in contextDB.TimeRecords
-                              where DbFunctions.TruncateTime(r.StartTime) == date
+                              where r.RecordDate == date
                               where r.UserID == User.Identity.Name
                               select r).FirstOrDefault();
                 if(record == null)
                 {
-                    model.TimeRecords.Add(new TimeRecord(date));
+                    TimeRecord r = new TimeRecord(date);
+                    r.UserID = User.Identity.Name;
+                    model.TimeRecords.Add(r);
                 }
                 else
                 {
@@ -95,9 +97,8 @@ namespace TimeSheet.Controllers
 
         public ActionResult SaveTimeSheet(TimeSheetContainer model)
         {
-            if (firstTimeLoaded == true)
+            if (Startup.NoRecords == true)
             {
-                firstTimeLoaded = false;
                 try
                 {
                     if (ModelState.IsValid)
@@ -106,15 +107,16 @@ namespace TimeSheet.Controllers
                         {
                             contextDB.TimeRecords.Add(model.TimeRecords[i]);
                             Debug.WriteLine(model.TimeRecords[i].StartTime);
+                            Debug.WriteLine(model.TimeRecords[i].UserID);
                         }
                         contextDB.TimeRecordForms.Add(model.TimeRecordForm);
                         contextDB.SaveChanges();
                     }
                     return RedirectToAction("Index");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return RedirectToAction("Index");
+                    throw ex;
                 }
             }
             else
@@ -126,7 +128,12 @@ namespace TimeSheet.Controllers
                         for (int i = 0; i < model.TimeRecords.Count; i++)
                         {
                             contextDB.TimeRecords.Attach(model.TimeRecords[i]);
-                            contextDB.Entry(model.TimeRecords[i]).State = EntityState.Modified;
+                            var entry = contextDB.Entry(model.TimeRecords[i]);
+                            entry.Property(e => e.StartTime).IsModified = true;
+                            entry.Property(e => e.LunchBreak).IsModified = true;
+                            entry.Property(e => e.EndTime).IsModified = true;
+                            Debug.WriteLine(model.TimeRecords[i].StartTime);
+                            contextDB.SaveChanges();
                         }
                         contextDB.TimeRecordForms.Attach(model.TimeRecordForm);
                         contextDB.Entry(model.TimeRecordForm).State = EntityState.Modified;
@@ -134,18 +141,12 @@ namespace TimeSheet.Controllers
                     }
                     return RedirectToAction("Index");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return RedirectToAction("Index");
+                    throw ex;
                 }
             }
         }
-
-
-
-
-
-
 
 
 

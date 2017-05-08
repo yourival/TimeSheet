@@ -104,19 +104,19 @@ namespace TimeSheet.Models
         {
             AdminDb adminDb = new AdminDb();
             List<Holiday> holidayLists = adminDb.Holidays.ToList();
-            DateTime startDate = records.First().StartTime;
-            DateTime endDate = records.Last().EndTime;
+            DateTime startDate = records.First().RecordDate;
+            DateTime endDate = records.Last().RecordDate;
             if (holidayLists.Count != 0)
             {
                 foreach (Holiday holiday in holidayLists)
                 {
                     foreach (TimeRecord record in records)
                     {
-                        if (holiday.HolidayDate.Date == record.StartTime.Date)
+                        if (holiday.HolidayDate.Date == record.RecordDate.Date)
                         {
                             record.isHoliday = true;
                         }
-                        if ((int)record.StartTime.DayOfWeek == 6 || (int)record.StartTime.DayOfWeek == 7)
+                        if ((int)record.RecordDate.DayOfWeek == 6 || (int)record.RecordDate.DayOfWeek == 7)
                         {
                             record.isHoliday = true;
                         }

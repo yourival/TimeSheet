@@ -28,6 +28,7 @@
             <td>@Html.EditorFor(model => model.TimeRecordForm.UserID)</td>
             <td>@Html.EditorFor(model => model.TimeRecordForm.ManagerID)</td>
             <td>@Html.EditorFor(model => model.TimeRecordForm.status)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.TimeRecordFormID)</td>
         </tr>
 
         @for (int i = 0; i < Model.TimeRecords.Count; i++)
@@ -36,21 +37,21 @@
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <th class="form-group">
-                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].StartTime)
+                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].RecordDate)
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type="time"} })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].StartTime, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.TimeRecords[i].LunchBreak, new { htmlAttributes = new { @class = "form-control"} })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].LunchBreak, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].EndTime, "", new { @class = "text-danger" })
                 </th>
 
@@ -79,7 +80,8 @@
 
                 <th hidden>
                     @Html.EditorFor(model => model.TimeRecords[i].UserID)
-                    @Html.EditorFor(model => model.TimeRecords[i].RecordDate)
+                    @Html.EditorFor(model=>model.TimeRecords[i].RecordDate)
+                    @Html.EditorFor(model=>model.TimeRecords[i].id)
                 </th>
 
             </tr>

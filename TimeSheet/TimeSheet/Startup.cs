@@ -11,5 +11,6 @@ namespace TimeSheet
         {
             ConfigureAuth(app);
         }
+        public static bool NoRecords = true;
     }
 }
