@@ -8,36 +8,40 @@ namespace TimeSheet.Models
 {
     public class TimeRecord
     {
+        public TimeRecord() { }
         public TimeRecord (DateTime date)
         {
-            StartTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
-            LunchBreak = new TimeSpan(0, 30, 0);
-            EndTime = new DateTime(date.Year, date.Month, date.Day, 17, 0, 0);
-            IsHoliday = false;
+            RecordDate = date.Date;
+            StartTime = TimeSpan.FromHours(9);
+            LunchBreak = TimeSpan.FromMinutes(30);
+            EndTime = TimeSpan.FromHours(17);
+            isHoliday = false;
         }
 
         public int id { get; set; }
         public string UserID { get; set; }
         public bool IsHoliday { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Time)]
-        public DateTime StartTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public DateTime RecordDate { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Time)]
-        public DateTime EndTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
+        public TimeSpan StartTime { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        //[DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
+        public TimeSpan EndTime { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
         public _leaveType leaveType { get; set; }
 
+        public bool isHoliday { get; set; }
 
-        //[DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
-        //[DataType(DataType.Time)]
+
+        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan LeaveTime { get; set; }
 
         public TimeSpan GetWorkHours ()

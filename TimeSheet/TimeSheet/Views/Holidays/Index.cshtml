@@ -1,0 +1,33 @@
+﻿@model IEnumerable<TimeSheet.Models.Holiday>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.HolidayDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HolidayName)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.HolidayDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.HolidayName)
+        </td>
+    </tr>
+}
+
+</table>
+<input type="button" value="Update" class="btn btn-default" onclick="location.href='@Url.Action("Update", "Holidays")'" />

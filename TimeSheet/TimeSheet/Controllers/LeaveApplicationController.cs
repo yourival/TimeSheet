@@ -9,7 +9,7 @@ namespace TimeSheet.Controllers
 {
     public class LeaveApplicationController : Controller
     {
-        private TimeSheetContext contextDB = new TimeSheetContext();
+        private TimeSheetDb contextDB = new TimeSheetDb();
 
         // GET: LeaveApplication
         public ActionResult Index()

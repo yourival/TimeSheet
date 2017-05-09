@@ -222,6 +222,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\HolidaysController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeaveApplicationController.cs" />
     <Compile Include="Controllers\TimeSheetController.cs" />
@@ -230,11 +232,15 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AdalTokenCache.cs" />
-    <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\AdminDb.cs" />
+    <Compile Include="Models\ApplicationDb.cs" />
+    <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
-    <Compile Include="Models\TimeSheetContext.cs" />
+    <Compile Include="Models\TimeRecordForm.cs" />
+    <Compile Include="Models\TimeSheetContainer.cs" />
+    <Compile Include="Models\TimeSheetDb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -348,6 +354,8 @@
     <Content Include="Views\TimeSheet\CreateLeaveForm.cshtml" />
     <Content Include="Views\LeaveApplication\Index.cshtml" />
     <Content Include="Views\LeaveApplication\Details.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Holidays\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

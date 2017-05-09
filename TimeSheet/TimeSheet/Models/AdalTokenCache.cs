@@ -11,7 +11,7 @@ namespace TimeSheet.Models
 {
     public class ADALTokenCache : TokenCache
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDb db = new ApplicationDb();
         private string userId;
         private UserTokenCache Cache;
 

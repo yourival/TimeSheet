@@ -7,15 +7,14 @@ using System.Web;
 
 namespace TimeSheet.Models
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDb : DbContext
     {
-        public ApplicationDbContext()
+        public ApplicationDb()
             : base("DefaultConnection")
         {
         }
 
         public DbSet<UserTokenCache> UserTokenCacheList { get; set; }
-        //public DbSet<PayForm> PayFormList { get; set; }
     }
 
     public class UserTokenCache
@@ -26,13 +25,4 @@ namespace TimeSheet.Models
         public byte[] cacheBits { get; set; }
         public DateTime LastWrite { get; set; }
     }
-
-    //public class PayForm
-    //{
-    //    public int PayFormId { get; set; }
-    //    public int UserId { get; set; }
-    //    public int ManagerId { get; set; }
-    //    public DateTime Pay { get; set; }
-    //    public string Comments { get; set; }
-    //}
 }

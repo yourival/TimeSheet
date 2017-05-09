@@ -1,14 +1,13 @@
-﻿@model List<TimeSheet.Models.TimeRecord>
+﻿@model TimeSheet.Models.TimeSheetContainer
 
 @{
-    ViewBag.Title = "Create";
-    int i = 0;
+    ViewBag.Title = "TimeRecords";
 }
 
-<h2>Create</h2>
+<h2>TimeRecords</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("SaveTimeSheet", "TimeSheet",FormMethod.Post))
 {
     //@Html.AntiForgeryToken()
 
@@ -23,42 +22,51 @@
             <th>Leave Type</th>
         </tr>
 
-        @foreach (var item in Model)
+        <tr hidden>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.Year)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.Period)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.UserID)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.ManagerID)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.status)</td>
+            <td>@Html.EditorFor(model => model.TimeRecordForm.TimeRecordFormID)</td>
+        </tr>
+
+        @for (int i = 0; i < Model.TimeRecords.Count; i++)
         {
             <tr>
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                <th class="form-group"                                            }>
-                    @item.StartTime.Date.ToString("dd/MM/yyy ddd")
+                <th class="form-group">
+                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].RecordDate)
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => item.StartTime, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => item.StartTime, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type="time"} })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].StartTime, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => item.LeaveTime, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => item.LunchBreak, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.TimeRecords[i].LunchBreak, new { htmlAttributes = new { @class = "form-control"} })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].LunchBreak, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => item.EndTime, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => item.EndTime, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].EndTime, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => item.UserID, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => item.UserID, User.Identity.Name, new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => item.Flexi, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => item.Flexi, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.TimeRecords[i].Flexi, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].Flexi, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.DropDownListFor(model => item.leaveType, new SelectList(
+                    @Html.DropDownListFor(model => model.TimeRecords[i].leaveType, new SelectList(
                   new List<Object>{
                        new { value = 0 , text = "Sick Leave"  },
                        new { value = 1 , text = "Flexi Leave" },
@@ -67,23 +75,21 @@
                   "value",
                   "text",
                    2))
-                    @Html.ValidationMessageFor(model => item.leaveType, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].leaveType, "", new { @class = "text-danger" })
                 </th>
+
+                <th hidden>
+                    @Html.EditorFor(model => model.TimeRecords[i].UserID)
+                    @Html.EditorFor(model=>model.TimeRecords[i].RecordDate)
+                    @Html.EditorFor(model=>model.TimeRecords[i].id)
+                </th>
+
             </tr>
-            i++;
         }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Submit" class="btn btn-default" />
             </div>
         </div>
     </table>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
 }
