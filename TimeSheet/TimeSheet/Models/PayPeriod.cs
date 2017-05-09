@@ -101,27 +101,21 @@ namespace TimeSheet.Models
         }
 
         // Set holiday status for TimeRecords
-        public static void SetPublicHoliday(List<TimeRecord> records)
+        public static void SetPublicHoliday(TimeRecord record)
         {
             AdminDb adminDb = new AdminDb();
             List<Holiday> holidayLists = adminDb.Holidays.ToList();
-            DateTime startDate = records.First().StartTime;
-            DateTime endDate = records.Last().EndTime;
             if (holidayLists.Count != 0)
             {
-                foreach (TimeRecord record in records)
+                foreach (Holiday holiday in holidayLists)
                 {
-                    record.LeaveTime = new TimeSpan(7, 30, 0);
-                    foreach (Holiday holiday in holidayLists)
+                    if (holiday.HolidayDate.Date == record.StartTime.Date ||
+                        record.StartTime.DayOfWeek == DayOfWeek.Saturday ||
+                        record.StartTime.DayOfWeek == DayOfWeek.Sunday)
                     {
-                        if (holiday.HolidayDate.Date == record.StartTime.Date ||
-                            record.StartTime.DayOfWeek == DayOfWeek.Saturday ||
-                            record.StartTime.DayOfWeek == DayOfWeek.Sunday)
-                        {
-                            record.IsHoliday = true;
-                            record.LeaveTime = new TimeSpan(0, 0, 0);
-                            record.LeaveType = _leaveType.none;
-                        }
+                        record.IsHoliday = true;
+                        record.LeaveTime = new TimeSpan(0, 0, 0);
+                        record.LeaveType = _leaveType.none;
                     }
                 }
             }

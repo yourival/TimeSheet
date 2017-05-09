@@ -23,7 +23,6 @@ textarea {
     max-width: 280px;
 }
 
-/* CSS for weekday/holiday rows */
 .th-holiday {
     color: red
 }
@@ -31,3 +30,12 @@ textarea {
 .th-weekday {
     color: black
 }
+
+.table {
+    width: auto;
+}
+
+.list-group-item {
+    max-width: 30%;
+}
+

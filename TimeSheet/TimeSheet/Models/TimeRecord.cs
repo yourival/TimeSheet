@@ -38,7 +38,7 @@ namespace TimeSheet.Models
         public bool IsHoliday { get; set; }
 
 
-        //[DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
         //[DataType(DataType.Time)]
         public TimeSpan LeaveTime { get; set; }
 

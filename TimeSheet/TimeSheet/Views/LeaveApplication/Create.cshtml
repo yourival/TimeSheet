@@ -2,18 +2,46 @@
 
 @{
     ViewBag.Title = "Create";
+    string[] LeaveNames = {"None-Type Leaves", "Sick Leaves", "Flexi Leaves", "Annual Leaves" };
 }
 
+<head>
+    @Styles.Render("~/Content/css")
+</head>
 
 @using (Html.BeginForm())
 {
-    //@Html.AntiForgeryToken()
-
+    @Html.AntiForgeryToken()
+    <br/>
+    <h3>Your Available Leaves</h3>
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Hours</th>
+                    <th>Mins</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 4; i++)
+                {
+                    <tr>
+                        <th>@LeaveNames[i]</th>
+                        <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].ExtractHours)</td>
+                        <td class="leftmins">@Html.DisplayFor(m => m.LeaveRecords[i].ExtractMins)</td>
+                    </tr>
+                }
+            </tbody>
+            
+        </table>
+    </div>
+    <hr />
+    <h3>LeaveApplication</h3>
+    <p>Pick the period and leave type to apply</p>
     <div class="form-inline">
-        <h4>LeaveApplication</h4>
-        <hr />
+        
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.LeaveApplication.id)
         @Html.HiddenFor(model => model.LeaveApplication.UserID)
 
         <div class="form-group">
@@ -49,64 +77,116 @@
         </div>
     </div>
 
-    <div id="leave-form">
-    </div>
-
+    <div id="leave-form"></div>
+    <br/>
+    <div id="alert" role="alert"></div>
     <div class="form-inline">
         <div class="form-group">
-            <input type="submit" value="Submit" class="btn btn-default"/>
+            <input type="submit" value="Submit" id="submit-btn" class="btn btn-default" disabled="disabled"/>
         </div>
     </div>
 }
 
 
-        @section Scripts {
-            @Scripts.Render("~/bundles/jqueryval")
-        }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-        <script>
-            function renderLeaveForm() {
-                var start = $('#start').val();
-                var end = $('#end').val();
-                var leaveType = $('#leaveType').val();
-                $.ajax({
-                    url: "/LeaveApplication/CreateLeaveForm",
-                    type: "GET",
-                    data: { start: start, end: end, leaveType: leaveType }
-                })
-                    .done(function (partialViewResult) {
-                        $("#leave-form").html(partialViewResult);
-                    });
-            }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function renderLeaveForm() {
+        var start = $('#start').val();
+        var end = $('#end').val();
+        var leaveType = $('#leaveType').val();
 
-            function getFormattedDate(date) {
-                var year = date.getFullYear();
-                var month = (1 + date.getMonth()).toString();
-                month = month.length > 1 ? month : '0' + month;
-                var day = date.getDate().toString();
-                day = day.length > 1 ? day : '0' + day;
-                return year + '-' + month + '-' + day;
-            }
-
-            $(document).ready(function () {
-                var fullDate = new Date();
-
-                $("#start").val(getFormattedDate(new Date()));
-                $("#end").val(getFormattedDate(new Date()));
-
-                $("#start").on("change", function () {
-                    if ($("#start").val() > $("#end").val())
-                        $("#end").val($("#start").val());
-                    renderLeaveForm();
-                });
-                $("#end").on("change", function () {
-                    if ($("#start").val() > $("#end").val())
-                        $("#start").val($("#end").val());
-                    renderLeaveForm();
-                });
-                $("#leaveType").on("change", function () {
-                    renderLeaveForm();
-                });
+        $("#leave-form").text("Loading...");
+        $.ajax({
+            url: "/LeaveApplication/CreateLeaveForm",
+            type: "GET",
+            data: { start: start, end: end, leaveType: leaveType }
+        })
+            .done(function (partialViewResult) {
+                $("#leave-form").html(partialViewResult);
+                $("#submit-btn").prop("disabled", false);
             });
-        </script>
+    }
+
+    function getFormattedDate(date) {
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return year + '-' + month + '-' + day;
+    }
+
+    $(document).ready(function () {
+        var fullDate = new Date();
+
+        $("#start").val(getFormattedDate(new Date()));
+        $("#end").val(getFormattedDate(new Date()));
+
+        $("#start").on("change", function () {
+            if ($("#start").val() > $("#end").val())
+                $("#end").val($("#start").val());
+            renderLeaveForm();
+        });
+        $("#end").on("change", function () {
+            if ($("#start").val() > $("#end").val())
+                $("#start").val($("#end").val());
+            renderLeaveForm();
+        });
+        $("#leaveType").on("change", function () {
+            renderLeaveForm();
+        });
+        $("form").submit(function (e) {
+            var leavetimes = $(".leavetime");
+            var leavetypes = $(".leavetype");
+
+            var lefthours = $(".lefthours");
+            var leftmins = $(".leftmins");
+            var lefttimes = [];
+            for (var i = 0; i < 4; i++) {
+                lefttimes.push(parseInt($(lefthours[i]).text()) * 60 + parseInt($(leftmins[i]).text()));
+            }
+
+            var length = leavetimes.length;
+            var msg = "";
+            for (var i = 0; i < length; i++) {
+                var times = $(leavetimes[i]).val().split(":");
+                lefttimes[$(leavetypes[i]).val()] -= (parseInt(times[0]) * 60 + parseInt(times[1]));
+            }
+            for (var i = 0; i < 4; i++) {
+                if (lefttimes[i] < 0) {
+                    switch (i) {
+                        case 0:
+                            msg += "Non-Type ";
+                            break;
+                        case 1:
+                            msg += "Sick ";
+                            break;
+                        case 2:
+                            msg += "Flexi ";
+                            break;
+                        case 3:
+                            msg += "Annual ";
+                            break;
+                        default:
+                            msg = "Something went wrong";
+                    }
+                }
+            }
+            if (msg != "") {
+                $("#alert").attr('class', "alert alert-danger");
+                $("#alert").html("<strong>Warning!</strong>" +
+                                 "Your leaves application excesses in the following leave types: " + msg +
+                                 "<br/>Please change them up and try submitting again");
+                e.preventDefault(e);
+            } else {
+                $("#alert").attr('class', "alert alert-success");
+                $("#alert").text("Successfully submitted" + msg);
+                e.preventDefault(e);
+            }
+        });
+    });
+</script>

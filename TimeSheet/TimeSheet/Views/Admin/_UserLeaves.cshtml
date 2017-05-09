@@ -1,0 +1,23 @@
+﻿@model List<TimeSheet.Models.LeaveRecord>
+
+@{
+    string[] LeaveNames = { "Total Leaves", "Sick Leaves", "Flexi Leaves", "Annual Leaves" };
+}
+
+<div class="container">
+    <table class="table table-striped">
+        <tbody>
+            @for (int i = 0; i < 4; i++)
+            {
+                <tr>
+                    @Html.HiddenFor(m => m[i].UserID)
+                    @Html.HiddenFor(m => m[i].LeaveType)
+                    <th>@LeaveNames[i]</th>
+                    <td>@Html.EditorFor(m => m[i].ExtractHours, new { @class = "col" }) Hours</td>
+                    <td>@Html.EditorFor(m => m[i].ExtractMins) Mins</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
