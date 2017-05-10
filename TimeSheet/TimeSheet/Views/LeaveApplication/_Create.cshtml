@@ -1,0 +1,63 @@
+﻿@model TimeSheet.Models.LeaveApplicationViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+<br />
+<table class="table-striped">
+    <tr>
+        <th>Date</th>
+        <th>Leave Type</th>
+        <th>Apply Leave Time</th>
+    </tr>
+    @for (int i=0; i<Model.TimeRecords.Count; i++)
+    {
+        <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            @Html.HiddenFor(m => m.TimeRecords[i].id)
+            @Html.HiddenFor(m => m.TimeRecords[i].UserID)
+            @Html.HiddenFor(m => m.TimeRecords[i].StartTime)
+            @Html.HiddenFor(m => m.TimeRecords[i].EndTime)
+            @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
+            @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
+            @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
+
+            <th class="form-group">
+                @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].StartTime)
+            </th>
+
+            <th class="form-group">
+
+                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetype"))
+                @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
+            </th>
+                       
+            <th class="form-group">
+                @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetime") })
+                @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
+            </th>
+        </tr>
+    }
+</table>
+
+@functions {
+    object getHtmlAttributes(bool isHoliday, string className)
+    {
+        if (isHoliday)
+        {
+            return new { @class = "form-control " + className, @disabled = "disabled" };
+        }
+        return new { @class = "form-control " + className };
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

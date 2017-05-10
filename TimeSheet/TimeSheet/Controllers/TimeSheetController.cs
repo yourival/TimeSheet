@@ -13,6 +13,7 @@ namespace TimeSheet.Controllers
     public class TimeSheetController : Controller
     {
         private TimeSheetDb contextDB = new TimeSheetDb();
+
         // GET: TimeSheet
         public async Task<ActionResult> Index()
         {

@@ -100,7 +100,8 @@ namespace TimeSheet.Models
             return listItems;
         }
 
-        public static void SetPublicHoliday(List<TimeRecord> records)
+        // Set holiday status for TimeRecords
+        public static void SetPublicHoliday(TimeRecord record)
         {
             AdminDb adminDb = new AdminDb();
             List<Holiday> holidayLists = adminDb.Holidays.ToList();
@@ -110,7 +111,9 @@ namespace TimeSheet.Models
             {
                 foreach (Holiday holiday in holidayLists)
                 {
-                    foreach (TimeRecord record in records)
+                    if (holiday.HolidayDate.Date == record.StartTime.Date ||
+                        record.StartTime.DayOfWeek == DayOfWeek.Saturday ||
+                        record.StartTime.DayOfWeek == DayOfWeek.Sunday)
                     {
                         if (holiday.HolidayDate.Date == record.RecordDate.Date)
                         {
@@ -126,6 +129,7 @@ namespace TimeSheet.Models
             
         }
 
+        // Get holiday list from online source
         public static List<Holiday> GetHoliday()
         {
             String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";

@@ -1,0 +1,53 @@
+﻿@model List<TimeSheet.Models.LeaveRecord>
+
+@{
+    ViewBag.Title = "UserLeaves";
+}
+
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+
+@using (Html.BeginForm())
+{
+    <br/>
+    <h3>User Leaves Management</h3>
+    <div class="form-inline">
+        <div class="form-group">
+            <label>User Id</label>
+            <input type="text" id="user-id" />
+            <input type="button" value="Search" id="search-btn" class="btn btn-default" />
+        </div>
+    </div>
+
+    <div id="leave-form"></div>
+
+    <div class="form-inline">
+        <div class="form-group">
+            <input type="submit" value="Save" id="submit-btn" class="btn btn-default" disabled="disabled" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#search-btn").click(function () {
+            var userId = $("#user-id").val();
+            $.ajax({
+                url: "/Admin/CreateForm",
+                type: "GET",
+                data: { userId: userId }
+            })
+            .done(function (partialViewResult) {
+                $("#leave-form").html(partialViewResult);
+                $("#submit-btn").prop("disabled", false);
+            });
+        });
+    });
+</script>

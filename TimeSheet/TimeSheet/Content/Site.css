@@ -22,3 +22,20 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.th-holiday {
+    color: red
+}
+
+.th-weekday {
+    color: black
+}
+
+.table {
+    width: auto;
+}
+
+.list-group-item {
+    max-width: 30%;
+}
+

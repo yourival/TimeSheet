@@ -36,9 +36,9 @@ namespace TimeSheet.Models
         public TimeSpan LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
-        public _leaveType leaveType { get; set; }
+        public _leaveType LeaveType { get; set; }
 
-        public bool isHoliday { get; set; }
+        public bool IsHoliday { get; set; }
 
 
         [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]

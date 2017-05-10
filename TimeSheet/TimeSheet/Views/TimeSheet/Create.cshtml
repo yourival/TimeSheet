@@ -5,6 +5,8 @@
     int i = 0;
 }
 
+
+
 <h2>Create</h2>
 
 
@@ -57,7 +59,7 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.DropDownListFor(model => item.leaveType, new SelectList(
+                    @Html.DropDownListFor(model => item.LeaveType, new SelectList(
                   new List<Object>{
                        new { value = 0 , text = "Sick Leave"  },
                        new { value = 1 , text = "Flexi Leave" },
@@ -66,17 +68,17 @@
                   "value",
                   "text",
                    2))
-                    @Html.ValidationMessageFor(model => item.leaveType, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => item.LeaveType, "", new { @class = "text-danger" })
                 </th>
             </tr>
             i++;
         }
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
     </table>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
 }
 
 <div>
