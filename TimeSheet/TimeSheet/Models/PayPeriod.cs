@@ -105,28 +105,21 @@ namespace TimeSheet.Models
         {
             AdminDb adminDb = new AdminDb();
             List<Holiday> holidayLists = adminDb.Holidays.ToList();
-            DateTime startDate = records.First().RecordDate;
-            DateTime endDate = records.Last().RecordDate;
+            DateTime startDate = record.RecordDate;
+            DateTime endDate = record.RecordDate;
             if (holidayLists.Count != 0)
             {
                 foreach (Holiday holiday in holidayLists)
                 {
-                    if (holiday.HolidayDate.Date == record.StartTime.Date ||
-                        record.StartTime.DayOfWeek == DayOfWeek.Saturday ||
-                        record.StartTime.DayOfWeek == DayOfWeek.Sunday)
+                    if (holiday.HolidayDate.Date == record.RecordDate.Date ||
+                        record.RecordDate.DayOfWeek == DayOfWeek.Saturday ||
+                        record.RecordDate.DayOfWeek == DayOfWeek.Sunday)
                     {
-                        if (holiday.HolidayDate.Date == record.RecordDate.Date)
-                        {
-                            record.isHoliday = true;
-                        }
-                        if ((int)record.RecordDate.DayOfWeek == 6 || (int)record.RecordDate.DayOfWeek == 7)
-                        {
-                            record.isHoliday = true;
-                        }
+                        record.IsHoliday = true;
                     }
                 }
+
             }
-            
         }
 
         // Get holiday list from online source

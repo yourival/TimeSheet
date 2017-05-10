@@ -21,6 +21,7 @@
 
             @Html.HiddenFor(m => m.TimeRecords[i].id)
             @Html.HiddenFor(m => m.TimeRecords[i].UserID)
+            @Html.HiddenFor(m => m.TimeRecords[i].RecordDate)
             @Html.HiddenFor(m => m.TimeRecords[i].StartTime)
             @Html.HiddenFor(m => m.TimeRecords[i].EndTime)
             @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
@@ -28,7 +29,7 @@
             @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
 
             <th class="form-group">
-                @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].StartTime)
+                @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
             </th>
 
             <th class="form-group">

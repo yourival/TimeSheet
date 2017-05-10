@@ -33,7 +33,7 @@ namespace TimeSheet.Controllers
             // Fetch Available Leaves in DB
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
-            for (int i=0; i<4; i++)
+            for (int i = 1; i < 4; i++)
             {
                 var availableLeave = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
                 leaveRecords.Add(availableLeave == null ? new LeaveRecord() : availableLeave);
@@ -49,11 +49,11 @@ namespace TimeSheet.Controllers
         {
             try
             {
-                TimeSpan[] takenLeaves = new TimeSpan[4];
+                TimeSpan[] takenLeaves = new TimeSpan[3];
                 foreach (var l in applicationVM.TimeRecords)
                 {
-                    int i = (int)l.LeaveType;
-                    takenLeaves[i] = takenLeaves[i].Add(l.LeaveTime);
+                    int index = (int)l.LeaveType-1;
+                    takenLeaves[index] = takenLeaves[index].Add(l.LeaveTime);
                 }
 
                 // Try to fetch Leaveapplication from DB if it exists
@@ -82,7 +82,7 @@ namespace TimeSheet.Controllers
                 {
                     // Try to fetch TimeRecord from DB if it exists
                     var timeRecord = (from a in contextDb.TimeRecords
-                                         where DbFunctions.TruncateTime(a.StartTime) == r.StartTime.Date &&
+                                         where DbFunctions.TruncateTime(a.RecordDate) == r.RecordDate.Date &&
                                                  a.UserID == r.UserID
                                          select a).FirstOrDefault();
 
@@ -93,7 +93,8 @@ namespace TimeSheet.Controllers
                     }
                     else
                     {
-                        takenLeaves[(int)timeRecord.LeaveType] = takenLeaves[(int)timeRecord.LeaveType].Subtract(timeRecord.LeaveTime);
+                        int index = (int)timeRecord.LeaveType - 1;
+                        takenLeaves[index] = takenLeaves[index].Subtract(timeRecord.LeaveTime);
                         timeRecord.LeaveTime = r.LeaveTime;
                         timeRecord.LeaveType = r.LeaveType;
                         contextDb.Entry(timeRecord).State = EntityState.Modified;
@@ -102,7 +103,7 @@ namespace TimeSheet.Controllers
                 }
                 
                 // Update user leaves data in Db after submitting
-                for (int i = 0; i < 4; i++)
+                for (int i = 1; i < 4; i++)
                 {
                     var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
                     if (leaveRecord == null)
@@ -110,17 +111,17 @@ namespace TimeSheet.Controllers
                         leaveRecord = new LeaveRecord();
                         leaveRecord.LeaveType = (_leaveType)i;
                         leaveRecord.UserID = User.Identity.Name;
-                        leaveRecord.AvailableLeaveTime = leaveRecord.AvailableLeaveTime.Subtract(takenLeaves[i]);
+                        leaveRecord.AvailableLeaveTime = leaveRecord.AvailableLeaveTime.Subtract(takenLeaves[i-1]);
                         contextDb.LeaveRecords.Add(leaveRecord);
                     }
                     else
                     {
-                        leaveRecord.AvailableLeaveTime = leaveRecord.AvailableLeaveTime.Subtract(takenLeaves[i]);
+                        leaveRecord.AvailableLeaveTime = leaveRecord.AvailableLeaveTime.Subtract(takenLeaves[i-1]);
                         contextDb.Entry(leaveRecord).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
                 }
-                return RedirectToAction("Index");
+                return View();
             }
             catch(Exception e)
             {
@@ -142,7 +143,7 @@ namespace TimeSheet.Controllers
                 // Fetch each timerecord in DB if it exists
                 DateTime currentDate = start.AddDays(i);
                 var newTimeRecord = (from r in contextDb.TimeRecords
-                                            where DbFunctions.TruncateTime(r.StartTime) == currentDate.Date &&
+                                            where DbFunctions.TruncateTime(r.RecordDate) == currentDate.Date &&
                                                   r.UserID == User.Identity.Name
                                             select r).FirstOrDefault();
                 if (newTimeRecord == null)
@@ -158,50 +159,6 @@ namespace TimeSheet.Controllers
             applicationVM.TimeRecords = newTimeRecords;
             
             return PartialView(@"~/Views/LeaveApplication/_Create.cshtml", applicationVM);
-        }
-
-        // GET: LeaveApplication/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: LeaveApplication/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: LeaveApplication/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: LeaveApplication/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }        
+        } 
     }
 }

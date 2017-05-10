@@ -27,7 +27,7 @@ namespace TimeSheet.Controllers
         public ActionResult CreateForm(string userId)
         {
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
-            for (int i=0; i<4; i++)
+            for (int i = 1; i < 4; i++)
             {
                 var leaveRecord = contextDb.LeaveRecords.Find(userId, (_leaveType)i);
                 if(leaveRecord == null)
@@ -45,16 +45,16 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public ActionResult UserLeaves(List<LeaveRecord> leaveRecords)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 1; i < 4; i++)
             {
                 var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
                 if (leaveRecord == null)
                 {
-                    contextDb.LeaveRecords.Add(leaveRecord);
+                    contextDb.LeaveRecords.Add(leaveRecords[i-1]);
                 }
                 else
                 {
-                    leaveRecord.AvailableLeaveTime = leaveRecords[i].AvailableLeaveTime;
+                    leaveRecord.AvailableLeaveTime = leaveRecords[i-1].AvailableLeaveTime;
                     contextDb.Entry(leaveRecord).State = EntityState.Modified;
                 }
                 contextDb.SaveChanges();

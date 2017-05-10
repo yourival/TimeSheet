@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Configuration;
 
 namespace TimeSheet.Models
 {
@@ -15,7 +16,7 @@ namespace TimeSheet.Models
             StartTime = TimeSpan.FromHours(9);
             LunchBreak = TimeSpan.FromMinutes(30);
             EndTime = TimeSpan.FromHours(17);
-            isHoliday = false;
+            IsHoliday = false;
         }
 
         public int id { get; set; }
@@ -37,9 +38,6 @@ namespace TimeSheet.Models
 
         public bool Flexi { get; set; }
         public _leaveType LeaveType { get; set; }
-
-        public bool IsHoliday { get; set; }
-
 
         [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan LeaveTime { get; set; }

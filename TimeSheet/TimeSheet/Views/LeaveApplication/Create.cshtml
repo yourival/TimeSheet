@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Create";
-    string[] LeaveNames = {"None-Type Leaves", "Sick Leaves", "Flexi Leaves", "Annual Leaves" };
+    string[] LeaveNames = {"Sick Leaves", "Flexi Leaves", "Annual Leaves" };
 }
 
 <head>
@@ -24,7 +24,7 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < 4; i++)
+                @for (int i = 0; i < 3; i++)
                 {
                     <tr>
                         <th>@LeaveNames[i]</th>
@@ -146,29 +146,32 @@
             var lefthours = $(".lefthours");
             var leftmins = $(".leftmins");
             var lefttimes = [];
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < 3; i++) {
                 lefttimes.push(parseInt($(lefthours[i]).text()) * 60 + parseInt($(leftmins[i]).text()));
             }
 
             var length = leavetimes.length;
             var msg = "";
             for (var i = 0; i < length; i++) {
+                if ($(leavetypes[i]).val() == 0) {
+                    $("#alert").attr('class', "alert alert-danger");
+                    $("#alert").html("<strong>Warning!</strong> Please specify the type of all leaves.");
+                    e.preventDefault(e);
+                    return false;
+                } 
                 var times = $(leavetimes[i]).val().split(":");
-                lefttimes[$(leavetypes[i]).val()] -= (parseInt(times[0]) * 60 + parseInt(times[1]));
+                lefttimes[$(leavetypes[i]).val()-1] -= (parseInt(times[0]) * 60 + parseInt(times[1]));
             }
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < 3; i++) {
                 if (lefttimes[i] < 0) {
                     switch (i) {
                         case 0:
-                            msg += "Non-Type ";
-                            break;
-                        case 1:
                             msg += "Sick ";
                             break;
-                        case 2:
+                        case 1:
                             msg += "Flexi ";
                             break;
-                        case 3:
+                        case 2:
                             msg += "Annual ";
                             break;
                         default:
@@ -182,10 +185,10 @@
                                  "Your leaves application excesses in the following leave types: " + msg +
                                  "<br/>Please change them up and try submitting again");
                 e.preventDefault(e);
+                return false;
             } else {
                 $("#alert").attr('class', "alert alert-success");
                 $("#alert").text("Successfully submitted" + msg);
-                e.preventDefault(e);
             }
         });
     });

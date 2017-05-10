@@ -22,18 +22,20 @@ namespace TimeSheet.Tests.Model
             }
 
             // Act
-            List<DateTime> holidays = PayPeriod.GetHoliday();
+            List<Holiday> holidays = PayPeriod.GetHoliday();
             foreach(TimeRecord record in period)
             {
                 Trace.Write("Record: ");
-                Trace.Write(record.StartTime.Date);
+                Trace.Write(record.RecordDate.Date);
                 Trace.Write("\n");
-                foreach (DateTime holiday in holidays)
+                foreach (var holiday in holidays)
                 {
                     Trace.Write("\tHoliday: ");
-                    Trace.Write(holiday.Date);
+                    Trace.Write(holiday.HolidayDate.Date);
                     Trace.Write("\n");
-                    if (record.StartTime.Date == holiday.Date || record.StartTime.DayOfWeek == DayOfWeek.Sunday || record.StartTime.DayOfWeek == DayOfWeek.Saturday)
+                    if (record.RecordDate.Date == holiday.HolidayDate.Date ||
+                        record.RecordDate.DayOfWeek == DayOfWeek.Sunday ||
+                        record.RecordDate.DayOfWeek == DayOfWeek.Saturday)
                     {
                         record.IsHoliday = true;
                         break;
