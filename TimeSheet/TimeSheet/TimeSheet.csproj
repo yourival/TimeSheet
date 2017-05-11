@@ -224,6 +224,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\HolidaysController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeaveApplicationController.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\AdminDb.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
+    <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\PayPeriod.cs" />
@@ -246,6 +248,8 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Templates\LeaveApplicationEmail.txt" />
+    <Content Include="App_Data\Templates\LeaveApplicationMessage.txt" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -357,10 +361,10 @@
     <Content Include="Views\LeaveApplication\Details.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Holidays\Index.cshtml" />
+    <Content Include="Views\Email\Index.cshtml" />
+    <Content Include="Views\Email\Sent.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
