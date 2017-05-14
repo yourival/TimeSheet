@@ -39,3 +39,49 @@ textarea {
     max-width: 30%;
 }
 
+.inner {
+    background-color: #eee;
+    border-radius: 20px;
+    padding: 30px;
+    margin-left: -30px;
+    margin-right: -30px;
+}
+
+.col-md-6 {
+    padding: 20px;
+}
+
+.jumbotron {
+    background-color: #ffffff;
+    border-radius: 10px;
+    font: bold 16px sans-serif
+}
+
+.navbar {
+    font: bold 16px sans-serif;
+}
+
+.footer-style {
+    padding-top: 10px;
+    padding-bottom: 9px;
+    color: white;
+    background-color: #2F4F4F;
+    opacity: 0.7;
+    font: bold 14px sans-serif;
+    text-align: center;
+}
+
+th {
+    text-align: center;
+    background-color: #eee;
+    opacity: 0.8;
+    padding: 15px;
+}
+
+input[type="submit"] {
+    font: bold 16px sans-serif;
+}
+
+
+
+    

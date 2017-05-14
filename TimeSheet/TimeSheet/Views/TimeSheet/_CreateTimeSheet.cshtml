@@ -1,11 +1,13 @@
 ﻿@model TimeSheet.Models.TimeSheetContainer
 
-@{
-    ViewBag.Title = "TimeRecords";
-}
+@{ViewBag.Title = "Fortnightly Time Sheet";}
 
-<h2>TimeRecords</h2>
+<br/>
+<hr/>
 
+<head>
+    @Styles.Render("~/Content/css")
+</head>
 
 @using (Html.BeginForm("SaveTimeSheet", "TimeSheet", FormMethod.Post))
 {
@@ -18,8 +20,8 @@
             <th>Lunch Break</th>
             <th>End Time</th>
             <th>Leave Time</th>
-            <th>Flexi 1.5</th>
-            <th>Leave Type</th>
+            <th>Flexi</th>
+            <th>Type</th>
         </tr>
 
         <tr hidden>
@@ -37,7 +39,7 @@
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <th class="form-group">
-                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].RecordDate)
+                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].RecordDate, new { htmlAttributes = new { @class = "form-control" } })
                 </th>
 
                 <th class="form-group">
@@ -83,13 +85,14 @@
                     @Html.EditorFor(model => model.TimeRecords[i].RecordDate)
                     @Html.EditorFor(model => model.TimeRecords[i].id)
                 </th>
-
             </tr>
         }
     </table>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Submit" class="btn btn-default" />
+    <br/>
+
+    <div class="row">
+        <div class="col-md-2 col-md-offset-10">
+            <input type="submit" value="Submit" class="btn btn-primary"  />
         </div>
     </div>
 }
