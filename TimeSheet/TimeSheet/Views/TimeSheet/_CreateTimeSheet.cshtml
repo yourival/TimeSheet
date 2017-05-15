@@ -45,7 +45,7 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = setTimeAttributes(Model.TimeRecords[i].IsHoliday)})
+                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type = "time"} })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].StartTime, "", new { @class = "text-danger" })
                 </th>
 
@@ -55,7 +55,7 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = setTimeAttributes(Model.TimeRecords[i].IsHoliday) })
+                    @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].EndTime, "", new { @class = "text-danger" })
                 </th>
 
@@ -96,26 +96,4 @@
             <input type="submit" value="Submit" class="btn btn-default" />
         </div>
     </div>
-}
-
-@functions {
-    object setTimeAttributes(bool isHoliday)
-    {
-        if (isHoliday)
-        {
-            return new { @class = "form-control ", @disabled = "disabled", type = "time"};
-        }
-        return new { @class = "form-control "};
-    }
-}
-
-@functions {
-    object setTimeSpanAttributes(bool isHoliday)
-    {
-        if (isHoliday)
-        {
-            return new { @class = "form-control ", @disabled = "disabled" };
-        }
-        return new { @class = "form-control " };
-    }
 }

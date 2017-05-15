@@ -80,7 +80,6 @@ namespace TimeSheet.Controllers
                               where r.RecordDate == date
                               where r.UserID == User.Identity.Name
                               select r).FirstOrDefault();
-                PayPeriod.SetPublicHoliday(record);
                 if (record == null)
                 {
                     TimeRecord r = new TimeRecord(date);
@@ -90,10 +89,10 @@ namespace TimeSheet.Controllers
                 }
                 else
                 {
+                    PayPeriod.SetPublicHoliday(record);
                     model.TimeRecords.Add(record);
                 }
             }
-
             return model;
         }
 
