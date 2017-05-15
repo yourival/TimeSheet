@@ -4,6 +4,10 @@
     ViewBag.Title = "TimeRecords";
 }
 
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
 <h2>TimeRecords</h2>
 
 
@@ -33,7 +37,7 @@
 
         @for (int i = 0; i < Model.TimeRecords.Count; i++)
         {
-            <tr>
+            <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <th class="form-group">
