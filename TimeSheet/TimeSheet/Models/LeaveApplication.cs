@@ -24,6 +24,5 @@ namespace TimeSheet.Models
         public _leaveType leaveType { get; set; }
         public string ManagerID { get; set; }
         public _status status { get; set; }
-
     }
 }

@@ -4,10 +4,14 @@
     ViewBag.Title = "TimeRecords";
 }
 
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
 <h2>TimeRecords</h2>
 
 
-@using (Html.BeginForm("SaveTimeSheet", "TimeSheet",FormMethod.Post))
+@using (Html.BeginForm("SaveTimeSheet", "TimeSheet", FormMethod.Post))
 {
     //@Html.AntiForgeryToken()
 
@@ -33,7 +37,7 @@
 
         @for (int i = 0; i < Model.TimeRecords.Count; i++)
         {
-            <tr>
+            <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <th class="form-group">
@@ -41,12 +45,12 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type="time"} })
+                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].StartTime, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].LunchBreak, new { htmlAttributes = new { @class = "form-control"} })
+                    @Html.EditorFor(model => model.TimeRecords[i].LunchBreak, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].LunchBreak, "", new { @class = "text-danger" })
                 </th>
 
@@ -66,7 +70,7 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.DropDownListFor(model => model.TimeRecords[i].leaveType, new SelectList(
+                    @Html.DropDownListFor(model => model.TimeRecords[i].LeaveType, new SelectList(
                   new List<Object>{
                        new { value = 0 , text = "Sick Leave"  },
                        new { value = 1 , text = "Flexi Leave" },
@@ -75,21 +79,21 @@
                   "value",
                   "text",
                    2))
-                    @Html.ValidationMessageFor(model => model.TimeRecords[i].leaveType, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
                 </th>
 
                 <th hidden>
                     @Html.EditorFor(model => model.TimeRecords[i].UserID)
-                    @Html.EditorFor(model=>model.TimeRecords[i].RecordDate)
-                    @Html.EditorFor(model=>model.TimeRecords[i].id)
+                    @Html.EditorFor(model => model.TimeRecords[i].RecordDate)
+                    @Html.EditorFor(model => model.TimeRecords[i].id)
                 </th>
 
             </tr>
         }
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Submit" class="btn btn-default" />
-            </div>
-        </div>
     </table>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Submit" class="btn btn-default" />
+        </div>
+    </div>
 }

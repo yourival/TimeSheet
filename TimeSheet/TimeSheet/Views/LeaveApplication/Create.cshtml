@@ -1,58 +1,88 @@
-﻿@model TimeSheet.Models.LeaveApplication
+﻿@model TimeSheet.Models.LeaveApplicationViewModel
 
 @{
     ViewBag.Title = "Create";
+    string[] LeaveNames = {"Sick Leaves", "Flexi Leaves", "Annual Leaves" };
 }
 
+<head>
+    @Styles.Render("~/Content/css")
+</head>
 
 @using (Html.BeginForm())
 {
-    
-    <div class="form-horizontal">
-        <h4>LeaveApplication</h4>
-        <hr />
+    @Html.AntiForgeryToken()
+    <br/>
+    <h3>Your Available Leaves</h3>
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Hours</th>
+                    <th>Mins</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 3; i++)
+                {
+                    <tr>
+                        <th>@LeaveNames[i]</th>
+                        <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].ExtractHours)</td>
+                        <td class="leftmins">@Html.DisplayFor(m => m.LeaveRecords[i].ExtractMins)</td>
+                    </tr>
+                }
+            </tbody>
+            
+        </table>
+    </div>
+    <hr />
+    <h3>LeaveApplication</h3>
+    <p>Pick the period and leave type to apply</p>
+    <div class="form-inline">
+        
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.id)
+        @Html.HiddenFor(model => model.LeaveApplication.UserID)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
-                @Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-danger" })
-            </div>
+            @Html.LabelFor(model => model.LeaveApplication.StartTime, htmlAttributes: new { @class = "control-label" })
+
+            @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
+            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
-                @Html.ValidationMessageFor(model => model.EndTime, "", new { @class = "text-danger" })
-            </div>
+            @Html.LabelFor(model => model.LeaveApplication.EndTime, htmlAttributes: new { @class = "control-label" })
+
+            @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
+            @Html.ValidationMessageFor(model => model.LeaveApplication.EndTime, "", new { @class = "text-danger" })
+
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
-                @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
-            </div>
+            @Html.LabelFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "control-label" })
+
+            @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
+            @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
+
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.ManagerID, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ManagerID, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ManagerID, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            @Html.LabelFor(model => model.LeaveApplication.ManagerID, htmlAttributes: new { @class = "control-label" })
 
-        <div id="leave-form">
-        </div>
+            @Html.EditorFor(model => model.LeaveApplication.ManagerID, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.LeaveApplication.ManagerID, "", new { @class = "text-danger" })
 
+        </div>
+    </div>
+
+    <div id="leave-form"></div>
+    <br/>
+    <div id="alert" role="alert"></div>
+    <div class="form-inline">
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Submit" class="btn btn-default" />
-            </div>
+            <input type="submit" value="Submit" id="submit-btn" class="btn btn-default" disabled="disabled"/>
         </div>
     </div>
 }
@@ -68,14 +98,17 @@
         var start = $('#start').val();
         var end = $('#end').val();
         var leaveType = $('#leaveType').val();
+
+        $("#leave-form").text("Loading...");
         $.ajax({
-            url: "/TimeSheet/CreateLeaveForm",
+            url: "/LeaveApplication/CreateLeaveForm",
             type: "GET",
             data: { start: start, end: end, leaveType: leaveType }
         })
-        .done(function (partialViewResult) {
-            $("#leave-form").html(partialViewResult);
-        });
+            .done(function (partialViewResult) {
+                $("#leave-form").html(partialViewResult);
+                $("#submit-btn").prop("disabled", false);
+            });
     }
 
     function getFormattedDate(date) {
@@ -92,12 +125,10 @@
 
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
-        //renderLeaveForm();
 
         $("#start").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#end").val($("#start").val());
-                
             renderLeaveForm();
         });
         $("#end").on("change", function () {
@@ -107,6 +138,58 @@
         });
         $("#leaveType").on("change", function () {
             renderLeaveForm();
+        });
+        $("form").submit(function (e) {
+            var leavetimes = $(".leavetime");
+            var leavetypes = $(".leavetype");
+
+            var lefthours = $(".lefthours");
+            var leftmins = $(".leftmins");
+            var lefttimes = [];
+            for (var i = 0; i < 3; i++) {
+                lefttimes.push(parseInt($(lefthours[i]).text()) * 60 + parseInt($(leftmins[i]).text()));
+            }
+
+            var length = leavetimes.length;
+            var msg = "";
+            for (var i = 0; i < length; i++) {
+                if ($(leavetypes[i]).val() == 0) {
+                    $("#alert").attr('class', "alert alert-danger");
+                    $("#alert").html("<strong>Warning!</strong> Please specify the type of all leaves.");
+                    e.preventDefault(e);
+                    return false;
+                } 
+                var times = $(leavetimes[i]).val().split(":");
+                lefttimes[$(leavetypes[i]).val()-1] -= (parseInt(times[0]) * 60 + parseInt(times[1]));
+            }
+            for (var i = 0; i < 3; i++) {
+                if (lefttimes[i] < 0) {
+                    switch (i) {
+                        case 0:
+                            msg += "Sick ";
+                            break;
+                        case 1:
+                            msg += "Flexi ";
+                            break;
+                        case 2:
+                            msg += "Annual ";
+                            break;
+                        default:
+                            msg = "Something went wrong";
+                    }
+                }
+            }
+            if (msg != "") {
+                $("#alert").attr('class', "alert alert-danger");
+                $("#alert").html("<strong>Warning!</strong>" +
+                                 "Your leaves application excesses in the following leave types: " + msg +
+                                 "<br/>Please change them up and try submitting again");
+                e.preventDefault(e);
+                return false;
+            } else {
+                $("#alert").attr('class', "alert alert-success");
+                $("#alert").text("Successfully submitted" + msg);
+            }
         });
     });
 </script>

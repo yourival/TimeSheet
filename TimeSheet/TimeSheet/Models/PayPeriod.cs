@@ -100,32 +100,29 @@ namespace TimeSheet.Models
             return listItems;
         }
 
-        public static void SetPublicHoliday(List<TimeRecord> records)
+        // Set holiday status for TimeRecords
+        public static void SetPublicHoliday(TimeRecord record)
         {
             AdminDb adminDb = new AdminDb();
             List<Holiday> holidayLists = adminDb.Holidays.ToList();
-            DateTime startDate = records.First().RecordDate;
-            DateTime endDate = records.Last().RecordDate;
+            DateTime startDate = record.RecordDate;
+            DateTime endDate = record.RecordDate;
             if (holidayLists.Count != 0)
             {
                 foreach (Holiday holiday in holidayLists)
                 {
-                    foreach (TimeRecord record in records)
+                    if (holiday.HolidayDate.Date == record.RecordDate.Date ||
+                        record.RecordDate.DayOfWeek == DayOfWeek.Saturday ||
+                        record.RecordDate.DayOfWeek == DayOfWeek.Sunday)
                     {
-                        if (holiday.HolidayDate.Date == record.RecordDate.Date)
-                        {
-                            record.isHoliday = true;
-                        }
-                        if ((int)record.RecordDate.DayOfWeek == 6 || (int)record.RecordDate.DayOfWeek == 7)
-                        {
-                            record.isHoliday = true;
-                        }
+                        record.IsHoliday = true;
                     }
                 }
+
             }
-            
         }
 
+        // Get holiday list from online source
         public static List<Holiday> GetHoliday()
         {
             String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";
