@@ -1,0 +1,51 @@
+﻿@model TimeSheet.Models.EmailSetting
+@{
+    ViewBag.Title = "EmailSetting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EmailSetting</h2>
+
+@using (Html.BeginForm("UpdateEmailSetting", "Admin", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.id)
+    <div class="form-group">
+        @Html.LabelFor(m => m.fromEmail, new { @class= "control-label" })
+        @Html.TextBoxFor(m => m.fromEmail, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.fromEmail)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.password, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.password)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.subject, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.subject, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.subject)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.message, new { @class = "control-label" })
+        @Html.TextAreaFor(m => m.message, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.message)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.smtpHost, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.smtpHost, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.smtpHost)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.smtpPort, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.smtpPort, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.smtpPort)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.EnableSsl, new { @class = "control-label" })
+        @Html.TextBoxFor(m => m.EnableSsl, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.EnableSsl)
+    </div>
+
+    <div class="form-group">
+        <input type="submit" class="btn btn-default" value="Update" />
+    </div>
+}

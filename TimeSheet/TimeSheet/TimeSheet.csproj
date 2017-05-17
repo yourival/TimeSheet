@@ -223,7 +223,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\HolidaysController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeaveApplicationController.cs" />
     <Compile Include="Controllers\TimeSheetController.cs" />
@@ -233,11 +232,14 @@
     </Compile>
     <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\AdminDb.cs" />
+    <Compile Include="Models\AdminDbInitializer.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
+    <Compile Include="Models\EmailSetting.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\LeaveApplicationViewModel.cs" />
     <Compile Include="Models\LeaveRecord.cs" />
+    <Compile Include="Models\Manager.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
     <Compile Include="Models\TimeRecordForm.cs" />
@@ -355,9 +357,13 @@
     <Content Include="Views\LeaveApplication\Index.cshtml" />
     <Content Include="Views\LeaveApplication\Details.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Holidays\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
     <Content Include="Views\Admin\_UserLeaves.cshtml" />
+    <Content Include="Views\Admin\Holidays.cshtml" />
+    <Content Include="Views\Admin\EmailSetting.cshtml" />
+    <Content Include="Views\Admin\ManagerSetting.cshtml" />
+    <Content Include="Views\Admin\CreateManager.cshtml" />
+    <Content Include="Views\Admin\EditManager.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

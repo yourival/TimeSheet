@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IdentityModel.Claims;
 using System.Linq;
 using System.Web;
@@ -7,6 +8,7 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using TimeSheet.Models;
 
 namespace TimeSheet
 {
@@ -19,6 +21,7 @@ namespace TimeSheet
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
+            Database.SetInitializer<AdminDb>(new AdminDbInitializer());
         }
     }
 }

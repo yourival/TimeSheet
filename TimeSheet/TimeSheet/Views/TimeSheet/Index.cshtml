@@ -17,6 +17,10 @@
     <div id="timesheetDiv">
         @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model)
     </div>
+
+    <div class="form-group">
+        <input type="submit" value="Sumit" class="btn btn-default"  onclick=@Url.Action("SendEmail", "TimeSheet") />
+    </div>
 </p>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
