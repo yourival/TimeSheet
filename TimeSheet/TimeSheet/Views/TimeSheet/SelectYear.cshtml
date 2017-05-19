@@ -1,5 +1,5 @@
 ﻿
- @Html.DropDownList("period", "Period")
+ @Html.DropDownList("period", (IEnumerable<SelectListItem>)ViewBag.Period, "--Period--", new { @class = "form-control"})
 
 
 

@@ -1,50 +1,54 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Leave Application";
 }
 <head>
     @Styles.Render("~/Content/css")
 </head>
 
-<br />
-<table class="table-striped">
-    <tr>
-        <th>Date</th>
-        <th>Leave Type</th>
-        <th>Apply Leave Time</th>
-    </tr>
-    @for (int i=0; i<Model.TimeRecords.Count; i++)
-    {
-        <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<br/>
+<body>
+    <div class="leaveContainer">
+        <table class="table table-condensed form-group">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Leave Type</th>
+                    <th>Apply Leave Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.TimeRecords.Count; i++)
+            {
+                    <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.TimeRecords[i].id)
+                        @Html.HiddenFor(m => m.TimeRecords[i].UserID)
+                        @Html.HiddenFor(m => m.TimeRecords[i].RecordDate)
+                        @Html.HiddenFor(m => m.TimeRecords[i].StartTime)
+                        @Html.HiddenFor(m => m.TimeRecords[i].EndTime)
+                        @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
+                        @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
+                        @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
+                        <th>
+                            @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
+                        </th>
+                        <td>
+                            @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetype"))
+                            @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
+                        </td>
 
-            @Html.HiddenFor(m => m.TimeRecords[i].id)
-            @Html.HiddenFor(m => m.TimeRecords[i].UserID)
-            @Html.HiddenFor(m => m.TimeRecords[i].RecordDate)
-            @Html.HiddenFor(m => m.TimeRecords[i].StartTime)
-            @Html.HiddenFor(m => m.TimeRecords[i].EndTime)
-            @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
-            @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
-            @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
-
-            <th class="form-group">
-                @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
-            </th>
-
-            <th class="form-group">
-
-                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetype"))
-                @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
-            </th>
-                       
-            <th class="form-group">
-                @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetime") })
-                @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
-            </th>
-        </tr>
-    }
-</table>
+                        <td>
+                            @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetime") })
+                            @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
 
 @functions {
     object getHtmlAttributes(bool isHoliday, string className)

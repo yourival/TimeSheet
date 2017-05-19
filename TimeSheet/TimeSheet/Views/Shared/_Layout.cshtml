@@ -5,55 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" href="~/Images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
+
 <body>
-    <div class="navbar">
-        <div class="container">
-            <img src="http://www.nantien.edu.au/sites/default/files/NTI-logo_2.png">
-            <div class="navbar-header navbar-inverse">
-                
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-            
-            <div class="navbar-collapse collapse navbar-inverse ">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home","Index","Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
-                    <li>@Html.ActionLink("Time Sheet","Index","TimeSheet")</li>
-                    <li>@Html.ActionLink("Admin","Index","Admin")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
+    <div>
+
+        <div class="container-fluid logInWhole" style="background-color:#222">
+            <div class="nav navbar-inverse">
+                <div class="logIn">
+                    @Html.Partial("_LoginPartial")
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <div class="footer-style row">
-                <div class="col-xs-12 col-md-4">
-                    <p>Nan Tien Institute &copy; @DateTime.Now.Year</p>
+
+        <div class="container-fluid">
+            <div class="row box1 center-block">
+                <div class="col-lg-4 col-md-4 col-sm-4 logo">
+                    <img class="img-responsive" src="http://www.nantien.edu.au/sites/default/files/NTI-logo_2.png" alt="Nan Tien Institute">
                 </div>
-                <div class="col-xs-12 col-md-4">
-                    <p>+61(2) 4258 0700</p>
-                </div>
-                <div class="col-xs-12 col-md-4">
-                    <p><a href="mailto:enquiry@nantien.edu.au">enquiry@nantien.edu.au</a></p>
+                <div class="menuContainer col-lg-8 col-md-8 col-sm-8">
+                    <div class="navbar navbar-default">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                <li>@Html.ActionLink("About", "About", "Home")</li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
+                                        <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
+                                    </ul>
+                                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </footer>
+
+
+            <div class="container center-block">
+                @RenderBody()
+            </div>
+        </div>
+
+        <hr />
+        <div class="contain-fluid footer">
+            <div class="row box1 center-block">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 copyRight">
+                    <p>Copyright &copy; @DateTime.Now.Year Nan Tien Institute. All rights reserved</p>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <div class="navbar navbar-inverse">
+                            <ul class="nav navbar-nav menu">
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                <li>@Html.ActionLink("About", "About", "Home")</li>
+                                <li class="dropup">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
+                                        <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
+                                    </ul>
+                                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
     </div>
+
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
+
+
 </html>
