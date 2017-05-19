@@ -1,0 +1,86 @@
+﻿@model List<TimeSheet.Models.LeaveApplication>
+
+@{ 
+    string type;
+    if(Model.First().status == TimeSheet.Models._status.submited ||
+                Model.First().status == TimeSheet.Models._status.modified)
+    {
+        type = "Waiting";
+    }
+    else
+    {
+        type = "Confirmed";
+    }
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Total Hours</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < 5 && i < Model.Count; i++)
+        {
+            <tr class="row" onclick="location.href='@Url.Action("ApprovalDetails", "Admin", new { id = Model[i].id })'">
+                <td>@Html.DisplayFor(m => m[i].id)</td>
+                <td>@Html.DisplayFor(m => m[i].UserID)</td>
+                <td>@Html.DisplayFor(m => m[i].leaveType)</td>
+                <td>@Html.DisplayFor(m => m[i].StartTime)</td>
+                <td>@Html.DisplayFor(m => m[i].EndTime)</td>
+                <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
+                <td class=@getStatusClass(Model[i].status)>@Html.DisplayFor(m => m[i].status)</td>
+                <td class="action">
+                    <button class="btn btn-success" value="@Model[i].id">Approved</button>
+                    <button class="btn btn-danger" value="@Model[i].id">Rejected</button>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="7">
+            <td>
+                @if (Model.Count > 5)
+                {
+                    @Html.ActionLink("More...", "ApplicationList", new { type = type })
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="alert-danger" id="error"></div>
+
+
+@functions {
+    string getStatusClass(TimeSheet.Models._status status)
+    {
+        string className;
+        switch (status)
+        {
+            case TimeSheet.Models._status.submited:
+                className = "text-primary";
+                break;
+            case TimeSheet.Models._status.approved:
+                className = "text-success";
+                break;
+            case TimeSheet.Models._status.rejected:
+                className = "text-danger";
+                break;
+            case TimeSheet.Models._status.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}
+
+
+

@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using TimeSheet.Models;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Diagnostics;
 
 namespace TimeSheet.Controllers
@@ -47,17 +46,21 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public ActionResult Create(LeaveApplicationViewModel applicationVM)
         {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Create");
+            }
+
             try
             {
-                TimeSpan[] takenLeaves = new TimeSpan[3];
+                double[] takenLeaves = new double[3];
                 foreach (var l in applicationVM.TimeRecords)
                 {
                     int index = (int)l.LeaveType-1;
-                    takenLeaves[index] = takenLeaves[index].Add(l.LeaveTime);
+                    takenLeaves[index] += l.LeaveTime;
                 }
 
                 // Try to fetch Leaveapplication from DB if it exists
-                applicationVM.LeaveApplication.status = _status.submited;
                 applicationVM.LeaveApplication.UserID = User.Identity.Name;
                 var application = (from a in contextDb.LeaveApplications
                                                  where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
@@ -65,21 +68,11 @@ namespace TimeSheet.Controllers
                                                        a.UserID == applicationVM.LeaveApplication.UserID
                                                  select a).FirstOrDefault();
 
-                // Update if exists, Add if not
-                if (application == null)
-                {
-                    contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
-                }
-                else
-                {
-                    application.leaveType = applicationVM.LeaveApplication.leaveType;
-                    application.ManagerID = applicationVM.LeaveApplication.ManagerID;
-                    contextDb.Entry(application).State = EntityState.Modified;
-                }
-                contextDb.SaveChanges();
-
                 foreach(var r in applicationVM.TimeRecords)
                 {
+                    // Sum up total leave time
+                    applicationVM.LeaveApplication.TotalLeaveTime += r.LeaveTime;
+
                     // Try to fetch TimeRecord from DB if it exists
                     var timeRecord = (from a in contextDb.TimeRecords
                                          where DbFunctions.TruncateTime(a.RecordDate) == r.RecordDate.Date &&
@@ -94,14 +87,30 @@ namespace TimeSheet.Controllers
                     else
                     {
                         int index = (int)timeRecord.LeaveType - 1;
-                        takenLeaves[index] = takenLeaves[index].Subtract(timeRecord.LeaveTime);
+                        takenLeaves[index] -= timeRecord.LeaveTime;
                         timeRecord.LeaveTime = r.LeaveTime;
                         timeRecord.LeaveType = r.LeaveType;
                         contextDb.Entry(timeRecord).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
                 }
-                
+
+                // Update if exists, Add if not
+                if (application == null)
+                {
+                    applicationVM.LeaveApplication.status = _status.submited;
+                    contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
+                }
+                else
+                {
+                    application.status = _status.modified;
+                    application.leaveType = applicationVM.LeaveApplication.leaveType;
+                    application.ManagerID = applicationVM.LeaveApplication.ManagerID;
+                    application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
+                    contextDb.Entry(application).State = EntityState.Modified;
+                }
+                contextDb.SaveChanges();
+
                 // Update user leaves data in Db after submitting
                 for (int i = 1; i < 4; i++)
                 {
@@ -111,12 +120,12 @@ namespace TimeSheet.Controllers
                         leaveRecord = new LeaveRecord();
                         leaveRecord.LeaveType = (_leaveType)i;
                         leaveRecord.UserID = User.Identity.Name;
-                        leaveRecord.AvailableLeaveTime = leaveRecord.AvailableLeaveTime.Subtract(takenLeaves[i-1]);
+                        leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
                         contextDb.LeaveRecords.Add(leaveRecord);
                     }
                     else
                     {
-                        leaveRecord.AvailableLeaveTime = leaveRecord.AvailableLeaveTime.Subtract(takenLeaves[i-1]);
+                        leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
                         contextDb.Entry(leaveRecord).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
@@ -151,10 +160,11 @@ namespace TimeSheet.Controllers
                     newTimeRecord = new TimeRecord(currentDate.Date);
                     newTimeRecord.UserID = User.Identity.Name;
                     newTimeRecord.LeaveType = leaveType;
-                    newTimeRecord.LeaveTime = new TimeSpan(7, 30, 0);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
+                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
                 }
-                newTimeRecords.Add(newTimeRecord);
+                if (!newTimeRecord.IsHoliday)
+                    newTimeRecords.Add(newTimeRecord);
             }
             applicationVM.TimeRecords = newTimeRecords;
             

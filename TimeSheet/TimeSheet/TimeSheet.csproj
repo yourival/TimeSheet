@@ -234,6 +234,8 @@
     <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\AdminDb.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
+    <Compile Include="Models\ApprovalViewModel.cs" />
+    <Compile Include="Models\TimeSheetInitializer.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\LeaveApplicationViewModel.cs" />
@@ -365,6 +367,10 @@
     <Content Include="Views\Holidays\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
     <Content Include="Views\Admin\_UserLeaves.cshtml" />
+    <Content Include="Views\Admin\_Approval.cshtml" />
+    <Content Include="Views\Admin\Approval.cshtml" />
+    <Content Include="Views\Admin\ApplicationList.cshtml" />
+    <Content Include="Views\Admin\ApprovalDetail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

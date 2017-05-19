@@ -1,0 +1,152 @@
+﻿@model TimeSheet.Models.ApprovalViewModel
+
+@{
+    ViewBag.Title = "Leave Application Detail";
+}
+
+
+<br />
+<div class="container">
+    <div>
+        <h3>General Information</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.id)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.UserID)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalLeaveTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.status)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="app-id">@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.id)</td>
+                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.UserID)</td>
+                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</td>
+                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</td>
+                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</td>
+                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalLeaveTime)</td>
+                    <td id ="app-status" class= @getStatusClass(Model.UserApplicationVM.LeaveApplication.status)>
+                        @Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.status)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="alert"></div>
+    </div>
+    <br />
+    <div>
+        <h3>Applied Leaves</h3>
+        <table class="table">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <tr>
+                <th>Date</th>
+                <th>Leave Type</th>
+                <th>Apply Leave Time</th>
+            </tr>
+            @foreach (var item in Model.UserApplicationVM.TimeRecords)
+            {
+                <tr>
+                    <td class="form-group">
+                        @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
+                    </td>
+                    <td class="form-group">
+                        @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
+                    </td>
+                    <td class="form-group">
+                        @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
+                    </td>
+                </tr>
+            }
+        </table>
+        <div>
+            @using (Html.BeginForm("ApprovalDetail", "Admin", FormMethod.Post))
+            {
+                <row>
+                    <button class="btn btn-default" onclick="location.href='@Url.Action( "Approval", "Admin")'">Go back</button>
+                    <input type="hidden" name="id" value=@Model.UserApplicationVM.LeaveApplication.id />
+                    <input type="submit" class="btn btn-success" name="decision" value="Approved">
+                    <input type="submit" class="btn btn-danger" name="decision" value="Rejected">
+                </row>
+            }
+        </div>
+    </div>
+</div>
+<hr />
+<div class="container">
+    <h3>Taken Leaves</h3>
+    @if(Model.TakenLeaves.Count == 0)
+    {
+        <p>No leave is taken in the period.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>User Id</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var leave in Model.TakenLeaves)
+                {
+                    <tr>
+                        <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
+                        <td>@Html.DisplayFor(m => leave.UserID)</td>
+                        <td>@Html.DisplayFor(m => leave.StartTime)</td>
+                        <td>@Html.DisplayFor(m => leave.EndTime)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<div id="myModal" class="modal small fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 class="modal-title">Done!</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text">Are you sure you want to delete the user?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                <button class="btn btn-danger" data-dismiss="modal">Delete</button>
+            </div>
+        </div>
+        </div>
+    </div>
+        @functions {
+            string getStatusClass(TimeSheet.Models._status status)
+            {
+                string className;
+                switch (status)
+                {
+                    case TimeSheet.Models._status.submited:
+                        className = "text-primary";
+                        break;
+                    case TimeSheet.Models._status.approved:
+                        className = "text-success";
+                        break;
+                    case TimeSheet.Models._status.rejected:
+                        className = "text-danger";
+                        break;
+                    case TimeSheet.Models._status.modified:
+                        className = "text-warning";
+                        break;
+                    default:
+                        className = "";
+                        break;
+                }
+                return className;
+            }
+        }
+

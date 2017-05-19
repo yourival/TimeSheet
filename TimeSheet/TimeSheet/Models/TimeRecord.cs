@@ -39,8 +39,8 @@ namespace TimeSheet.Models
         public bool Flexi { get; set; }
         public _leaveType LeaveType { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
-        public TimeSpan LeaveTime { get; set; }
+        [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "fill in a number that is a multiple of 0.5 and not larger than 7.5")]
+        public double LeaveTime { get; set; }
 
         public TimeSpan GetWorkHours ()
         {

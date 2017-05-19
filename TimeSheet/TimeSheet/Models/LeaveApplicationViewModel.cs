@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 using System.Collections.Generic;
 
 namespace TimeSheet.Models
@@ -10,6 +9,6 @@ namespace TimeSheet.Models
         public List<TimeRecord> TimeRecords { get; set; }
         public List<LeaveRecord> LeaveRecords { get; set; }
 
-        public LeaveApplicationViewModel(): base() {}
+        public LeaveApplicationViewModel(): base() { }
     }
 }

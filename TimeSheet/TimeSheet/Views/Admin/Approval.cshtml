@@ -1,0 +1,53 @@
+﻿@model List<TimeSheet.Models.LeaveApplication>
+
+@{
+    ViewBag.Title = "Leave Application Approval";
+}
+
+<h3>Leave Application Approval</h3>
+
+<div class="container">
+    <h4>Waiting Applications</h4>
+    <div id="waiting-apps">
+        @Html.Partial("_Approval", Model.Where(a => a.status == TimeSheet.Models._status.submited ||
+                                                a.status == TimeSheet.Models._status.modified).ToList())
+    </div>
+</div>
+
+<div class="container">
+    <h4>Confirmed Applications</h4>
+    <div id="confirmed-apps">
+        @Html.Partial("_Approval", Model.Where(a => a.status == TimeSheet.Models._status.approved ||
+                                                a.status == TimeSheet.Models._status.rejected).ToList())
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+        $(document).ready(function () {
+            $("button").on('click', function (e) {
+                var id = $(this).val();
+                var decision = $(this).text();
+                alert("start!");
+                //$.ajax({
+                //    url: "/Admin/ApprovalPartial/",
+                //    type: "POST",
+                //    data: { id: id, decision: decision }
+                //})
+                //    .done(function (result) {
+                //        //$(document).html(result);
+                //        alert("success!");
+                //    })
+                //    .fail(function (xmlHttpRequest, textStatus, errorThrown) {
+                //        $("#error").html(xmlHttpRequest.responseText);
+                //    });
+            });
+            $('.row .action').click(function (e) {
+                e.stopPropagation();
+            });
+        });
+</script>

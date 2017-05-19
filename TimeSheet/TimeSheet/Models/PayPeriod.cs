@@ -105,8 +105,6 @@ namespace TimeSheet.Models
         {
             AdminDb adminDb = new AdminDb();
             List<Holiday> holidayLists = adminDb.Holidays.ToList();
-            DateTime startDate = record.RecordDate;
-            DateTime endDate = record.RecordDate;
             if (holidayLists.Count != 0)
             {
                 foreach (Holiday holiday in holidayLists)
