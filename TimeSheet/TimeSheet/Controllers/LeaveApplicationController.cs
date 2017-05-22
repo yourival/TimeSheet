@@ -6,12 +6,16 @@ using System.Web.Mvc;
 using TimeSheet.Models;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Net.Mail;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace TimeSheet.Controllers
 {
     public class LeaveApplicationController : Controller
     {
-        private TimeSheetDb contextDb = new TimeSheetDb();
+        private TimeSheetDb contextDb = new TimeSheetDb();        
+        private AdminDb adminDb = new AdminDb();
 
         // GET: LeaveApplication
         public ActionResult Index()
@@ -46,7 +50,7 @@ namespace TimeSheet.Controllers
 
         // POST: LeaveApplication/Create
         [HttpPost]
-        public ActionResult Create(LeaveApplicationViewModel applicationVM)
+        public async Task<ActionResult> Create(LeaveApplicationViewModel applicationVM, FormCollection form)
         {
             if (!ModelState.IsValid)
             {
@@ -100,6 +104,7 @@ namespace TimeSheet.Controllers
                 // Update if exists, Add if not
                 if (application == null)
                 {
+                    applicationVM.LeaveApplication.ManagerID = form["manager"].ToString();
                     applicationVM.LeaveApplication.status = _status.submited;
                     contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
                 }
@@ -107,7 +112,7 @@ namespace TimeSheet.Controllers
                 {
                     application.status = _status.modified;
                     application.leaveType = applicationVM.LeaveApplication.leaveType;
-                    application.ManagerID = applicationVM.LeaveApplication.ManagerID;
+                    application.ManagerID = form["manager"].ToString();
                     application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
                     contextDb.Entry(application).State = EntityState.Modified;
                 }
@@ -133,16 +138,46 @@ namespace TimeSheet.Controllers
                     contextDb.SaveChanges();
                 }
 
-                // send an email to manager
+                // Send an email to manager
+                var applicationModel = (from a in contextDb.LeaveApplications
+                                        where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
+                                              DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
+                                              a.UserID == applicationVM.LeaveApplication.UserID
+                                        select a).FirstOrDefault();
 
-                return View();
+                if (applicationModel != null)
+                {
+                    string link = "http://localhost/Admin/Approval/ApplicationDetails/" + applicationModel.id;
+                    EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
+                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='{1}'>{1}</a>";
+                    var message = new MailMessage();
+                    message.To.Add(new MailAddress(applicationModel.ManagerID));
+                    message.From = new MailAddress(model.FromEmail);
+                    message.Subject = model.Subject;
+                    message.Body = string.Format(body, model.Message, link);
+                    message.IsBodyHtml = true;
+
+                    using (var smtp = new SmtpClient())
+                    {
+                        var credential = new NetworkCredential
+                        {
+                            UserName = model.FromEmail,
+                            Password = model.Password
+                        };
+                        smtp.Credentials = credential;
+                        smtp.Host = model.SMTPHost;
+                        smtp.Port = model.SMTPPort;
+                        smtp.EnableSsl = model.EnableSsl;
+                        await smtp.SendMailAsync(message);
+                    }
+                }    
             }
             catch(Exception e)
             {
                 Debug.WriteLine(e.Message);
                 Debug.WriteLine(e.StackTrace);
-                return View();
             }
+            return RedirectToAction("Create");
         }
 
         // GET: LeaveApplication/CreateLeaveForm

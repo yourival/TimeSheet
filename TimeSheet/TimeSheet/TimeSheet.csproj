@@ -235,6 +235,7 @@
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\ApprovalViewModel.cs" />
     <Compile Include="Controllers\LeaveApprovalController.cs" />
+    <Compile Include="Models\EmailSetting.cs" />
     <Compile Include="Models\TimeSheetInitializer.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />

@@ -53,7 +53,7 @@ namespace TimeSheet.Controllers
         {
             for (int i = 1; i < 4; i++)
             {
-                var leaveRecord = contextDb.LeaveRecords.Find(leaveRecords.First().UserID, (_leaveType)i);
+                var leaveRecord = timesheetDb.LeaveRecords.Find(leaveRecords.First().UserID, (_leaveType)i);
                 if (leaveRecord == null)
                 {
                     timesheetDb.LeaveRecords.Add(leaveRecords[i-1]);
