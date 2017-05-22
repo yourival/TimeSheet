@@ -111,6 +111,10 @@ namespace TimeSheet.Controllers
         {
             EmailSetting model;
             model = adminDb.EmailSetting.ToList().FirstOrDefault();
+            if (model == null)
+            {
+                model = new EmailSetting();
+            }
             return View(model);
         }
 
@@ -156,6 +160,9 @@ namespace TimeSheet.Controllers
                 {
                     if (model != null)
                     {
+                        string ID = model.ManagerID;
+                        int id = model.id;
+                        string name = model.ManagerName;
                         adminDb.ManagerSetting.Add(model);
                         adminDb.SaveChanges();
                     }
@@ -180,7 +187,6 @@ namespace TimeSheet.Controllers
         }
 
         //Save Manager info to Db
-        [HttpPost]
         public ActionResult EditManagerConfirmed(Manager model)
         {
             try
@@ -212,6 +218,32 @@ namespace TimeSheet.Controllers
             return RedirectToAction("ManagerSetting");
         }
 
-
+        public static List<SelectListItem> GetManagerItems()
+        {
+            AdminDb adminDb = new AdminDb();
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            List<Manager> managerList = adminDb.ManagerSetting.ToList();
+            for(int i = 0; i < managerList.Count(); i++)
+            {
+                if (i == 0)
+                {
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = managerList[i].ManagerName,
+                        Value = managerList[i].ManagerID,
+                        Selected = true
+                    });
+                }
+                else
+                {
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = managerList[i].ManagerName,
+                        Value = managerList[i].ManagerID
+                    });
+                }
+            }
+            return listItems;
+        }
     }
 }

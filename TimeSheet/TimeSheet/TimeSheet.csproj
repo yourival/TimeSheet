@@ -232,7 +232,6 @@
     </Compile>
     <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\AdminDb.cs" />
-    <Compile Include="Models\AdminDbInitializer.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\EmailSetting.cs" />
     <Compile Include="Models\Holiday.cs" />
@@ -364,6 +363,7 @@
     <Content Include="Views\Admin\ManagerSetting.cshtml" />
     <Content Include="Views\Admin\CreateManager.cshtml" />
     <Content Include="Views\Admin\EditManager.cshtml" />
+    <Content Include="Views\TimeSheet\ReceiveEmail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

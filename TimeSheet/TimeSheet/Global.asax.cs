@@ -21,7 +21,7 @@ namespace TimeSheet
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
-            Database.SetInitializer<AdminDb>(new AdminDbInitializer());
+            //Database.SetInitializer<AdminDb>(new AdminDbInitializer());
         }
     }
 }

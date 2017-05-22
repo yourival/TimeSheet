@@ -21,8 +21,8 @@
             <th>Start Time</th>
             <th>Lunch Break</th>
             <th>End Time</th>
-            <th>Leave Time</th>
             <th>Flexi 1.5</th>
+            <th>Leave Time</th>
             <th>Leave Type</th>
         </tr>
 
@@ -60,25 +60,19 @@
                 </th>
 
                 <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
-                </th>
-
-                <th class="form-group">
                     @Html.EditorFor(model => model.TimeRecords[i].Flexi, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].Flexi, "", new { @class = "text-danger" })
                 </th>
 
                 <th class="form-group">
-                    @Html.DropDownListFor(model => model.TimeRecords[i].LeaveType, new SelectList(
-                  new List<Object>{
-                       new { value = 0 , text = "Sick Leave"  },
-                       new { value = 1 , text = "Flexi Leave" },
-                       new { value = 2 , text = "Annual Leave"}
-                    },
-                  "value",
-                  "text",
-                   2))
+                    @Html.DisplayFor(model => model.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "form-control"} })
+                    @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
+                </th>
+
+
+
+                <th class="form-group">
+                    @Html.DisplayFor(model => model.TimeRecords[i].LeaveType, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
                 </th>
 

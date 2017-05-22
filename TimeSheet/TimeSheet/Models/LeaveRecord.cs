@@ -15,7 +15,7 @@ namespace TimeSheet.Models
         [Key, Column(Order = 1)]
         public _leaveType LeaveType { get; set; }
         public Double AvailableLeaveMinuites { get; set; }
-
+         
         [NotMapped]
         public TimeSpan AvailableLeaveTime
         {

@@ -29,9 +29,10 @@
         <td>
             @Html.DisplayFor(modelItem => item.ManagerName)
         </td>
+        @Html.HiddenFor(modelItem=>item.id)
         <td>
-            @Html.ActionLink("Edit", "EditManager", "Admin",new { id=item.id }) |
-            @Html.ActionLink("Delete", "DeleteManager", "Admin",new { id=item.id })
+            @Html.ActionLink("Edit", "EditManager", "Admin",new { id=item.id },null) |
+            @Html.ActionLink("Delete", "DeleteManager", "Admin", new { id = item.id }, null)
         </td>
     </tr>
 }

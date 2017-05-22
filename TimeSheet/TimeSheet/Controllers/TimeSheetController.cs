@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.IO;
 using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
@@ -18,13 +19,22 @@ namespace TimeSheet.Controllers
         private AdminDb adminDb = new AdminDb();
 
         // GET: TimeSheet
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(bool error = false)
         {
             ViewBag.Year = PayPeriod.GetYearItems();
+            ViewBag.Manager = AdminController.GetManagerItems();
             int year = DateTime.Now.Year;
             int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
             TimeSheetContainer model = await this.GetTimeSheetModel(year, period);
-            return View(model);
+            if(error == true)
+            {
+                ViewBag.Error = "There is a error";
+                return View(model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         // GET: Year
@@ -101,6 +111,7 @@ namespace TimeSheet.Controllers
             return model;
         }
 
+        [HttpPost]
         //save time records to db
         public ActionResult SaveTimeSheet(TimeSheetContainer model)
         {
@@ -116,6 +127,7 @@ namespace TimeSheet.Controllers
                             Debug.WriteLine(model.TimeRecords[i].StartTime);
                             Debug.WriteLine(model.TimeRecords[i].UserID);
                         }
+                        model.TimeRecordForm.status = TimeRecordForm._formstatus.saved;
                         timesheetDb.TimeRecordForms.Add(model.TimeRecordForm);
                         timesheetDb.SaveChanges();
                     }
@@ -139,8 +151,10 @@ namespace TimeSheet.Controllers
                             entry.Property(e => e.StartTime).IsModified = true;
                             entry.Property(e => e.LunchBreak).IsModified = true;
                             entry.Property(e => e.EndTime).IsModified = true;
+                            entry.Property(e => e.Flexi).IsModified = true;
                             timesheetDb.SaveChanges();
                         }
+                        model.TimeRecordForm.status = TimeRecordForm._formstatus.saved;
                         timesheetDb.TimeRecordForms.Attach(model.TimeRecordForm);
                         timesheetDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
                         timesheetDb.SaveChanges();
@@ -154,39 +168,64 @@ namespace TimeSheet.Controllers
             }
         }
 
-        public async Task<ActionResult> SendEmail()
+        public async Task<ActionResult> SendEmail(FormCollection form)
         {
-            EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
-            if (ModelState.IsValid)
+            string managerID = form["manager"].ToString();
+            int year = Convert.ToInt32(form["year"].ToString());
+            int period = Convert.ToInt32(form["period"].ToString());
+            
+            var formModel = (from f in timesheetDb.TimeRecordForms
+                        where f.Year == year
+                        where f.Period == period
+                        where f.UserID == User.Identity.Name
+                        select f).FirstOrDefault();
+            if (formModel == null)
             {
-                string body = "<p>Message: </p><p>{0}</p><p>Link: </p><p>{1}</p>";
-                //using (var sr = new StreamReader(Server.MapPath("\\App_Data\\Templates\\" + "LeaveApplicationEmail.txt")))
-                //{
-                //    body = sr.ReadToEnd();
-                //}
-                var message = new MailMessage();
-                message.To.Add(new MailAddress(User.Identity.Name));
-                message.From = new MailAddress(model.FromEmail);
-                message.Subject = model.Subject;
-                message.Body = string.Format(body, model.Message);
-                message.IsBodyHtml = true;
-
-                using (var smtp = new SmtpClient())
-                {
-                    var credential = new NetworkCredential
-                    {
-                        UserName = model.FromEmail,
-                        Password = model.Password
-                    };
-                    smtp.Credentials = credential;
-                    smtp.Host = model.SMTPHost;
-                    smtp.Port = model.SMTPPort;
-                    smtp.EnableSsl = model.EnableSsl;
-                    await smtp.SendMailAsync(message);
-                    return RedirectToAction("Index");
-                }
+                return RedirectToAction("Index", new { error = true });
             }
-            return RedirectToAction("Index");
+            else
+            {
+                string Link = "www.nantien.com/Timesheet/ReceiveEmail/message?=" + formModel.TimeRecordFormID;
+                formModel.ManagerID = managerID;
+                formModel.status = TimeRecordForm._formstatus.submited;
+                timesheetDb.TimeRecordForms.Attach(formModel);
+                timesheetDb.Entry(formModel).State = EntityState.Modified;
+                timesheetDb.SaveChanges();
+
+                EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
+                if (ModelState.IsValid)
+                {
+                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='http://www.google.com'>{1}</a>";
+                    var message = new MailMessage();
+                    message.To.Add(new MailAddress(managerID));
+                    message.From = new MailAddress(model.FromEmail);
+                    message.Subject = model.Subject;
+                    message.Body = string.Format(body, model.Message, Link);
+                    message.IsBodyHtml = true;
+
+                    using (var smtp = new SmtpClient())
+                    {
+                        var credential = new NetworkCredential
+                        {
+                            UserName = model.FromEmail,
+                            Password = model.Password
+                        };
+                        smtp.Credentials = credential;
+                        smtp.Host = model.SMTPHost;
+                        smtp.Port = model.SMTPPort;
+                        smtp.EnableSsl = model.EnableSsl;
+                        await smtp.SendMailAsync(message);
+                        return RedirectToAction("Index");
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+        }
+
+        public ActionResult ReceiveEmail(string message)
+        {
+            ViewBag.message = message;
+            return View();
         }
     }
 }
