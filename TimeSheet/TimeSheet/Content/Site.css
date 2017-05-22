@@ -147,7 +147,7 @@ body {
     }
 
     .logIn {
-        display:inline;
+        /*display:inline;*/
         float:right;
         font-size:0.8em;
     }

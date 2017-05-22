@@ -38,7 +38,7 @@
                     <td>@Html.EditorFor(model => model.TimeRecordForm.status)</td>
                     <td>@Html.EditorFor(model => model.TimeRecordForm.TimeRecordFormID)</td>
                 </tr>
-
+            <tbody>
         @for (int i = 0; i < Model.TimeRecords.Count; i++)
         {
             <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
@@ -94,7 +94,6 @@
                     </tr>
                 }
             </tbody>
-
         </table>
         <br />
         <input type="submit" value="Submit" class="btn btn-primary" />
