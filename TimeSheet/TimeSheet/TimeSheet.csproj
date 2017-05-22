@@ -235,6 +235,7 @@
     <Compile Include="Models\AdminDb.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\ApprovalViewModel.cs" />
+    <Compile Include="Controllers\LeaveApprovalController.cs" />
     <Compile Include="Models\TimeSheetInitializer.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
@@ -367,10 +368,10 @@
     <Content Include="Views\Holidays\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
     <Content Include="Views\Admin\_UserLeaves.cshtml" />
-    <Content Include="Views\Admin\_Approval.cshtml" />
-    <Content Include="Views\Admin\Approval.cshtml" />
-    <Content Include="Views\Admin\ApplicationList.cshtml" />
-    <Content Include="Views\Admin\ApprovalDetail.cshtml" />
+    <Content Include="Views\LeaveApproval\_Approval.cshtml" />
+    <Content Include="Views\LeaveApproval\Approval.cshtml" />
+    <Content Include="Views\LeaveApproval\ApplicationList.cshtml" />
+    <Content Include="Views\LeaveApproval\ApprovalDetail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

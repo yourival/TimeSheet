@@ -19,7 +19,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr onclick="location.href = '@(Url.Action("ApprovalDetails", "Admin", new { id = item.id }))'">
+            <tr @*onclick="location.href = '@(Url.Action("ApprovalDetails", "Admin", new { id = item.id }))'"*@>
                 <td>@Html.DisplayFor(m => item.id)</td>
                 <td>@Html.DisplayFor(m => item.UserID)</td>
                 <td>@Html.DisplayFor(m => item.leaveType)</td>
