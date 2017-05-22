@@ -223,7 +223,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\HolidaysController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeaveApplicationController.cs" />
     <Compile Include="Controllers\TimeSheetController.cs" />
@@ -241,6 +240,7 @@
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\LeaveApplicationViewModel.cs" />
     <Compile Include="Models\LeaveRecord.cs" />
+    <Compile Include="Models\Manager.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
     <Compile Include="Models\TimeRecordForm.cs" />
@@ -359,7 +359,6 @@
     <Content Include="Views\LeaveApplication\Index.cshtml" />
     <Content Include="Views\LeaveApplication\Details.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Holidays\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
     <Content Include="Views\Admin\_UserLeaves.cshtml" />
     <Content Include="Views\LeaveApproval\_Approval.cshtml" />

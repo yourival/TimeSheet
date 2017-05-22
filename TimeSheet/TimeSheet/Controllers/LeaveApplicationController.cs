@@ -32,6 +32,8 @@ namespace TimeSheet.Controllers
             // Fetch Available Leaves in DB
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            //get manager droplist
+            ViewBag.Manager = AdminController.GetManagerItems();
             for (int i = 1; i < 4; i++)
             {
                 var availableLeave = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
@@ -130,6 +132,9 @@ namespace TimeSheet.Controllers
                     }
                     contextDb.SaveChanges();
                 }
+
+                // send an email to manager
+
                 return View();
             }
             catch(Exception e)

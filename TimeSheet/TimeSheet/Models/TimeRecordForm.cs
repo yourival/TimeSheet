@@ -10,7 +10,7 @@ namespace TimeSheet.Models
     public class TimeRecordForm
     {
 
-        public enum _formstatus { approved, rejected, submited }
+        public enum _formstatus { approved, rejected, submited, saved }
 
         [Key]
         public int TimeRecordFormID { get; set; }
