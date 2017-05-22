@@ -28,7 +28,7 @@ namespace TimeSheet.Controllers
             TimeSheetContainer model = await this.GetTimeSheetModel(year, period);
             if(error == true)
             {
-                ViewBag.Error = "There is a error";
+                ViewBag.Error = "Please save the timesheet records first";
                 return View(model);
             }
             else
@@ -185,7 +185,7 @@ namespace TimeSheet.Controllers
             }
             else
             {
-                string Link = "www.nantien.com/Timesheet/ReceiveEmail/message?=" + formModel.TimeRecordFormID;
+                string Link = "http://localhost:44300/TimeSheet/ReceiveEmail/message/" + formModel.TimeRecordFormID;
                 formModel.ManagerID = managerID;
                 formModel.status = TimeRecordForm._formstatus.submited;
                 timesheetDb.TimeRecordForms.Attach(formModel);
@@ -195,7 +195,7 @@ namespace TimeSheet.Controllers
                 EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
                 if (ModelState.IsValid)
                 {
-                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='http://www.google.com'>{1}</a>";
+                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='{1}'>{1}</a>";
                     var message = new MailMessage();
                     message.To.Add(new MailAddress(managerID));
                     message.From = new MailAddress(model.FromEmail);
