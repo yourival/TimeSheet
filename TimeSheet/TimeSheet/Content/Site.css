@@ -256,27 +256,37 @@ body {
     left:0;
     right:0;
     background-color:#222;
+    height:2.5em;
 }
 
 .menu li a {
     font-size:1em;
     font-weight:500;
     text-transform:uppercase;
+    padding-top:0.5em;
 }
 
 .menu li {
     list-style-type: none;
-    display:inline-block;
+    display: inline-block;
+    padding-top: 0.2em;
 }
 
 .copyRight {
-    margin-top:13px;
-    color:white;
+    margin-top: 13px;
+    color: white;
+    padding-top: 0.2em;
 }
 
 .navbar-inverse {
     border-color:#222;
 }
 
+th-holiday {
+    color: red;
+}
 
+th-weekday {
+    color: black;
+}
 

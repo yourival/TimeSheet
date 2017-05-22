@@ -115,6 +115,8 @@ namespace TimeSheet.Controllers
             if (model == null)
             {
                 model = new EmailSetting();
+                adminDb.EmailSetting.Add(model);
+                adminDb.SaveChanges();
             }
             return View(model);
         }

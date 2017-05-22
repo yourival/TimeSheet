@@ -28,7 +28,7 @@ namespace TimeSheet.Controllers
             TimeSheetContainer model = await this.GetTimeSheetModel(year, period);
             if(error == true)
             {
-                ViewBag.Error = "There is a error";
+                ViewBag.Error = "Please save timesheet before submit";
                 return View(model);
             }
             else
