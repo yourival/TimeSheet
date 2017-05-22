@@ -250,10 +250,6 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\AdminDb.mdf" />
-    <Content Include="App_Data\AdminDb_log.ldf">
-      <DependentUpon>AdminDb.mdf</DependentUpon>
-    </Content>
     <Content Include="App_Data\aspnet-TimeSheet-20161125111829.mdf" />
     <Content Include="App_Data\aspnet-TimeSheet-20161125111829_log.ldf">
       <DependentUpon>aspnet-TimeSheet-20161125111829.mdf</DependentUpon>
@@ -349,14 +345,11 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Account\SignOutCallback.cshtml" />
     <Content Include="Views\UserProfile\Index.cshtml" />
     <Content Include="Views\UserProfile\Relogin.cshtml" />
-    <Content Include="Views\TimeSheet\Create.cshtml" />
     <Content Include="Views\TimeSheet\Index.cshtml" />
     <Content Include="Views\TimeSheet\SelectYear.cshtml" />
     <Content Include="Views\TimeSheet\_CreateTimeSheet.cshtml" />

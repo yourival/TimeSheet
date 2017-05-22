@@ -80,18 +80,19 @@ namespace TimeSheet.Controllers
                               where r.RecordDate == date
                               where r.UserID == User.Identity.Name
                               select r).FirstOrDefault();
-                if(record == null)
+                if (record == null)
                 {
                     TimeRecord r = new TimeRecord(date);
                     r.UserID = User.Identity.Name;
+                    PayPeriod.SetPublicHoliday(r);
                     model.TimeRecords.Add(r);
                 }
                 else
                 {
+                    PayPeriod.SetPublicHoliday(record);
                     model.TimeRecords.Add(record);
                 }
             }
-
             return model;
         }
 
