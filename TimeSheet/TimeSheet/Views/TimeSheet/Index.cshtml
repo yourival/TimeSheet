@@ -1,23 +1,29 @@
 ﻿@model TimeSheet.Models.TimeSheetContainer
 
-@{
-    ViewBag.Title = "Index";
-}
+<head>
+    @{ViewBag.Title = "Time Sheet";}
+</head>
 
-<h2>Index</h2>
+<body>
+    <h2>Fortnightly Pay Period</h2>
+    <hr />
 
-<p>
-    <div>
-        @Html.DropDownList("year", "Year")
-    </div>
-    <div id="periodDiv">
-        @{Html.RenderAction("SelectDefaultYear");}
+    <div class="row">
+        <div class="col-md-2 col-lg-3 col-xs-6">
+            <h4>Select Year</h4>
+            @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, "--Year--", new {@class = "form-control"})
+        </div>
+        <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
+            <h4>Select Pay period</h4>
+            @{Html.RenderAction("SelectDefaultYear");}
+        </div>
     </div>
 
     <div id="timesheetDiv">
         @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model)
     </div>
-</p>
+</body>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {

@@ -1,41 +1,282 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+﻿
+body {
+    font-family:Lato;
 }
 
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+/*make sure navbar doesn't go beyonod main picture*/
+.box1{
+    max-width:1000px;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+.mainContainer {
+    max-width:1000px;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+.aboutContainer {
+    text-align:center;
 }
 
-.th-holiday {
-    color: red
-}
-
-.th-weekday {
-    color: black
+.contactDiv {
+    text-align:center;
 }
 
 .table {
-    width: auto;
+    width:auto;
 }
 
-.list-group-item {
-    max-width: 30%;
+
+@media (min-width: 1200px) {
+
+    /*navbar*/
+    .logIn {
+        padding-right: 0.8em;
+    }
+
+    .logo {
+        padding-top:0.5em;
+    }
+
+    .navbar-default {
+        font: bold 1.3em Lato;
+        text-transform: uppercase;
+        font-weight: 500;
+        border-color: white;
+        float:right;
+    }
+
+    .menuContainer {
+        padding-top: 1.8em;
+    }
+
+    /*body*/
+    .glyphicon-edit {
+        font-size:4em;
+    }
+
+    .glyphicon-list-alt {
+        font-size:4em;
+    }
 }
+
+@media (min-width: 992px) and (max-width:1199px){
+
+    .logIn {
+    padding-right: 0.8em;
+}
+
+    .logo {
+        padding-top:0.5em;
+    }
+
+    .navbar-default {
+        font: bold 1.1em Lato;
+        text-transform: uppercase;
+        font-weight: 500;
+        border-color: white;
+        float:right;
+    }
+
+    .menuContainer {
+        padding-top: 1.8em;
+    }
+
+        /*body*/
+    .glyphicon-edit {
+        font-size:3em;
+    }
+
+    .glyphicon-list-alt {
+        font-size:3em;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+    .box1{
+        max-width:700px;
+    }
+
+    .img-reponsive {
+        max-width:700px;
+    }
+
+    .logIn {
+        padding-right: 0.8em;
+    }
+
+    .logo {
+        padding-top:1.1em;
+        padding-left:0.5em;
+    }
+
+    .navbar-default {
+        font: bold 1em Lato;
+        text-transform: uppercase;
+        font-weight: 500;
+        border-color: white;
+        float: right;
+    }
+
+    .menuContainer {
+        padding-top: 1.8em;
+    }
+
+    /*body*/
+    .glyphicon-edit {
+        font-size:2em;
+    }
+
+    .glyphicon-list-alt {
+        font-size:2em;
+    }
+
+    .footer .navbar-inverse li a {
+        font:0.7em Lato;
+    }
+
+    .copyRight p {
+        font: 0.7em Lato;
+    }
+
+}
+
+@media (max-width: 767px) {
+
+    #nameDisplay {
+        display:none;
+    }
+
+    .logIn {
+        display:inline;
+        float:right;
+        font-size:0.8em;
+    }
+
+    .logo {
+        max-width:70%;
+        height:auto;
+        width:auto;
+        float:left;
+        padding-top:1em;
+    }
+
+    .navbar-default {
+        font: bold 0.8em Lato;
+        text-transform:uppercase;
+        font-weight:500;
+        border-color: white;
+        float: right;
+    }
+
+    .menuContainer{
+        padding-top: 1.2em;
+    }
+    
+    .navbar-nav > li > a {
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+
+    .dropdown-menu {
+        font: bold 0.8em Lato;
+    }
+
+    .nav > li {
+        display: inline;
+    }
+    .nav > li > a {
+      display: inline;
+    }
+
+        /*body*/
+    .glyphicon-edit {
+        font-size:2em;
+    }
+
+    .glyphicon-list-alt {
+        font-size:2em;
+    }
+
+    h2 {
+        font-size:1.2em;
+    }
+
+    p {
+        font-size: 0.7em;
+    }
+
+    /*time sheet*/
+    table, thead, tbody, th, td,tr{
+        display:block;
+    }
+
+    th {
+        font-size:1.5em;
+        background-color:lightgray;
+    }
+
+    thead tr {
+        position:absolute;
+        top:-9999px;
+        left:-9999px;
+    }
+
+    tr {
+        border: 1px solid #ccc;
+    }
+    
+    .leaveTable td:nth-of-type(1):before {content: "Start Time";}
+    .leaveTable td:nth-of-type(2):before {content: "Lunch Break";}
+    .leaveTable td:nth-of-type(3):before {content: "End Time";}
+    .leaveTable td:nth-of-type(4):before {content: "Leave Time";}
+    .leaveTable td:nth-of-type(5):before {content: "Flexi";}
+    .leaveTable td:nth-of-type(6):before {content: "Type";}
+
+    .leaveTable .clickbox {
+        padding-left:0px;
+    }
+
+    .leaveTable  input[type=checkbox] { 
+        width: 2em; 
+    }
+
+    .footer .navbar-inverse li a {
+        font:0.7em Lato;
+    }
+
+    .copyRight p {
+        padding-left: 1.5em;
+        font: 0.7em Lato;
+    }
+}
+
+.footer {
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background-color:#222;
+}
+
+.menu li a {
+    font-size:1em;
+    font-weight:500;
+    text-transform:uppercase;
+}
+
+.menu li {
+    list-style-type: none;
+    display:inline-block;
+}
+
+.copyRight {
+    margin-top:13px;
+    color:white;
+}
+
+.navbar-inverse {
+    border-color:#222;
+}
+
+
 
