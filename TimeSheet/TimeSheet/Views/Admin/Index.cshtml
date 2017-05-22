@@ -10,8 +10,13 @@
     <br />
     <h3>Administator Settings</h3>
     <div class="list-group">
-        @Html.ActionLink("Public Holiday", "Index", "Holidays", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Public Holiday", "Holidays", "Admin", null, new { @class = "list-group-item list-group-item-action" })
         @Html.ActionLink("User Leaves", "UserLeaves", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Approve Leave Applications", "Approval", "LeaveApproval", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Email Setting", "EmailSetting", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Manager Setting", "ManagerSetting", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+
+
     </div>
 </div>
 

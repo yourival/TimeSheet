@@ -1,7 +1,7 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Leave Application";
 }
 <head>
     @Styles.Render("~/Content/css")
@@ -9,6 +9,7 @@
 
 <br />
 <table class="table-striped">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <tr>
         <th>Date</th>
         <th>Leave Type</th>
@@ -16,7 +17,7 @@
     </tr>
     @for (int i=0; i<Model.TimeRecords.Count; i++)
     {
-        <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
+        <tr>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
             @Html.HiddenFor(m => m.TimeRecords[i].id)
@@ -34,28 +35,17 @@
 
             <th class="form-group">
 
-                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetype"))
+                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: new { @class = "leavetype" })
                 @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
             </th>
                        
             <th class="form-group">
-                @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = getHtmlAttributes(Model.TimeRecords[i].IsHoliday, "leavetime") })
+                @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
                 @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
             </th>
         </tr>
     }
 </table>
-
-@functions {
-    object getHtmlAttributes(bool isHoliday, string className)
-    {
-        if (isHoliday)
-        {
-            return new { @class = "form-control " + className, @disabled = "disabled" };
-        }
-        return new { @class = "form-control " + className };
-    }
-}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

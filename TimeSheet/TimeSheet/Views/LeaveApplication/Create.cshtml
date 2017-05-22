@@ -1,7 +1,7 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Leave Application";
     string[] LeaveNames = {"Sick Leaves", "Flexi Leaves", "Annual Leaves" };
 }
 
@@ -9,10 +9,11 @@
     @Styles.Render("~/Content/css")
 </head>
 
+<body>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    <br/>
+        <br />
     <h3>Your Available Leaves</h3>
     <div class="container">
         <table class="table table-striped">
@@ -20,7 +21,6 @@
                 <tr>
                     <th></th>
                     <th>Hours</th>
-                    <th>Mins</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,8 +28,7 @@
                 {
                     <tr>
                         <th>@LeaveNames[i]</th>
-                        <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].ExtractHours)</td>
-                        <td class="leftmins">@Html.DisplayFor(m => m.LeaveRecords[i].ExtractMins)</td>
+                            <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</td>
                     </tr>
                 }
             </tbody>
@@ -39,54 +38,52 @@
     <hr />
     <h3>LeaveApplication</h3>
     <p>Pick the period and leave type to apply</p>
+
     <div class="form-inline">
         
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.LeaveApplication.UserID)
 
-        <div class="form-group">
+            <div class="form-group row">
+                <div class="col-xs-6">
             @Html.LabelFor(model => model.LeaveApplication.StartTime, htmlAttributes: new { @class = "control-label" })
-
             @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
             @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
-
         </div>
+            </div>
 
         <div class="form-group">
+                <div class="col-xs-6">
             @Html.LabelFor(model => model.LeaveApplication.EndTime, htmlAttributes: new { @class = "control-label" })
-
             @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
-            @Html.ValidationMessageFor(model => model.LeaveApplication.EndTime, "", new { @class = "text-danger" })
 
         </div>
-
-        <div class="form-group">
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-6">
             @Html.LabelFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "control-label" })
-
             @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
             @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
-
         </div>
+            </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.LeaveApplication.ManagerID, htmlAttributes: new { @class = "control-label" })
-
-            @Html.EditorFor(model => model.LeaveApplication.ManagerID, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.LeaveApplication.ManagerID, "", new { @class = "text-danger" })
-
+                <div class="col-xs-6">
+                    @Html.Label("ManagerID", htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                </div>
         </div>
     </div>
 
     <div id="leave-form"></div>
-    <br/>
+        <br />
     <div id="alert" role="alert"></div>
     <div class="form-inline">
         <div class="form-group">
-            <input type="submit" value="Submit" id="submit-btn" class="btn btn-default" disabled="disabled"/>
+                <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" disabled="disabled" />
         </div>
     </div>
 }
-
+</body>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -100,6 +97,12 @@
         var leaveType = $('#leaveType').val();
 
         $("#leave-form").text("Loading...");
+
+        //Enable validation
+        $("form").removeData("validator");
+        $("form").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse("form");
+
         $.ajax({
             url: "/LeaveApplication/CreateLeaveForm",
             type: "GET",
@@ -144,11 +147,6 @@
             var leavetypes = $(".leavetype");
 
             var lefthours = $(".lefthours");
-            var leftmins = $(".leftmins");
-            var lefttimes = [];
-            for (var i = 0; i < 3; i++) {
-                lefttimes.push(parseInt($(lefthours[i]).text()) * 60 + parseInt($(leftmins[i]).text()));
-            }
 
             var length = leavetimes.length;
             var msg = "";
@@ -159,8 +157,7 @@
                     e.preventDefault(e);
                     return false;
                 } 
-                var times = $(leavetimes[i]).val().split(":");
-                lefttimes[$(leavetypes[i]).val()-1] -= (parseInt(times[0]) * 60 + parseInt(times[1]));
+                lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
             }
             for (var i = 0; i < 3; i++) {
                 if (lefttimes[i] < 0) {
@@ -181,8 +178,8 @@
             }
             if (msg != "") {
                 $("#alert").attr('class', "alert alert-danger");
-                $("#alert").html("<strong>Warning!</strong>" +
-                                 "Your leaves application excesses in the following leave types: " + msg +
+                $("#alert").html("<strong>Warning!</strong> " +
+                                 "Your leaves application excesses in leave types: " + msg +
                                  "<br/>Please change them up and try submitting again");
                 e.preventDefault(e);
                 return false;

@@ -13,8 +13,7 @@
                     @Html.HiddenFor(m => m[i].UserID)
                     @Html.HiddenFor(m => m[i].LeaveType)
                     <th>@LeaveNames[i]</th>
-                    <td>@Html.EditorFor(m => m[i].ExtractHours, new { @class = "col" }) Hours</td>
-                    <td>@Html.EditorFor(m => m[i].ExtractMins) Mins</td>
+                    <td>@Html.EditorFor(m => m[i].AvailableLeaveHours, new { @class = "col" }) Hours</td>
                 </tr>
             }
         </tbody>

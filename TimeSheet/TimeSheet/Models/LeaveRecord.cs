@@ -14,32 +14,15 @@ namespace TimeSheet.Models
         public string UserID { get; set; }
         [Key, Column(Order = 1)]
         public _leaveType LeaveType { get; set; }
-        public Double AvailableLeaveMinuites { get; set; }
+
+        [RegularExpression(@"^(\d*(\.[05])?)$", ErrorMessage = "fill in a number that is a multiple of 0.5")]
+        public Double AvailableLeaveHours { get; set; }
 
         [NotMapped]
         public TimeSpan AvailableLeaveTime
         {
-            get { return TimeSpan.FromMinutes(AvailableLeaveMinuites); }
-            set { AvailableLeaveMinuites = value.TotalMinutes; }
-        }
-
-        [NotMapped]
-        public int ExtractHours
-        {
-            get { return (int)AvailableLeaveTime.TotalHours; }
-            set { AvailableLeaveMinuites = value * 60 + AvailableLeaveMinuites % 60; }
-        }
-
-        [NotMapped]
-        public int ExtractMins
-        {
-            get { return AvailableLeaveTime.Minutes; }
-            set { AvailableLeaveMinuites = AvailableLeaveMinuites - (AvailableLeaveMinuites % 60) + value; }
-        }
-        
-        public void SetMinutes(int hours, int mins)
-        {
-            AvailableLeaveMinuites = 60 * hours + mins;
+            get { return TimeSpan.FromHours(AvailableLeaveHours); }
+            set { AvailableLeaveHours = value.TotalHours; }
         }
     }
 }

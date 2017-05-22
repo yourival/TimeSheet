@@ -1,26 +1,34 @@
 ﻿@model TimeSheet.Models.TimeSheetContainer
 
-@{
-    ViewBag.Title = "TimeRecords";
-}
+@{ViewBag.Title = "Fortnightly Time Sheet";}
+
+<head>
+    @Styles.Render("~/Content/css")
+</head>
 
 <h2>TimeRecords</h2>
 
+<head>
+    @Styles.Render("~/Content/css")
+</head>
 
+<body>
 @using (Html.BeginForm("SaveTimeSheet", "TimeSheet", FormMethod.Post))
 {
     //@Html.AntiForgeryToken()
 
-    <table>
+        <table class="table table-condensed form-group leaveTable">
+            <thead>
         <tr>
             <th>Date</th>
             <th>Start Time</th>
             <th>Lunch Break</th>
             <th>End Time</th>
             <th>Leave Time</th>
-            <th>Flexi 1.5</th>
-            <th>Leave Type</th>
+                    <th>Flexi</th>
+                    <th>Type</th>
         </tr>
+            </thead>
 
         <tr hidden>
             <td>@Html.EditorFor(model => model.TimeRecordForm.Year)</td>
@@ -30,66 +38,65 @@
             <td>@Html.EditorFor(model => model.TimeRecordForm.status)</td>
             <td>@Html.EditorFor(model => model.TimeRecordForm.TimeRecordFormID)</td>
         </tr>
-
+            <tbody>
         @for (int i = 0; i < Model.TimeRecords.Count; i++)
         {
-            <tr>
+            <tr class="@(Model.TimeRecords[i].IsHoliday ? "th-holiday" : "th-weekday")">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                <th class="form-group">
-                    @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].RecordDate)
+                        <th>
+                            @String.Format("{0:yyyy-MM-dd}", Model.TimeRecords[i].RecordDate, new { htmlAttributes = new { @class = "form-control", @style = "width:auto" } })
                 </th>
 
-                <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })
+                        <td>
+                            @Html.EditorFor(model => model.TimeRecords[i].StartTime, new { htmlAttributes = new { @class = "form-control", type = "time", @style = "width:auto" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].StartTime, "", new { @class = "text-danger" })
-                </th>
+                        </td>
 
-                <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].LunchBreak, new { htmlAttributes = new { @class = "form-control" } })
+                        <td>
+                            @Html.EditorFor(model => model.TimeRecords[i].LunchBreak, new { htmlAttributes = new { @class = "form-control", @style = "max-width:80px" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].LunchBreak, "", new { @class = "text-danger" })
-                </th>
+                        </td>
 
-                <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = new { @class = "form-control", type = "time" } })
+                        <td>
+                            @Html.EditorFor(model => model.TimeRecords[i].EndTime, new { htmlAttributes = new { @class = "form-control", type = "time", @style = "width:auto" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].EndTime, "", new { @class = "text-danger" })
-                </th>
+                        </td>
 
-                <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "form-control" } })
+                        <td>
+                            @Html.EditorFor(model => model.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "form-control", @style= "max-width:80px" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
-                </th>
+                        </td>
 
-                <th class="form-group">
-                    @Html.EditorFor(model => model.TimeRecords[i].Flexi, new { htmlAttributes = new { @class = "form-control" } })
+                        <td>
+                            @Html.EditorFor(model => model.TimeRecords[i].Flexi, new { htmlAttributes = new { @class = "form-control", style = "padding-left:0px" } })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].Flexi, "", new { @class = "text-danger" })
-                </th>
+                        </td>
 
-                <th class="form-group">
+                        <td>
                     @Html.DropDownListFor(model => model.TimeRecords[i].LeaveType, new SelectList(
                   new List<Object>{
-                       new { value = 0 , text = "Sick Leave"  },
-                       new { value = 1 , text = "Flexi Leave" },
-                       new { value = 2 , text = "Annual Leave"}
+                       new { value = 1 , text = "Sick Leave"  },
+                       new { value = 2 , text = "Flexi Leave" },
+                       new { value = 3 , text = "Annual Leave"}
                     },
                   "value",
                   "text",
-                   2))
+                   2), new { @class = "form-control", @style = "width:auto" })
                     @Html.ValidationMessageFor(model => model.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
-                </th>
+                        </td>
 
-                <th hidden>
+                        <td hidden>
                     @Html.EditorFor(model => model.TimeRecords[i].UserID)
                     @Html.EditorFor(model => model.TimeRecords[i].RecordDate)
                     @Html.EditorFor(model => model.TimeRecords[i].id)
-                </th>
-
+                        </td>
             </tr>
         }
+            </tbody>
     </table>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Submit" class="btn btn-default" />
-        </div>
-    </div>
+        <br />
+        <input type="submit" value="Submit" class="btn btn-primary" />
+
 }
+</body>
