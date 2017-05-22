@@ -366,6 +366,10 @@
     <Content Include="Views\LeaveApproval\Approval.cshtml" />
     <Content Include="Views\LeaveApproval\ApplicationList.cshtml" />
     <Content Include="Views\LeaveApproval\ApprovalDetail.cshtml" />
+    <Content Include="Views\TimeSheetApproval\_Approval.cshtml" />
+    <Content Include="Views\TimeSheetApproval\TimeSheetList.cshtml" />
+    <Content Include="Views\TimeSheetApproval\Approval.cshtml" />
+    <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

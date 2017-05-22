@@ -233,7 +233,7 @@ body {
     .leaveTable td:nth-of-type(6):before {content: "Type";}
 
     .leaveTable .clickbox {
-        padding-left:0px;
+        padding-left:0;
     }
 
     .leaveTable  input[type=checkbox] { 
