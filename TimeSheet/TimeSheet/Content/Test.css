@@ -1,0 +1,29 @@
+﻿.btn {
+    color: white;
+    position: relative;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.c-hamburger:focus {
+    outline: none;
+}
+
+.c-hamburger--rot {
+    background-color: #28aadc;
+}
+
+.c-hamburger--rot span {
+    transition: transform 0.3s;
+}
+
+/* active state, i.e. menu open */
+.c-hamburger--rot.is-active {
+    background-color: #166888;
+}
+
+.c-hamburger--rot.is-active span {
+    transform: rotate(90deg);
+}

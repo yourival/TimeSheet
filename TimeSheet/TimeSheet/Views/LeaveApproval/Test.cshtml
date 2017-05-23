@@ -1,0 +1,22 @@
+﻿
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+<button type="button" class="btn btn-default test" data-toggle="dropdown">
+    <span class="glyphicon glyphicon-chevron-up">Leave Balance</span>
+</button>
+
+
+<button class="btn c-hamburger--rot">
+    <span class="glyphicon glyphicon-chevron-up"></span>Leave Balance
+</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.btn').on('click', function () {
+            $(this).toggleClass("is-active");
+        });
+    });
+</script>

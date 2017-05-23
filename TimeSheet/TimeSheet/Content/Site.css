@@ -282,11 +282,11 @@ body {
     border-color:#222;
 }
 
-th-holiday {
+.th-holiday {
     color: red;
 }
 
-th-weekday {
+.th-weekday {
     color: black;
 }
 
