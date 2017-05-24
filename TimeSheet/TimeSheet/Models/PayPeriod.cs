@@ -69,7 +69,6 @@ namespace TimeSheet.Models
                 }
                 
             }
-
             return listItems;
         }
 

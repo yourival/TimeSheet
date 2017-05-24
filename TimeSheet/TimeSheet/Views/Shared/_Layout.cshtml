@@ -6,7 +6,7 @@
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" href="~/Images/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- 
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -29,43 +29,16 @@
                 </div>
                 <div class="menuContainer col-lg-8 col-md-8 col-sm-8">
                     <div class="navbar navbar-default">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
-                                <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
-                                        <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
-                                    </ul>
-                </ul>
-                        </div>
-            </div>
-        </div>
-    </div>
-
-
-            <div>
-            @RenderBody()
-            </div>
-        </div>
-
-        <hr />
-        <div class="contain-fluid footer">
-            <div class="row box1 center-block">
-                
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                    <div class="navbar navbar-inverse">
-                            <ul class="nav navbar-nav menu">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
                                 <li>@Html.ActionLink("Home", "Index", "Home")</li>
                                 <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
-                                <li class="dropup">
+                                <li class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
@@ -74,6 +47,33 @@
                             </ul>
                         </div>
                     </div>
+                </div>
+            </div>
+
+
+            <div>
+                @RenderBody()
+            </div>
+        </div>
+
+        <hr />
+        <div class="contain-fluid footer">
+            <div class="row box1 center-block">
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <div class="navbar navbar-inverse">
+                        <ul class="nav navbar-nav menu">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
+                            <li class="dropup">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
+                                    <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
+                                </ul>
+                        </ul>
+                    </div>
+                </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 copyRight">
                     <p>Copyright &copy; @DateTime.Now.Year Nan Tien Institute. All rights reserved</p>
                 </div>

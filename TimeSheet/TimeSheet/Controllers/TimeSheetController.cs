@@ -19,36 +19,51 @@ namespace TimeSheet.Controllers
         private AdminDb adminDb = new AdminDb();
 
         // GET: TimeSheet
-        public async Task<ActionResult> Index(bool error = false)
+        public async Task<ActionResult> Index(int message = 0)
         {
-            ViewBag.Year = PayPeriod.GetYearItems();
             ViewBag.Manager = AdminController.GetManagerItems();
             int year = DateTime.Now.Year;
             int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
-            TimeSheetContainer model = await this.GetTimeSheetModel(year, period);
-            if(error == true)
+            TimeSheetContainer model = await GetTimeSheetModel(year, period);
+            model.YearList = PayPeriod.GetYearItems();
+            switch (message)
             {
-                ViewBag.Error = "Please save timesheet before submit";
-            return View(model);
-        }
-            else
-            {
-                return View(model);
+                case 0:
+                    ViewBag.Message = null;
+                    break;
+                case 1:
+                    ViewBag.Message = "Please save timesheet before submit";
+                    break;
+                case 2:
+                    ViewBag.Message = "Timesheet approval email has been sent successfully";
+                    break;
+                case 3:
+                    ViewBag.Message = "Timesheet has been saved successfully";
+                    break;
+                default:
+                    ViewBag.Message = null;
+                    break;
             }
+            return View(model);
         }
 
         // GET: Year
         public ActionResult SelectDefaultYear()
         {
-            ViewBag.Period = PayPeriod.GetPeriodItems(DateTime.Now.Year);
-            return PartialView("SelectYear");
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.PeriodList = PayPeriod.GetPeriodItems(DateTime.Now.Year);
+            return PartialView("SelectYear",model);
         }
 
         // POST: Year
         public ActionResult SelectYear(int year)
         {
-            ViewBag.Period = PayPeriod.GetPeriodItems(year);
-            return PartialView(year);
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.TimeRecordForm = new TimeRecordForm();
+            model.TimeRecords = new List<TimeRecord>();
+            model.TimeRecords.Add(new TimeRecord());
+            model.PeriodList = PayPeriod.GetPeriodItems(year);
+            return PartialView("SelectYear", model);
         }
 
         //Get year period user selected
@@ -101,6 +116,7 @@ namespace TimeSheet.Controllers
                     r.UserID = User.Identity.Name;
                     PayPeriod.SetPublicHoliday(r);
                     model.TimeRecords.Add(r);
+                    Debug.WriteLine(r.GetWorkHours());
                 }
                 else
                 {
@@ -131,7 +147,7 @@ namespace TimeSheet.Controllers
                         timesheetDb.TimeRecordForms.Add(model.TimeRecordForm);
                         timesheetDb.SaveChanges();
                     }
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index",new { message = 3 });
                 }
                 catch (Exception ex)
                 {
@@ -159,13 +175,13 @@ namespace TimeSheet.Controllers
                         timesheetDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
                         timesheetDb.SaveChanges();
                     }
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new { message = 3 });
                 }
                 catch (Exception ex)
                 {
                     throw ex;
                 }
-            }
+            }  
         }
 
         public async Task<ActionResult> SendEmail(FormCollection form)
@@ -181,7 +197,7 @@ namespace TimeSheet.Controllers
                         select f).FirstOrDefault();
             if (formModel == null)
             {
-                return RedirectToAction("Index", new { error = true });
+                return RedirectToAction("Index", new { message = 1 });
             }
             else
             {
@@ -215,17 +231,10 @@ namespace TimeSheet.Controllers
                         smtp.Port = model.SMTPPort;
                         smtp.EnableSsl = model.EnableSsl;
                         await smtp.SendMailAsync(message);
-                        return RedirectToAction("Index");
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { message = 2});
             }
-        }
-
-        public ActionResult ReceiveEmail(string message)
-        {
-            ViewBag.message = message;
-            return View();
         }
     }
 }

@@ -10,13 +10,13 @@
 <br />
 
 <body>
-    <div align="center">
+    <div align="center" class="leaveDetail">
         <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#leaveDetail">
+        <span class="glyphicon glyphicon-chevron-down"></span>
             Click for Application Detail
         </button>
         <div id="leaveDetail" class="collapse">
             <table class="table table-fill">
-
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <tr>
                     <th>Date</th>
@@ -36,16 +36,13 @@
                         @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
                         @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
                         @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
-
                         <td>
                             @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
                         </td>
-
                         <td>
                             @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: new { @class = "leavetype form-control" })
                             @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
                         </td>
-
                         <td>
                             @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime form-control" } })
                             @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
@@ -53,12 +50,9 @@
                     </tr>
                 }
             </table>
-            <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary"  />
-
+            <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
         </div>
-
     </div>
-
 </body>
 
 @section Scripts {
