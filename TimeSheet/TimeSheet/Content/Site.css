@@ -1,6 +1,6 @@
 ﻿
-body {
-    font-family:Lato;
+* {
+    font-family:Lato,Atlanta,Calibri,Arial,Sans-serif;
 }
 
 /*make sure navbar doesn't go beyonod main picture*/
@@ -12,18 +12,175 @@ body {
     max-width:1000px;
 }
 
-.aboutContainer {
-    text-align:center;
-}
 
-.contactDiv {
-    text-align:center;
-}
-
+/*footer style*/
 .table {
     width:auto;
 }
 
+.footer {
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background-color:#222;
+    height:2.5em;
+}
+
+.menu li a {
+    font-size:1em;
+    font-weight:500;
+    text-transform:uppercase;
+    padding-top:0.5em;
+}
+
+.menu li {
+    list-style-type: none;
+    display: inline-block;
+}
+
+.copyRight {
+    padding-top: 0.5em;
+    color: gray;
+}
+
+.navbar-inverse {
+    border-color:#222;
+}
+
+/*table style*/
+th-holiday {
+    color: red;
+}
+
+th-weekday {
+    color: black;
+}
+
+/*leave balance button color animation*/
+.btn,
+.btn-default:active:hover,
+.btn-default:active:focus,
+.btn-default.active,
+.btn-default.active:hover,
+.btn-default.active:focus
+{
+    color:white;
+    background-color:#0099b3;
+    border-color:white;
+    border: none;
+    transition: top 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
+}
+
+.btn-default:hover,
+.btn-default:active {
+    color:white;
+}
+
+.btn-default span{
+    transition: transform 0.3s;
+}
+
+.btn-default.active span{
+    transform: rotate(180deg);
+}
+
+.btn:focus,
+.btn:hover,
+.btn:active:focus,
+.btn.active,
+.btn.active:hover,
+.btn-default.active:focus {
+    outline: none;
+    outline-offset: 5px;
+    background-color:#a7a7a7;
+}
+
+.btn:hover,
+.btn:focus {
+  color: white;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+/*leave balance button color animation end*/
+
+/*leave balance table style change start*/
+.table-fill {
+    margin-top:2em;
+    border-color:blue;
+}
+
+.table-fill {
+    border-radius:4px;
+    border-collapse: collapse;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    animation: float 5s infinite;
+}
+
+.table-fill th {
+    color:#D5DDE5;
+    background:#1b1e24;
+    border-bottom:2px solid #9ea7af;
+    border-right: 1px solid #343a45;
+    text-align:center;
+    font-size:1em;
+    font-weight: 100;
+    padding:0.5em;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    vertical-align:middle;
+}
+
+.table-fill th:first-child {
+  border-top-left-radius:4px;
+}
+
+.table-fill th:last-child {
+  border-top-right-radius:4px;
+  border-right:none;
+}
+
+.table-fill tr td {
+  background:#FFFFFF;
+  padding:0.8em;
+  text-align:center;
+  vertical-align:middle;
+  font-weight:200;
+  font-size:1.1em;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #C1C3D1;
+}
+
+.table-fill td:last-child {
+  border-right: 0px;
+}
+/*leave balance table style change end*/
+
+/*leave application table style start*/
+.applicationTable h3 {
+    font-family: bold 1.4em Lato,Atlanta,Calibri,Arial,Sans-serif;
+    font-weight:200;
+}
+
+.applicationTable .table-fill td {
+    text-align:left;
+}
+
+.applicationTable .table-fill td:last-child,
+#leaveDetail .table-fill td:last-child {
+    border-right: 1px solid #DDDDDD;
+    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.1);
+}
+
+#leaveDetail .table-fill td {
+    font-size:1em;
+    vertical-align:middle;
+}
+
+#leaveDetail .table-fill td {
+    border-left: 1px solid #DDDDDD;
+}
+
+
+/*leave application table style end*/
 
 @media (min-width: 1200px) {
 
@@ -33,7 +190,7 @@ body {
     }
 
     .logo {
-        padding-top:0.5em;
+        padding-top: 0.5em;
     }
 
     .navbar-default {
@@ -41,7 +198,7 @@ body {
         text-transform: uppercase;
         font-weight: 500;
         border-color: white;
-        float:right;
+        float: right;
     }
 
     .menuContainer {
@@ -50,12 +207,14 @@ body {
 
     /*body*/
     .glyphicon-edit {
-        font-size:4em;
+        font-size: 4em;
     }
 
     .glyphicon-list-alt {
-        font-size:4em;
+        font-size: 4em;
     }
+
+    /*leave application page*/
 }
 
 @media (min-width: 992px) and (max-width:1199px){
@@ -69,7 +228,7 @@ body {
     }
 
     .navbar-default {
-        font: bold 1.1em Lato;
+        font: bold 1.1em Lato,Atlanta,Calibri,Arial,Sans-serif;
         text-transform: uppercase;
         font-weight: 500;
         border-color: white;
@@ -110,7 +269,7 @@ body {
     }
 
     .navbar-default {
-        font: bold 1em Lato;
+        font: bold 1em Lato,Atlanta,Calibri,Arial,Sans-serif;
         text-transform: uppercase;
         font-weight: 500;
         border-color: white;
@@ -161,7 +320,7 @@ body {
     }
 
     .navbar-default {
-        font: bold 0.8em Lato;
+        font: bold 0.8em Lato,Atlanta,Calibri,Arial,Sans-serif;
         text-transform:uppercase;
         font-weight:500;
         border-color: white;
@@ -250,43 +409,5 @@ body {
     }
 }
 
-.footer {
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    background-color:#222;
-    height:2.5em;
-}
 
-.menu li a {
-    font-size:1em;
-    font-weight:500;
-    text-transform:uppercase;
-    padding-top:0.5em;
-}
-
-.menu li {
-    list-style-type: none;
-    display: inline-block;
-    padding-top: 0.2em;
-}
-
-.copyRight {
-    margin-top: 13px;
-    color: white;
-    padding-top: 0.2em;
-}
-
-.navbar-inverse {
-    border-color:#222;
-}
-
-th-holiday {
-    color: red;
-}
-
-th-weekday {
-    color: black;
-}
 

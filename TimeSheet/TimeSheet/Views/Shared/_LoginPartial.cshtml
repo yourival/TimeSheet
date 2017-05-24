@@ -1,8 +1,7 @@
 ﻿@if (Request.IsAuthenticated)
 {
     <text>
-         <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
+        <ul class="nav navbar-nav navbar-right">
         <li id="nameDisplay">
                 @Html.ActionLink("Hello " + User.Identity.Name + "!", "Index", "UserProfile", routeValues: null, htmlAttributes: null)
             </li>

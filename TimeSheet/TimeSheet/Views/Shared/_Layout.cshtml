@@ -37,14 +37,13 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
                                 <li class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
                                         <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
                                     </ul>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
                         </div>
             </div>
@@ -52,8 +51,8 @@
     </div>
 
 
-            <div class="container center-block">
-        @RenderBody()
+            <div>
+            @RenderBody()
             </div>
         </div>
 
@@ -65,14 +64,13 @@
                     <div class="navbar navbar-inverse">
                             <ul class="nav navbar-nav menu">
                                 <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                                <li>@Html.ActionLink("About", "About", "Home")</li>
+                                <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
                                 <li class="dropup">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li>@Html.ActionLink("Leave Application", "Create", "LeaveApplication")</li>
                                         <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
                                     </ul>
-                                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                             </ul>
                         </div>
                     </div>
