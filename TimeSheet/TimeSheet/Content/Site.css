@@ -1,6 +1,6 @@
 ﻿
 body {
-    font-family:Lato;
+    font-family:arial;
 }
 
 /*make sure navbar doesn't go beyonod main picture*/
@@ -275,18 +275,18 @@ body {
 .copyRight {
     margin-top: 13px;
     color: white;
-    padding-top: 0.2em;
+    padding-top: 0.1em;
 }
 
 .navbar-inverse {
     border-color:#222;
 }
 
-th-holiday {
+.th-holiday {
     color: red;
 }
 
-th-weekday {
+.th-weekday {
     color: black;
 }
 

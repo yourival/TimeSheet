@@ -1,7 +1,9 @@
 ﻿@model TimeSheet.Models.TimeSheetContainer
 
 <head>
-    @{ViewBag.Title = "Time Sheet";}
+    @{
+        ViewBag.Title = "Time Sheet";
+     }
 </head>
 
 <body>
@@ -15,10 +17,11 @@
         <div class="row">
             <div class="col-md-2 col-lg-3 col-xs-6">
                 <h4>Select Year</h4>
-                @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, "--Year--", new { @class = "form-control" })
+                @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
             </div>
             <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
                 <h4>Select Pay period</h4>
+                @*@Html.DropDownList("period", Model.PeriodList, new { @class = "form-control" })*@
                 @{Html.RenderAction("SelectDefaultYear");}
             </div>
             <div class="col-md-2 col-lg-3 col-xs-6">
@@ -27,16 +30,17 @@
             </div>
         </div>
 
-        if (ViewBag.Error != null)
+        if (ViewBag.Message != null)
         {
-            <div class="alert alert-warning">
-                <strong>Warning!</strong>
-                @ViewBag.Error
-            </div>
+            <script type="text/javascript">
+                alert('@ViewBag.Message');
+            </script>
         }
+        
 
-        <div class="form-group">
-            <input type="submit" value="Sumit" class="btn btn-default" />
+
+        <div class="form-group" style="padding-top:10px">
+            <input type="submit" value="Submit" class="btn btn-primary" />
         </div>
     }
 

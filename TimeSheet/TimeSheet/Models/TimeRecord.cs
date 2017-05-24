@@ -14,7 +14,7 @@ namespace TimeSheet.Models
         {
             RecordDate = date.Date;
             StartTime = TimeSpan.FromHours(9);
-            LunchBreak = TimeSpan.FromMinutes(30);
+            LunchBreak = 0.5;
             EndTime = TimeSpan.FromHours(17);
             IsHoliday = false;
         }
@@ -33,8 +33,8 @@ namespace TimeSheet.Models
         [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan EndTime { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
-        public TimeSpan LunchBreak { get; set; }
+        [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "fill in a number that is a multiple of 0.5 and not larger than 7.5")]
+        public double LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
         public _leaveType LeaveType { get; set; }
@@ -42,9 +42,9 @@ namespace TimeSheet.Models
         [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "fill in a number that is a multiple of 0.5 and not larger than 7.5")]
         public double LeaveTime { get; set; }
 
-        public TimeSpan GetWorkHours ()
+        public double GetWorkHours ()
         {
-            return StartTime-EndTime-LunchBreak;
+            return (EndTime - StartTime).TotalHours - LunchBreak;
         }
     }
 }
