@@ -29,7 +29,7 @@ namespace TimeSheet.Controllers
             switch (message)
             {
                 case 0:
-                    ViewBag.Message = null;
+                    ViewBag.Message = "no message";
                     break;
                 case 1:
                     ViewBag.Message = "Please save timesheet before submit";
@@ -41,7 +41,7 @@ namespace TimeSheet.Controllers
                     ViewBag.Message = "Timesheet has been saved successfully";
                     break;
                 default:
-                    ViewBag.Message = null;
+                    ViewBag.Message = "no message";
                     break;
             }
             return View(model);
