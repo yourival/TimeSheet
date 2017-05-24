@@ -5,43 +5,40 @@
 </head>
 
 <body>
-    <div class="container" align="center">
-        <h2>Fortnightly Pay Period</h2>
+        <h2 align="center">Fortnightly Pay Period</h2>
         <hr />
         @using (Html.BeginForm("SendEmail", "TimeSheet", FormMethod.Post))
         {
-            <div class="row">
-                <div class="col-md-2 col-lg-3 col-xs-6">
-                    <h4>Select Year</h4>
-                    @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, "--Year--", new { @class = "form-control" })
-                </div>
-                <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
-                    <h4>Select Pay period</h4>
-                    @{Html.RenderAction("SelectDefaultYear");}
-                </div>
-                <div class="col-md-2 col-lg-3 col-xs-6">
-                    <h4>Select Manager</h4>
-                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+            <div class="container" align="center">
+                <div class="form form-inline">
+                    <div class="form-group">
+                        <label>Select Year</label>
+                        @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, "--Year--", new { @class = "form-control" })
+                    </div>
+                    <div id="periodDiv"  class="form-group">
+                        <label>Select Pay period</label>
+                        @{Html.RenderAction("SelectDefaultYear");}
+                    </div>
+                    <div class="form-group">
+                        <label>Select Manager</label>
+                        @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                    </div>
                 </div>
             </div>
+            if (ViewBag.Error != null)
+            {
+                <div class="alert alert-warning">
+                    <strong>Warning!</strong>
+                    @ViewBag.Error
+                </div>
+            }
 
-                        if (ViewBag.Error != null)
-                        {
-                            <div class="alert alert-warning">
-                                <strong>Warning!</strong>
-                                @ViewBag.Error
-                            </div>
-                        }
-                        <hr />
-
-                        }
-
-
+        <hr />
+        }
 
         <div id="timesheetDiv">
             @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model)
         </div>
-    </div>
 </body>
 
 
