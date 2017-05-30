@@ -8,6 +8,7 @@ using TimeSheet.Models;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Data;
 
 namespace TimeSheet.Controllers
 {
@@ -247,6 +248,141 @@ namespace TimeSheet.Controllers
                 }
             }
             return listItems;
+        }
+
+        public ActionResult TimesheetExport()
+        {
+            ViewBag.Year = PayPeriod.GetYearItems();
+            return View();
+        }
+
+        public ActionResult SelectDefaultPeriod()
+        {
+            ViewBag.Period = PayPeriod.GetPeriodItems(DateTime.Now.Year);
+            return PartialView("_SelectPeriod");
+        }
+
+        public ActionResult SelectPeriod(int year)
+        {
+            ViewBag.Period = PayPeriod.GetPeriodItems(year);
+            return PartialView("_SelectPeriod");
+        }
+
+        [HttpPost]
+        public ActionResult TimesheetExport(string year, string period)
+        {
+            int y = Convert.ToInt32(year);
+            int p = Convert.ToInt32(period);
+            DateTime StartDate = PayPeriod.GetStartDay(y, p);
+            DateTime EndDate = PayPeriod.GetEndDay(y, p);
+
+            List<Payroll> payrolls = (from t in timesheetDb.TimeRecords
+                                      join u in timesheetDb.UserInfo on t.UserID equals u.Email // Email used as UserID in TimeRecord table
+                                      where t.RecordDate >= StartDate && t.RecordDate <= EndDate
+                                      select new Payroll
+                                      {
+                                          UserName = u.UserName,
+                                          JobCode = u.JobCode,
+                                          EmployeeID = u.EmployeeID,
+                                          IsHoliday = t.IsHoliday,
+                                          RecordDate = t.RecordDate,
+                                          StartTime = t.StartTime,
+                                          EndTime = t.EndTime,
+                                          LunchBreak = t.LunchBreak,
+                                          Flexi = t.Flexi,
+                                          LeaveTime = t.LeaveTime,
+                                          LeaveType = t.LeaveType
+                                      }).ToList();
+
+            DataTable dt = new DataTable();
+            DataColumn LastName = new DataColumn("Employee Last Name", typeof(string));
+            dt.Columns.Add(LastName);
+
+            DataColumn FirstName = new DataColumn("Employee First Name", typeof(string));
+            dt.Columns.Add(FirstName);
+
+            DataColumn Payroll = new DataColumn("Payroll Category", typeof(string));
+            dt.Columns.Add(Payroll);
+
+            DataColumn Job = new DataColumn("Job", typeof(string));
+            dt.Columns.Add(Job);
+
+            DataColumn Notes = new DataColumn("Notes",typeof(string));
+            dt.Columns.Add(Notes);
+
+            DataColumn date = new DataColumn("Date", typeof(string));
+            dt.Columns.Add(date);
+
+            DataColumn Units = new DataColumn("Units", typeof(int));
+            dt.Columns.Add(Units);
+
+            DataColumn ID = new DataColumn("Employee Card ID", typeof(int));
+            dt.Columns.Add(ID);
+
+            if(payrolls != null)
+            {
+                for(int i=0; i < payrolls.Count; i++)
+                {
+                    string[] words = payrolls[i].UserName.Split(',');
+
+                    DataRow dr = dt.NewRow();
+                    dr["Employee Last Name"] = words[0];
+                    dr["Employee First Name"] = words[1];
+
+                    dr["Job"] = payrolls[i].JobCode;
+                    dr["Employee Card ID"] = payrolls[i].EmployeeID;
+                    dr["Notes"] = null;
+
+                    dr["Date"] = string.Format("0:dd/mm/yyyy", payrolls[i].RecordDate);
+                    dr["Units"] = payrolls[i].Flexi ? payrolls[i].GetWorkHours() * 1.5 : payrolls[i].GetWorkHours();
+
+                    if (payrolls[i].IsHoliday)
+                    {
+                        if(payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Saturday ||
+                            payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Sunday)
+                            dr["Payroll Category"] = "Holiday Pay";
+                        else
+                            dr["Payroll Category"] = "Public Holiday Pay";
+                    }
+                    else
+                    {
+                        dr["Payroll Category"] = "Base Hourly";
+                    }
+                    dt.Rows.Add(dr);
+
+                    if(payrolls[i].LeaveTime != 0 && payrolls[i].LeaveType != _leaveType.none)
+                    {
+                        DataRow drw = dt.NewRow();
+                        drw["Employee Last Name"] = words[0];
+                        drw["Employee First Name"] = words[1];
+
+                        drw["Job"] = payrolls[i].JobCode;
+                        drw["Employee Card ID"] = payrolls[i].EmployeeID;
+                        drw["Notes"] = null;
+
+                        drw["Date"] = string.Format("0:dd/mm/yyyy", payrolls[i].RecordDate);
+                        drw["Units"] = payrolls[i].LeaveTime;
+
+                        switch (payrolls[i].LeaveType)
+                        {
+                            case _leaveType.annual:
+                                drw["Payroll Category"] = "Holiday Pay";
+                                break;
+                            case _leaveType.flexi:
+                                drw["Payroll Category"] = "Flexi Pay";
+                                break;
+                            case _leaveType.sick:
+                                drw["Payroll Category"] = "Sick Pay";
+                                break;
+                        }
+                        dt.Rows.Add(drw);
+                    }
+                }
+            }
+
+            //conver to csv file continues from here
+
+            return View();
         }
     }
 }

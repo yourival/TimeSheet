@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "TimesheetImport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.DropDownList("year", "Year")
+
+<div id="periodDiv">
+    @{Html.RenderAction("SelectDefaultPeriod");}
+</div>
+
+<button id="expBtn">Export</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#year").on("change", function () {
+            var val = $('#year').val();
+            $.ajax({
+                url: "/timesheet/selectyear",
+                type: "get",
+                data: { year: val }
+            })
+                .done(function (partialviewresult) {
+                    $("#perioddiv").html(partialviewresult);
+                });
+        });
+
+        var year = $('#year').val();
+        var period = $('#period').val();
+        $("#expBtn").on("click", function () {
+            location.href = '@Url.Action("TimesheetExport","Admin")?year=' + year + '&period=' + period;
+        });
+    });
+</script>

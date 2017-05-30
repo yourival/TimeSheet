@@ -128,7 +128,7 @@ namespace TimeSheet.Controllers
         }
 
         [HttpPost]
-        //save time records to db
+        //save or update time records to db
         public ActionResult SaveTimeSheet(TimeSheetContainer model)
         {
             if (Startup.NoRecords == true)
@@ -143,7 +143,9 @@ namespace TimeSheet.Controllers
                             Debug.WriteLine(model.TimeRecords[i].StartTime);
                             Debug.WriteLine(model.TimeRecords[i].UserID);
                         }
-                        model.TimeRecordForm.status = TimeRecordForm._formstatus.saved;
+                        model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
+                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.TotalWorkingHours = CalculateTotalWorkingHours(model);
                         timesheetDb.TimeRecordForms.Add(model.TimeRecordForm);
                         timesheetDb.SaveChanges();
                     }
@@ -170,7 +172,9 @@ namespace TimeSheet.Controllers
                             entry.Property(e => e.Flexi).IsModified = true;
                             timesheetDb.SaveChanges();
                         }
-                        model.TimeRecordForm.status = TimeRecordForm._formstatus.saved;
+                        model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
+                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.TotalWorkingHours = CalculateTotalWorkingHours(model);
                         timesheetDb.TimeRecordForms.Attach(model.TimeRecordForm);
                         timesheetDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
                         timesheetDb.SaveChanges();
@@ -203,7 +207,7 @@ namespace TimeSheet.Controllers
             {
                 string Link = "www.nantien.com/Timesheet/ReceiveEmail/message?=" + formModel.TimeRecordFormID;
                 formModel.ManagerID = managerID;
-                formModel.status = TimeRecordForm._formstatus.submited;
+                formModel.SumbitStatus = TimeRecordForm._sumbitstatus.submitted;
                 timesheetDb.TimeRecordForms.Attach(formModel);
                 timesheetDb.Entry(formModel).State = EntityState.Modified;
                 timesheetDb.SaveChanges();
@@ -235,6 +239,18 @@ namespace TimeSheet.Controllers
                 }
                 return RedirectToAction("Index", new { message = 2});
             }
+        }
+
+        //Calculate the total working hours to current date
+        private double CalculateTotalWorkingHours(TimeSheetContainer model)
+        {
+            double workingHours = 0;
+            DateTime current = DateTime.Now.Date;
+            for(int i=0;i<=Convert.ToInt32(current - model.TimeRecords[0].RecordDate); i++)
+            {
+                workingHours += model.TimeRecords[i].GetWorkHours();
+            }
+            return workingHours;
         }
     }
 }

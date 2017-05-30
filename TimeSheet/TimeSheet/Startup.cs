@@ -11,6 +11,8 @@ namespace TimeSheet
         {
             ConfigureAuth(app);
         }
+
+        //check if the first time to access the timesheet page
         public static bool NoRecords = true;
     }
 }

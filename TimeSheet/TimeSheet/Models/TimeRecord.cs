@@ -17,6 +17,9 @@ namespace TimeSheet.Models
             LunchBreak = 0.5;
             EndTime = TimeSpan.FromHours(17);
             IsHoliday = false;
+            Flexi = false;
+            LeaveTime = 0;
+            LeaveType = _leaveType.none;
         }
 
         public int id { get; set; }
@@ -46,5 +49,7 @@ namespace TimeSheet.Models
         {
             return (EndTime - StartTime).TotalHours - LunchBreak;
         }
+
+        public virtual ICollection<User> Users { get; set; }
     }
 }

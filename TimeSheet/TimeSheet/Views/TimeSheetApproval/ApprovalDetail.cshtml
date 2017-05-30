@@ -1,112 +1,89 @@
-﻿@model TimeSheet.Models.ApprovalViewModel
+﻿@model TimeSheet.Models.TimeRecordForm
 
 @{
-    ViewBag.Title = "Leave Application Detail";
+    ViewBag.Title = "Timesheet Detail";
+    if (Model.Comments == null)
+    {
+        ViewBag.Comments = "Add";
+    }
+    else
+    {
+        ViewBag.Comments = "View";
+    }
 }
 
 
 <br />
 <div class="container">
     <div>
-        <h3>General Information</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.id)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.UserID)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalLeaveTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.status)</th>
-                </tr>
-            </thead>
+        <h3>@ViewBag.Title</h3>
+        <table class="table" >
             <tbody>
                 <tr>
-                    <td id="app-id">@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.id)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.UserID)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalLeaveTime)</td>
-                    <td id ="app-status" class= @getStatusClass(Model.UserApplicationVM.LeaveApplication.status)>
-                        @Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.status)
-                    </td>
+                    <td>@Html.Label("Name:")</td>
+                    <td>@ViewBag.UserName</td>
+                    <td>@Html.Label("Approved By:")</td>
+                    <td>@ViewBag.ManagerName</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.Label("Empl ID:")</td>
+                    <td>@Html.DisplayFor(m=>m.UserID)</td>
+                    <td>@Html.Label("Empl ID:")</td>
+                    <td>@Html.DisplayFor(m=>m.ManagerID)</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.DisplayNameFor(m=>m.SubmitTime)</td>
+                    <td>@Html.DisplayFor(m=>m.SubmitTime)</td>
+                    <td>@Html.DisplayNameFor(m=>m.SumbitStatus)</td>
+                    <td>@Html.DisplayFor(m=>m.SumbitStatus)</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.Label("Period Begin:")</td>
+                    <td>@ViewBag.PeriodBegin</td>
+                    <td>@Html.Label("Period End:")</td>
+                    <td>@ViewBag.PeriodEnd</td>
                 </tr>
             </tbody>
         </table>
-        <div id="alert"></div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Period/Year</td>
+                    <td>Total Working Hours</td>
+                    <td>Requested Working Hours</td>
+                    <td>Total Leave Hours</td>
+                    <td>Comments</td>
+                </tr>
+
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayFor(m => m.TimeRecordFormID)</td>
+                    <td>@ViewBag.PeriodYear</td>
+                    <td>@Html.DisplayFor(m => m.TotalWorkingHours)</td>
+                    <td>@ViewBag.RequestedHours</td>
+                    <td></td>
+                    <td><a href="javascript:CommentEditor()">@ViewBag.Comments</a></td>
+                </tr>
+                <tr>
+                    <td><button id="approveBtn" value="@Model.TimeRecordFormID">Approved</button></td>
+                    <td><button id="rejectBtn" value="@Model.TimeRecordFormID">Rejected</button></td>
+                </tr>
+            </tbody>
+        </table>
+        @Html.ActionLink("Return to Timesheet Approval","Approval")
+        <button id="timesheetDetail">View Timesheet Details</button>
     </div>
     <br />
-    <div>
-        <h3>Applied Leaves</h3>
-        <table class="table">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <tr>
-                <th>Date</th>
-                <th>Leave Type</th>
-                <th>Apply Leave Time</th>
-            </tr>
-            @foreach (var item in Model.UserApplicationVM.TimeRecords)
-            {
-                <tr>
-                    <td class="form-group">
-                        @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
-                    </td>
-                    <td class="form-group">
-                        @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
-                    </td>
-                    <td class="form-group">
-                        @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
-                    </td>
-                </tr>
-            }
-        </table>
-        <div>
-            @using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
-            {
-                <row>
-                    <button class="btn btn-default" onclick="location.href='@Url.Action( "Approval", "LeaveApproval")'">Go back</button>
-                    <input type="hidden" name="id" value=@Model.UserApplicationVM.LeaveApplication.id />
-                    <input type="submit" class="btn btn-success" name="decision" value="Approved">
-                    <input type="submit" class="btn btn-danger" name="decision" value="Rejected">
-                </row>
-            }
-        </div>
-    </div>
 </div>
+<div id="timesheetDiv"></div>
 <hr />
-<div class="container">
-    <h3>Taken Leaves</h3>
-    @if(Model.TakenLeaves.Count == 0)
-    {
-        <p>No leave is taken in the period.</p>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>User Id</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var leave in Model.TakenLeaves)
-                {
-                    <tr>
-                        <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
-                        <td>@Html.DisplayFor(m => leave.UserID)</td>
-                        <td>@Html.DisplayFor(m => leave.StartTime)</td>
-                        <td>@Html.DisplayFor(m => leave.EndTime)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>
+
 <div id="myModal" class="modal small fade" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -124,6 +101,29 @@
         </div>
         </div>
     </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        function CommentEditor() {
+            
+        }
+
+        $("#approveBtn").on("click", function () {
+            var approveID = $("#approveBtn").val;
+            var approveDec = $("#approveBtn").text;
+            location.href = '@Url.Action("ApprovalDetail","TimesheetApproval")?id=' + approveID + '&decision=' + approveDec;
+        });
+
+        $("#rejectBtn").on("click", function () {
+            var rejectID = $("#rejecBtn").val;
+            var rejectDec = $("#rejecBtn").text;
+            location.href = '@Url.Action("ApprovalDetail","TimesheetApproval")?id=' + rejectID + '&decision=' + rejectDec;
+        });
+    });
+</script>
+
         @functions {
             string getStatusClass(TimeSheet.Models._status status)
             {
