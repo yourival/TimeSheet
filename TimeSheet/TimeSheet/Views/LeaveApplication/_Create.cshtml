@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Leave Application";
 }
+
 <head>
     @Styles.Render("~/Content/css")
 </head>
@@ -35,7 +36,7 @@
 
             <th class="form-group">
 
-                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: new { @class = "leavetype" })
+                @Html.DropDownListFor(m => m.TimeRecords[i].LeaveType, (IEnumerable<SelectListItem>)ViewBag.LeaveType, htmlAttributes: new { @class = "leavetype" })
                 @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
             </th>
                        

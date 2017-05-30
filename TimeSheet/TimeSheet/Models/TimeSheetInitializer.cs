@@ -87,6 +87,27 @@ namespace TimeSheet.Models
             }
             applications.ForEach(a => context.LeaveApplications.Add(a));
             timeRecords.ForEach(t => context.TimeRecords.Add(t));
+
+            // Initialise Leaves
+            context.LeaveRecords.Add(new LeaveRecord()
+            {
+                UserID = "r.lin@m.nantien.edu.au",
+                LeaveType = _leaveType.annual,
+                AvailableLeaveHours = 100
+            });
+            context.LeaveRecords.Add(new LeaveRecord()
+            {
+                UserID = "r.lin@m.nantien.edu.au",
+                LeaveType = _leaveType.flexi,
+                AvailableLeaveHours = 7.5
+            });
+            context.LeaveRecords.Add(new LeaveRecord()
+            {
+                UserID = "r.lin@m.nantien.edu.au",
+                LeaveType = _leaveType.sick,
+                AvailableLeaveHours = 20
+            });
+
             context.SaveChanges();
 
         }

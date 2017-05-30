@@ -61,7 +61,7 @@
             <div class="form-group row">
                 <div class="col-xs-6">
                     @Html.LabelFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "control-label" })
-                    @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
+                    @Html.DropDownListFor(model => model.LeaveApplication.leaveType, (IEnumerable<SelectListItem>)ViewBag.LeaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
                     @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -69,7 +69,7 @@
             <div class="form-group">
                 <div class="col-xs-6">
                     @Html.Label("ManagerID", htmlAttributes: new { @class = "control-label" })
-                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
         <div id="alert" role="alert"></div>
         <div class="form-inline">
             <div class="form-group">
-                <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" disabled="disabled" />
+                <input type="button" value="Submit" id="submit-btn" class="btn btn-primary" disabled="disabled" />
             </div>
         </div>
     }
@@ -98,10 +98,9 @@
 
         $("#leave-form").text("Loading...");
 
-        //Enable validation
+        //Clear previous validation message
         $("form").removeData("validator");
         $("form").removeData("unobtrusiveValidation");
-        $.validator.unobtrusive.parse("form");
 
         $.ajax({
             url: "/LeaveApplication/CreateLeaveForm",
@@ -111,6 +110,9 @@
         .done(function (partialViewResult) {
             $("#leave-form").html(partialViewResult);
             $("#submit-btn").prop("disabled", false);
+
+            //Enable jquery validation
+            $.validator.unobtrusive.parse("#leave-form");
         });
     }
 
@@ -145,22 +147,22 @@
         $("form").submit(function (e) {
             var leavetimes = $(".leavetime");
             var leavetypes = $(".leavetype");
-
-            var lefthours = $(".lefthours");
-
+            var lefthours = [];
+            $(".lefthours").each(function (i) {
+                lefthours.push($(this).text());
+            });
+            leavetypes.each(function (i) {
+                alert($(this).val());
+            });
             var length = leavetimes.length;
             var msg = "";
+
             for (var i = 0; i < length; i++) {
-                if ($(leavetypes[i]).val() == 0) {
-                    $("#alert").attr('class', "alert alert-danger");
-                    $("#alert").html("<strong>Warning!</strong> Please specify the type of all leaves.");
-                    e.preventDefault(e);
-                    return false;
-                } 
                 lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
             }
+
             for (var i = 0; i < 3; i++) {
-                if (lefttimes[i] < 0) {
+                if (lefthours[i] < 0) {
                     switch (i) {
                         case 0:
                             msg += "Sick ";

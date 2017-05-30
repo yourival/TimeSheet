@@ -38,6 +38,7 @@ namespace TimeSheet.Controllers
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
             //get manager droplist
             ViewBag.Manager = AdminController.GetManagerItems();
+            ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
             for (int i = 1; i < 4; i++)
             {
                 var availableLeave = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
@@ -50,7 +51,7 @@ namespace TimeSheet.Controllers
 
         // POST: LeaveApplication/Create
         [HttpPost]
-        public async Task<ActionResult> Create(LeaveApplicationViewModel applicationVM, FormCollection form)
+        public async Task<ActionResult> Create(LeaveApplicationViewModel applicationVM)
         {
             if (!ModelState.IsValid)
             {
@@ -104,7 +105,6 @@ namespace TimeSheet.Controllers
                 // Update if exists, Add if not
                 if (application == null)
                 {
-                    applicationVM.LeaveApplication.ManagerID = form["manager"].ToString();
                     applicationVM.LeaveApplication.status = _status.submited;
                     contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
                 }
@@ -112,7 +112,7 @@ namespace TimeSheet.Controllers
                 {
                     application.status = _status.modified;
                     application.leaveType = applicationVM.LeaveApplication.leaveType;
-                    application.ManagerID = form["manager"].ToString();
+                    application.ManagerID = applicationVM.LeaveApplication.ManagerID;
                     application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
                     contextDb.Entry(application).State = EntityState.Modified;
                 }
@@ -186,6 +186,7 @@ namespace TimeSheet.Controllers
             // Try to fetch Leaveapplication from DB if it exists
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<TimeRecord> newTimeRecords = new List<TimeRecord>();
+            ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
 
             for (int i = 0; i <= (end - start).Days; i++)
             {

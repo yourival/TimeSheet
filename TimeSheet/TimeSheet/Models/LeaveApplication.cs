@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
 using System.Web;
+using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
@@ -64,6 +65,21 @@ namespace TimeSheet.Models
             }
 
             return records;
+        }
+
+        public static IEnumerable<SelectListItem> GetLeaveTypeItems()
+        {
+            IEnumerable<SelectListItem> listItems =
+                Enum.GetValues(typeof(_leaveType))
+                .Cast<_leaveType>()
+                .Where(e => e != _leaveType.none)
+                .Select(e => new SelectListItem
+                {
+                    Text = e.ToString(),
+                    Value = ((int)e).ToString()
+                });
+
+            return listItems;
         }
     }
 }
