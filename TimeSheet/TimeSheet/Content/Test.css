@@ -27,3 +27,50 @@
 .c-hamburger--rot.is-active span {
     transform: rotate(90deg);
 }
+
+/* Table */
+.approval-table {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    width: 50%;
+    margin: 0 auto;
+    position: relative;
+    background: #fff;
+    transition: all 0.3s ease-out;
+    box-shadow: 0 5px 6px #444;
+}
+
+
+.approval-heading {
+    color: #fff;
+    padding: 5px 5px 5px 5px;
+    background-color: #21618C;
+}
+
+.approval-heading > h4 {
+    font: 16px;
+}
+
+.approval-heading > p {
+    font: 26px;
+}
+
+.approval-date-row {
+    font: 26px;
+    padding: 5px 5px 5px 5px;
+    background-color: #85C1E9;
+}
+
+.approval-date-row > icon {
+    font: 26px bold;
+    background-color: #85C1E9;
+}
+
+.approval-date-row > date {
+    font: 26px;
+    background-color: #85C1E9;
+}
+
+.approval-date-row > span {
+    color: #fff;
+}

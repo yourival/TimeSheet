@@ -233,6 +233,7 @@
     </Compile>
     <Compile Include="Models\AdalTokenCache.cs" />
     <Compile Include="Models\AdminDb.cs" />
+    <Compile Include="Models\AdminDbInitializer.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\ApprovalViewModel.cs" />
     <Compile Include="Controllers\LeaveApprovalController.cs" />
