@@ -13,9 +13,11 @@ namespace TimeSheet.Models
 
         [Required]
         [EmailAddress]
+        [Display(Name = "Manager ID")]
         public String ManagerID { get; set; }
 
         [Required]
+        [Display(Name = "Manager Name")]
         public String ManagerName { get; set; }
     }
 }

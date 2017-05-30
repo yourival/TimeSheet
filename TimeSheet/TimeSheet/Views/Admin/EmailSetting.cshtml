@@ -1,51 +1,69 @@
 ﻿@model TimeSheet.Models.EmailSetting
 @{
-    ViewBag.Title = "EmailSetting";
+    ViewBag.Title = "Email Setting";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>EmailSetting</h2>
+<body>
+    <div class="container emailSetting" align="center">
+        <h2>Email Setting</h2>
 
-@using (Html.BeginForm("UpdateEmailSetting", "Admin", FormMethod.Post))
-{
-    @Html.HiddenFor(m => m.id)
-    <div class="form-group">
-        @Html.LabelFor(m => m.FromEmail, new { @class= "control-label" })
-        @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.FromEmail)
+        @using (Html.BeginForm("UpdateEmailSetting", "Admin", FormMethod.Post))
+        {
+            <table class="table-fill">
+                @Html.HiddenFor(m => m.id)
+                <tr>
+                    <th>@Html.LabelFor(m => m.FromEmail)</th>
+                    <td>
+                        @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FromEmail)
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(m => m.Password)</th>
+                    <td>
+                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(m => m.Subject)</th>
+                    <td>
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Subject)
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(m => m.Message)</th>
+                    <td>
+                        @Html.TextAreaFor(m => m.Message, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Message)
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(m => m.SMTPHost)</th>
+                    <td>
+                        @Html.TextBoxFor(m => m.SMTPHost, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SMTPHost)
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(m => m.SMTPPort)</th>
+                    <td>
+                        @Html.TextBoxFor(m => m.SMTPPort, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SMTPPort)
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(m => m.EnableSsl)</th>
+                    <td>
+                        @Html.TextBoxFor(m => m.EnableSsl, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.EnableSsl)
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <input type="submit" class="btn btn-primary" value="Update" />
+        }
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "control-label" })
-        @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Password)
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Subject, new { @class = "control-label" })
-        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Subject)
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Message, new { @class = "control-label" })
-        @Html.TextAreaFor(m => m.Message, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Message)
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.SMTPHost, new { @class = "control-label" })
-        @Html.TextBoxFor(m => m.SMTPHost, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.SMTPHost)
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.SMTPPort, new { @class = "control-label" })
-        @Html.TextBoxFor(m => m.SMTPPort, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.SMTPPort)
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.EnableSsl, new { @class = "control-label" })
-        @Html.TextBoxFor(m => m.EnableSsl, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.EnableSsl)
-    </div>
-
-    <div class="form-group">
-        <input type="submit" class="btn btn-default" value="Update" />
-    </div>
-}
+</body>

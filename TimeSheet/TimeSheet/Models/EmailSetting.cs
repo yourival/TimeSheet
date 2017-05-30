@@ -25,6 +25,7 @@ namespace TimeSheet.Models
 
         [Required]
         [EmailAddress]
+        [Display(Name = "From Email")]
         public string FromEmail { get; set; }
 
         [Required]
@@ -36,12 +37,15 @@ namespace TimeSheet.Models
         public string Message { get; set; }
 
         [Required]
+        [Display(Name = "SMTP Host")]
         public string SMTPHost { get; set; }
 
         [Required]
+        [Display(Name = "SMTP Port")]
         public int SMTPPort { get; set; }
 
         [Required]
+        [Display(Name = "Enable SSL")]
         public bool EnableSsl { get; set; }
     }
 }

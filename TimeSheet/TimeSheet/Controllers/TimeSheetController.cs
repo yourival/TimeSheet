@@ -29,7 +29,7 @@ namespace TimeSheet.Controllers
             switch (message)
             {
                 case 0:
-                    ViewBag.Message = "no message";
+                    ViewBag.Message = "";
                     break;
                 case 1:
                     ViewBag.Message = "Please save timesheet before submit";

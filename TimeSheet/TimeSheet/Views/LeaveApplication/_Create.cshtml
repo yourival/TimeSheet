@@ -16,7 +16,7 @@
             Click for Application Detail
         </button>
         <div id="leaveDetail" class="collapse">
-            <table class="table table-fill">
+            <table class="table table-fill table-responsive">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <tr>
                     <th>Date</th>
@@ -43,7 +43,7 @@
                             @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: new { @class = "leavetype form-control" })
                             @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
                         </td>
-                        <td>
+                        <td class="leaveTimeColumn">
                             @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime form-control" } })
                             @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
                         </td>
