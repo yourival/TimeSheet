@@ -267,9 +267,8 @@ namespace TimeSheet.Controllers
             ViewBag.Period = PayPeriod.GetPeriodItems(year);
             return PartialView("_SelectPeriod");
         }
-
-        [HttpPost]
-        public ActionResult TimesheetExport(string year, string period)
+        
+        public FileContentResult TimesheetExport(string year, string period)
         {
             int y = Convert.ToInt32(year);
             int p = Convert.ToInt32(period);
@@ -384,5 +383,7 @@ namespace TimeSheet.Controllers
 
             return View();
         }
+
+
     }
 }

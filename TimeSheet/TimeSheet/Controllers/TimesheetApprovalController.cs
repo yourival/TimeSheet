@@ -90,10 +90,10 @@ namespace TimeSheet.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult ApprovalDetail (int id, string decision)
-        {
+        //[HttpPost]
+        //public ActionResult ApprovalDetail (int id, string decision)
+        //{
 
-        }
+        //}
     }
 }
