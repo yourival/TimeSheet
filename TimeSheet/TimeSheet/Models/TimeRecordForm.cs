@@ -10,7 +10,9 @@ namespace TimeSheet.Models
     public class TimeRecordForm
     {
 
-        public enum _formstatus { approved, rejected, submited, saved }
+        public enum _formstatus { approved, rejected, modified }
+
+        public enum _sumbitstatus { submitted, saved}
 
         [Key]
         public int TimeRecordFormID { get; set; }
@@ -21,6 +23,15 @@ namespace TimeSheet.Models
 
         public string ManagerID { get; set; }
 
-        public _formstatus status { get; set; }
+        public double TotalWorkingHours { get; set; }
+
+        public _formstatus FormStatus { get; set; }
+
+        public _sumbitstatus SumbitStatus { get; set; }
+
+        public DateTime SubmitTime { get; set; }
+
+        public string Comments { get; set; }
+        
     }
 }

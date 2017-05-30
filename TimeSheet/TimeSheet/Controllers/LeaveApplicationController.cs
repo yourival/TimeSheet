@@ -14,7 +14,7 @@ namespace TimeSheet.Controllers
 {
     public class LeaveApplicationController : Controller
     {
-        private TimeSheetDb contextDb = new TimeSheetDb();        
+        private TimeSheetDb contextDb = new TimeSheetDb();
         private AdminDb adminDb = new AdminDb();
 
         // GET: LeaveApplication
@@ -117,7 +117,7 @@ namespace TimeSheet.Controllers
                     contextDb.Entry(application).State = EntityState.Modified;
                 }
                 contextDb.SaveChanges();
-
+                
                 // Update user leaves data in Db after submitting
                 for (int i = 1; i < 4; i++)
                 {
@@ -204,7 +204,7 @@ namespace TimeSheet.Controllers
                     newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
                 }
                 if (!newTimeRecord.IsHoliday)
-                    newTimeRecords.Add(newTimeRecord);
+                newTimeRecords.Add(newTimeRecord);
             }
             applicationVM.TimeRecords = newTimeRecords;
             

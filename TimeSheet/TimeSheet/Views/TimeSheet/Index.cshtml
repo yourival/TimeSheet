@@ -2,54 +2,61 @@
 
 <head>
     @{ViewBag.Title = "Time Sheet";}
+    @Styles.Render("~/Content/css")
 </head>
 
 <body>
-    <h2>Fortnightly Pay Period</h2>
-    <hr />
-
-    
-<p>
-    @using (Html.BeginForm("SendEmail", "TimeSheet", FormMethod.Post))
-    {
-        <div class="row">
-            <div class="col-md-2 col-lg-3 col-xs-6">
-                <h4>Select Year</h4>
-                @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, "--Year--", new { @class = "form-control" })
-            </div>
-            <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
-                <h4>Select Pay period</h4>
-                @{Html.RenderAction("SelectDefaultYear");}
-            </div>
-            <div class="col-md-2 col-lg-3 col-xs-6">
-                <h4>Select Manager</h4>
-                @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-            </div>
-        </div>
-
-        if (ViewBag.Error != null)
+    <div class="container" align="center">
+        <h2>Fortnightly Pay Period</h2>
+        <hr />
+        @using (Html.BeginForm("SendEmail", "TimeSheet", FormMethod.Post))
         {
-            <div class="alert alert-warning">
-                <strong>Warning!</strong>
-                @ViewBag.Error
+            <div class="row">
+                <div class="col-md-2 col-lg-3 col-xs-6">
+                    <h4>Select Year</h4>
+                    @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
+                </div>
+                <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
+                    <h4>Select Pay period</h4>
+                    @{Html.RenderAction("SelectDefaultYear");}
+                </div>
+                <div class="col-md-2 col-lg-3 col-xs-6">
+                    <h4>Select Manager</h4>
+                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                </div>
             </div>
+
+            <div class="form-group" style="padding-top:10px">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+            
         }
 
-        <div class="form-group">
-            <input type="submit" value="Sumit" class="btn btn-default" />
+
+        <div id="timesheetDiv">
+            @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model)
         </div>
-    }
 
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h4>Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@ViewBag.Message</p>
+                </div>
+            </div>
+        </div>
 
+        <input type="hidden" value="@ViewBag.Message" id="viewbagMessage" />
 
-    <div id="timesheetDiv">
-        @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model)
     </div>
 </body>
 
 
 
-</p>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -61,7 +68,7 @@
                 data: { year: val }
             })
                 .done(function (partialviewresult) {
-                    $("#perioddiv").html(partialviewresult);
+                    $("#periodDiv").html(partialviewresult);
                 });
         });
 
@@ -71,5 +78,30 @@
             var yp = year + "." + period;
             $("#timesheetDiv").load('@Url.Action("GetTimeRecords","TimeSheet",null,Request.Url.Scheme)?text=' + yp);
         });
+
+        // Get the modal
+        var modal = document.getElementById('myModal');
+
+        // Get ViewBag.Message value
+        var vm = document.getElementById("viewbagMessage").value;
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        if (vm != "no message") {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     });
 </script>

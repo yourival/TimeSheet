@@ -9,79 +9,110 @@
     @Styles.Render("~/Content/css")
 </head>
 
-<body>
+<body class="center-block">
     @using (Html.BeginForm())
     {
-        @Html.AntiForgeryToken()
-        <br />
-        <h3>Your Available Leaves</h3>
-        <div class="container">
-            <table class="table table-striped">
+    @Html.AntiForgeryToken()
+    <br />
+    <div class="leaveAvaTable" align="center">
+        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#leaveAvaTable">
+            <span class="glyphicon glyphicon-chevron-down"></span>
+            Click to view your available balance
+        </button>
+        <div id="leaveAvaTable" class="collapse">
+            <table class="table-fill">
                 <thead>
                     <tr>
+
+                        @for (int i = 0; i < 3; i++)
+                        {
+                        <th>@LeaveNames[i]</th>
+                        }
                         <th></th>
-                        <th>Hours</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tr>
+
                     @for (int i = 0; i < 3; i++)
                     {
-                        <tr>
-                            <th>@LeaveNames[i]</th>
-                            <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</td>
-                        </tr>
+                    <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</td>
                     }
-                </tbody>
-
+                    <td>Hours</td>
+                </tr>
             </table>
         </div>
-        <hr />
-        <h3>LeaveApplication</h3>
-        <p>Pick the period and leave type to apply</p>
+    </div>
 
-        <div class="form-inline">
 
-            @Html.HiddenFor(model => model.LeaveApplication.UserID)
+    <hr />
 
-            <div class="form-group row">
-                <div class="col-xs-6">
-                    @Html.LabelFor(model => model.LeaveApplication.StartTime, htmlAttributes: new { @class = "control-label" })
-                    @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
-                    @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 applicationTable" align="center">
+                <h3>Leave Application</h3>
+
+
+                <div class="form-inline form-group">
+                    <table class="table table-fill">
+                        @Html.HiddenFor(model => model.LeaveApplication.UserID)
+
+                        <tr>
+                            <th>
+                                @Html.LabelFor(model => model.LeaveApplication.StartTime, htmlAttributes: new { @class = "control-label" })
+                            </th>
+                            <td>
+                                @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
+                                @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                @Html.LabelFor(model => model.LeaveApplication.EndTime, htmlAttributes: new { @class = "control-label" })
+                            </th>
+                            <td>
+                                @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                @Html.LabelFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "control-label" })
+                            </th>
+                            <td>
+                                @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
+                                @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                @Html.Label("Manager", htmlAttributes: new { @class = "control-label" })
+                            </th>
+                            <td>
+                                @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-            </div>
+                <br />
 
-            <div class="form-group">
-                <div class="col-xs-6">
-                    @Html.LabelFor(model => model.LeaveApplication.EndTime, htmlAttributes: new { @class = "control-label" })
-                    @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
 
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-xs-6">
-                    @Html.LabelFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "control-label" })
-                    @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
-                    @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-xs-6">
-                    @Html.Label("ManagerID", htmlAttributes: new { @class = "control-label" })
-                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-                </div>
-            </div>
-        </div>
-
-        <div id="leave-form"></div>
-        <br />
-        <div id="alert" role="alert"></div>
-        <div class="form-inline">
-            <div class="form-group">
                 <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" disabled="disabled" />
+
+
+            </div>
+
+            <div class="col-lg-6">
+                <div id="leave-form"></div>
             </div>
         </div>
+
+        <br />
+
+    </div>
+
     }
 </body>
 
@@ -108,10 +139,10 @@
             type: "GET",
             data: { start: start, end: end, leaveType: leaveType }
         })
-        .done(function (partialViewResult) {
-            $("#leave-form").html(partialViewResult);
-            $("#submit-btn").prop("disabled", false);
-        });
+            .done(function (partialViewResult) {
+                $("#leave-form").html(partialViewResult);
+                $("#submit-btn").prop("disabled", false);
+            });
     }
 
     function getFormattedDate(date) {
@@ -128,7 +159,10 @@
 
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
-
+        $(".btn-default").on("click", function (e) {
+            e.preventDefault();
+            $(this).toggleClass("active");
+        })
         $("#start").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#end").val($("#start").val());
@@ -156,7 +190,7 @@
                     $("#alert").html("<strong>Warning!</strong> Please specify the type of all leaves.");
                     e.preventDefault(e);
                     return false;
-                } 
+                }
                 lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
             }
             for (var i = 0; i < 3; i++) {

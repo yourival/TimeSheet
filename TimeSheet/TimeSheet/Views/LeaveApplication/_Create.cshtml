@@ -8,47 +8,63 @@
 </head>
 
 <br />
-<table class="table-striped">
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <tr>
-        <th>Date</th>
-        <th>Leave Type</th>
-        <th>Apply Leave Time</th>
-    </tr>
-    @for (int i=0; i<Model.TimeRecords.Count; i++)
-    {
-        <tr>
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-            @Html.HiddenFor(m => m.TimeRecords[i].id)
-            @Html.HiddenFor(m => m.TimeRecords[i].UserID)
-            @Html.HiddenFor(m => m.TimeRecords[i].RecordDate)
-            @Html.HiddenFor(m => m.TimeRecords[i].StartTime)
-            @Html.HiddenFor(m => m.TimeRecords[i].EndTime)
-            @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
-            @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
-            @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
+<body>
+    <div align="center">
+        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#leaveDetail">
+            Click for Application Detail
+        </button>
+        <div id="leaveDetail" class="collapse">
+            <table class="table table-fill">
 
-            <th class="form-group">
-                @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
-            </th>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <tr>
+                    <th>Date</th>
+                    <th>Leave Type</th>
+                    <th>Apply Leave Time</th>
+                </tr>
+                @for (int i = 0; i < Model.TimeRecords.Count; i++)
+                {
+                    <tr>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-            <th class="form-group">
+                        @Html.HiddenFor(m => m.TimeRecords[i].id)
+                        @Html.HiddenFor(m => m.TimeRecords[i].UserID)
+                        @Html.HiddenFor(m => m.TimeRecords[i].RecordDate)
+                        @Html.HiddenFor(m => m.TimeRecords[i].StartTime)
+                        @Html.HiddenFor(m => m.TimeRecords[i].EndTime)
+                        @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
+                        @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
+                        @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
 
-                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: new { @class = "leavetype" })
-                @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
-            </th>
-                       
-            <th class="form-group">
-                @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
-                @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
-            </th>
-        </tr>
-    }
-</table>
+                        <td>
+                            @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
+                        </td>
+
+                        <td>
+                            @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, htmlAttributes: new { @class = "leavetype form-control" })
+                            @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveType, "", new { @class = "text-danger" })
+                        </td>
+
+                        <td>
+                            @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime form-control" } })
+                            @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                }
+            </table>
+            <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
+
+        </div>
+
+    </div>
+
+</body>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+
 
 
