@@ -8,6 +8,7 @@ using TimeSheet.Models;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace TimeSheet.Controllers
 {
@@ -247,6 +248,14 @@ namespace TimeSheet.Controllers
                 }
             }
             return listItems;
+        }
+
+        public FileContentResult DownloadCSV()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            string columnNames = "Employee Co./Last Name, Employee First Name, Payroll Category, Job, Notes, Date, Units, Employee Card ID";
+            stringBuilder.AppendLine(columnNames);
+            return File(new UTF8Encoding().GetBytes(stringBuilder.ToString()), "text/csv", "Report123.csv");
         }
     }
 }
