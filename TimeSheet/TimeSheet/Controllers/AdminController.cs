@@ -269,7 +269,7 @@ namespace TimeSheet.Controllers
             return PartialView("_SelectPeriod");
         }
         
-        public FileContentResult TimesheetExport(string year, string period)
+        public FileContentResult TimesheetExportResult(string year, string period)
         {
             int y = Convert.ToInt32(year);
             int p = Convert.ToInt32(period);
@@ -313,7 +313,7 @@ namespace TimeSheet.Controllers
             DataColumn date = new DataColumn("Date", typeof(string));
             dt.Columns.Add(date);
 
-            DataColumn Units = new DataColumn("Units", typeof(int));
+            DataColumn Units = new DataColumn("Units", typeof(double));
             dt.Columns.Add(Units);
 
             DataColumn ID = new DataColumn("Employee Card ID", typeof(int));
@@ -333,8 +333,8 @@ namespace TimeSheet.Controllers
                     dr["Employee Card ID"] = payrolls[i].EmployeeID;
                     dr["Notes"] = null;
 
-                    dr["Date"] = string.Format("0:dd/mm/yyyy", payrolls[i].RecordDate);
-                    dr["Units"] = payrolls[i].Flexi ? payrolls[i].GetWorkHours() * 1.5 : payrolls[i].GetWorkHours();
+                    dr["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
+                    dr["Units"] = payrolls[i].GetWorkHours() * (payrolls[i].Flexi ?  1.5 : 1);
 
                     if (payrolls[i].IsHoliday)
                     {
@@ -360,7 +360,7 @@ namespace TimeSheet.Controllers
                         drw["Employee Card ID"] = payrolls[i].EmployeeID;
                         drw["Notes"] = null;
 
-                        drw["Date"] = string.Format("0:dd/mm/yyyy", payrolls[i].RecordDate);
+                        drw["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
                         drw["Units"] = payrolls[i].LeaveTime;
 
                         switch (payrolls[i].LeaveType)
@@ -380,19 +380,25 @@ namespace TimeSheet.Controllers
                 }
             }
 
-            //conver to csv file continues from here
-
-            return View();
+            return GetCSV(dt);
         }
 
 
 
-        public FileContentResult DownloadCSV()
+        public FileContentResult GetCSV(DataTable dt)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            string columnNames = "Employee Co./Last Name, Employee First Name, Payroll Category, Job, Notes, Date, Units, Employee Card ID";
-            stringBuilder.AppendLine(columnNames);
-            return File(new UTF8Encoding().GetBytes(stringBuilder.ToString()), "text/csv", "Report123.csv");
+            StringBuilder sb = new StringBuilder();
+            IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().
+                                              Select(column => column.ColumnName);
+            sb.AppendLine(string.Join(",", columnNames));
+
+            foreach (DataRow row in dt.Rows)
+            {
+                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+                sb.AppendLine(string.Join(",", fields));
+            }
+            
+            return File(new UTF8Encoding().GetBytes(sb.ToString()), "text/csv", "Payroll.csv");
         }
     }
 }

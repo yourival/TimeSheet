@@ -110,21 +110,19 @@ namespace TimeSheet.Models
             context.SaveChanges();
 
             // Initialise users
-            //context.Users.Add(new User()
-            //{
-            //    UserId = "r.lin@m.nantien.edu.au",
-            //    FirstName = "Yichia",
-            //    LastName = "Lin",
-            //    JobCode = "102"
-            //});
-            //context.Users.Add(new User()
-            //{
-            //    UserId = "y.ben@m.nantien.edu.au",
-            //    FirstName = "Yanhong",
-            //    LastName = "Ben",
-            //    JobCode = "110A"
-            //});
-            //context.SaveChanges();
+            context.UserInfo.Add(new User()
+            {
+                Email = "r.lin@m.nantien.edu.au",
+                UserName = "Lin, Yichia",
+                JobCode = "102"
+            });
+            context.UserInfo.Add(new User()
+            {
+                Email = "y.ben@m.nantien.edu.au",
+                UserName = "Ben, Yanhong",
+                JobCode = "110A"
+            });
+            context.SaveChanges();
         }
     }
 }

@@ -16,7 +16,6 @@ namespace TimeSheet.Models
 
         public string JobCode { get; set; }
 
-
         public int EmployeeID { get; set; }
 
         public virtual ICollection<TimeRecord> TimeRecords { get; set; }
