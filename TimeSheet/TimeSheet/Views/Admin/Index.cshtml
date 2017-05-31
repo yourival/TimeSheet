@@ -2,24 +2,39 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@{
+    ViewBag.Title = "Amin";
+}
+
 <head>
     @Styles.Render("~/Content/css")
 </head>
 
-<div>
+
     <br />
-    <h3>Administator Settings</h3>
-    <div class="list-group">
-        @Html.ActionLink("Public Holiday", "Holidays", "Admin", null, new { @class = "list-group-item list-group-item-action" })
-        @Html.ActionLink("User Leaves", "UserLeaves", "Admin", null, new { @class = "list-group-item list-group-item-action" })
-        @Html.ActionLink("Approve Leave Applications", "Approval", "LeaveApproval", null, new { @class = "list-group-item list-group-item-action" })
-        @Html.ActionLink("Approve Timesheet", "Approval", "TimeshetApproval", null, new { @class = "list-group-item list-group-item-action" })
-        @Html.ActionLink("Email Setting", "EmailSetting", "Admin", null, new { @class = "list-group-item list-group-item-action" })
-        @Html.ActionLink("Manager Setting", "ManagerSetting", "Admin", null, new { @class = "list-group-item list-group-item-action" })
-
-
+    <h3 align="center">ADMINISTATOR SETTINGS</h3>
+    
+    <div class="container">
+        <div class="row AdminBox" style="text-align:center">
+            <div class="col-md-2 square1">
+                @Html.ActionLink("Public Holiday", "Holidays", "Admin")
+            </div>
+            <div class="col-md-2 square2">
+                @Html.ActionLink("User Leaves", "UserLeaves", "Admin")
+            </div>
+            <div class="col-md-2 square3">
+                @Html.ActionLink("Leave Approval", "Approval", "LeaveApproval")
+            </div>
+            <div class="col-md-2 square4">
+                @Html.ActionLink("Email Setting", "EmailSetting", "Admin")
+            </div>
+            <div class="col-md-2  square5">
+                @Html.ActionLink("Manager Setting", "ManagerSetting", "Admin")
+            </div>
+        </div>
     </div>
-</div>
+
+
 
 
 

@@ -373,9 +373,11 @@
     <Content Include="Views\TimeSheetApproval\TimeSheetList.cshtml" />
     <Content Include="Views\TimeSheetApproval\Approval.cshtml" />
     <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
-    <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
-    <Content Include="Views\Admin\TimesheetExport.cshtml" />
-    <Content Include="Views\Admin\_SelectPeriod.cshtml" />
+    <Content Include="Views\Admin\Holidays.cshtml" />
+    <Content Include="Views\Admin\CreateManager.cshtml" />
+    <Content Include="Views\Admin\EditManager.cshtml" />
+    <Content Include="Views\Admin\EmailSetting.cshtml" />
+    <Content Include="Views\Admin\ManagerSetting.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
