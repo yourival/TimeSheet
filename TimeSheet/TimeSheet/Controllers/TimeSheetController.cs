@@ -145,7 +145,9 @@ namespace TimeSheet.Controllers
                         }
                         model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
                         model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.SubmitTime = DateTime.Now;
                         model.TimeRecordForm.TotalWorkingHours = CalculateTotalWorkingHours(model);
+                        model.TimeRecordForm.TotalLeaveHours = CalculateTotalLeaveHours(model);
                         timesheetDb.TimeRecordForms.Add(model.TimeRecordForm);
                         timesheetDb.SaveChanges();
                     }
@@ -175,6 +177,8 @@ namespace TimeSheet.Controllers
                         model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
                         model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
                         model.TimeRecordForm.TotalWorkingHours = CalculateTotalWorkingHours(model);
+                        model.TimeRecordForm.TotalLeaveHours = CalculateTotalLeaveHours(model);
+                        model.TimeRecordForm.SubmitTime = DateTime.Now;
                         timesheetDb.TimeRecordForms.Attach(model.TimeRecordForm);
                         timesheetDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
                         timesheetDb.SaveChanges();
@@ -208,6 +212,7 @@ namespace TimeSheet.Controllers
                 string Link = "www.nantien.com/Timesheet/ReceiveEmail/message?=" + formModel.TimeRecordFormID;
                 formModel.ManagerID = managerID;
                 formModel.SumbitStatus = TimeRecordForm._sumbitstatus.submitted;
+                formModel.SubmitTime = DateTime.Now;
                 timesheetDb.TimeRecordForms.Attach(formModel);
                 timesheetDb.Entry(formModel).State = EntityState.Modified;
                 timesheetDb.SaveChanges();
@@ -234,7 +239,7 @@ namespace TimeSheet.Controllers
                         smtp.Host = model.SMTPHost;
                         smtp.Port = model.SMTPPort;
                         smtp.EnableSsl = model.EnableSsl;
-                        await smtp.SendMailAsync(message);
+                        //await smtp.SendMailAsync(message);
                     }
                 }
                 return RedirectToAction("Index", new { message = 2});
@@ -246,11 +251,23 @@ namespace TimeSheet.Controllers
         {
             double workingHours = 0;
             DateTime current = DateTime.Now.Date;
-            for(int i=0;i<=Convert.ToInt32(current - model.TimeRecords[0].RecordDate); i++)
+            for(int i=0;i<=Convert.ToInt32((current - model.TimeRecords[0].RecordDate).TotalDays); i++)
             {
                 workingHours += model.TimeRecords[i].GetWorkHours();
             }
             return workingHours;
+        }
+
+        //Calculate the total leaving hours to current date
+        private double CalculateTotalLeaveHours(TimeSheetContainer model)
+        {
+            double leaveHours = 0;
+            DateTime current = DateTime.Now.Date;
+            for (int i = 0; i <= Convert.ToInt32((current - model.TimeRecords[0].RecordDate).TotalDays); i++)
+            {
+                leaveHours += model.TimeRecords[i].LeaveTime;
+            }
+            return leaveHours;
         }
     }
 }

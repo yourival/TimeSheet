@@ -84,6 +84,7 @@ namespace TimeSheet.Models
             }
             applications.ForEach(a => context.LeaveApplications.Add(a));
             timeRecords.ForEach(t => context.TimeRecords.Add(t));
+
             context.SaveChanges();
 
         }

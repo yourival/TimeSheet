@@ -36,7 +36,7 @@
             <td>
                 @if (Model.Count > 5)
                 {
-                    @Html.ActionLink("More...", "ApplicationList", new { type = @ViewBag.Type })
+                    @Html.ActionLink("More...", "TimeSheetList", new { type = @ViewBag.Type })
                 }
             </td>
         </tr>
@@ -52,6 +52,9 @@
         string className;
         switch (status)
         {
+            case TimeSheet.Models.TimeRecordForm._formstatus.submitted:
+                className = "text-primary";
+                break;
             case TimeSheet.Models.TimeRecordForm._formstatus.approved:
                 className = "text-success";
                 break;

@@ -18,6 +18,12 @@ namespace TimeSheet
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+                name: "Approval",
+                url: "{controller}/{action}/{id}/{decision}",
+                defaults: new { controller = "TimesheetApproval", action = "ApprovalDetailPost", id = UrlParameter.Optional, decision = UrlParameter.Optional}
+            );
         }
     }
 }
