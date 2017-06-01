@@ -12,6 +12,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using TimeSheet.Models;
+using System.Collections;
 
 namespace TimeSheet.Controllers
 {
@@ -77,5 +78,6 @@ namespace TimeSheet.Controllers
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return authenticationResult.AccessToken;
         }
+
     }
 }

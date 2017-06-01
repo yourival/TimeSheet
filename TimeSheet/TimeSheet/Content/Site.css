@@ -501,9 +501,13 @@
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+.th-holiday {
+    color: red;
 }
 
 .modal-body {
     padding: 2px 16px;
+.th-weekday {
+    color: black;
 }
 /*modal style on timesheet page end*/

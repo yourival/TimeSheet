@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
 using System.Web;
+using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
@@ -15,8 +16,11 @@ namespace TimeSheet.Models
         [Key]
         [Display(Name = "#")]
         public int id { get; set; }
-        [Display(Name = "User")]
+        [Display(Name = "User ID")]
         public string UserID { get; set; }
+
+        [Display(Name = "User Name")]
+        public string UserName { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Start Time")]
@@ -36,6 +40,8 @@ namespace TimeSheet.Models
 
         [Display(Name = "Status")]
         public _status status { get; set; }
+
+        public string Comment { get; set; }
 
         public List<TimeRecord> GetTimeRecords()
         {
@@ -59,6 +65,21 @@ namespace TimeSheet.Models
             }
 
             return records;
+        }
+
+        public static IEnumerable<SelectListItem> GetLeaveTypeItems()
+        {
+            IEnumerable<SelectListItem> listItems =
+                Enum.GetValues(typeof(_leaveType))
+                .Cast<_leaveType>()
+                .Where(e => e != _leaveType.none)
+                .Select(e => new SelectListItem
+                {
+                    Text = e.ToString(),
+                    Value = ((int)e).ToString()
+                });
+
+            return listItems;
         }
     }
 }

@@ -19,6 +19,7 @@ namespace TimeSheet.Models
             {
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "r.lin@m.nantien.edu.au";
+                newApplication.UserName = "Robin Lin";
                 newApplication.StartTime = startDate.AddDays(i * 4);
                 newApplication.EndTime = startDate.AddDays(i * 4 + 3);
                 newApplication.leaveType = (_leaveType)(i % 4);
@@ -41,6 +42,7 @@ namespace TimeSheet.Models
             {
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "y.ben@m.nantien.edu.au";
+                newApplication.UserName = "Rita Ben";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i + 1) % 4);
@@ -63,7 +65,8 @@ namespace TimeSheet.Models
             for (int i = 0; i < 10; i++)
             {
                 LeaveApplication newApplication = new LeaveApplication();
-                newApplication.UserID = "d.wang@m.nantien.edu.au";
+                newApplication.UserID = "d.yang@m.nantien.edu.au";
+                newApplication.UserName = "Dawen Yang";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i +1) % 4);
@@ -85,8 +88,41 @@ namespace TimeSheet.Models
             applications.ForEach(a => context.LeaveApplications.Add(a));
             timeRecords.ForEach(t => context.TimeRecords.Add(t));
 
+            // Initialise Leaves
+            context.LeaveRecords.Add(new LeaveRecord()
+            {
+                UserID = "r.lin@m.nantien.edu.au",
+                LeaveType = _leaveType.annual,
+                AvailableLeaveHours = 100
+            });
+            context.LeaveRecords.Add(new LeaveRecord()
+            {
+                UserID = "r.lin@m.nantien.edu.au",
+                LeaveType = _leaveType.flexi,
+                AvailableLeaveHours = 7.5
+            });
+            context.LeaveRecords.Add(new LeaveRecord()
+            {
+                UserID = "r.lin@m.nantien.edu.au",
+                LeaveType = _leaveType.sick,
+                AvailableLeaveHours = 20
+            });
             context.SaveChanges();
 
+            // Initialise users
+            context.UserInfo.Add(new User()
+            {
+                Email = "r.lin@m.nantien.edu.au",
+                UserName = "Lin, Yichia",
+                JobCode = "102"
+            });
+            context.UserInfo.Add(new User()
+            {
+                Email = "y.ben@m.nantien.edu.au",
+                UserName = "Ben, Yanhong",
+                JobCode = "110A"
+            });
+            context.SaveChanges();
         }
     }
 }

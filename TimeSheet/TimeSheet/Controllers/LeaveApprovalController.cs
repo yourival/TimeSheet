@@ -151,5 +151,10 @@ namespace TimeSheet.Controllers
 
             return applications;
         }
+
+        public ActionResult Test()
+        {
+            return View();
+        }
     }
 }
