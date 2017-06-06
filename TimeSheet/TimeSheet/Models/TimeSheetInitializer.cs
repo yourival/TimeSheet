@@ -78,7 +78,7 @@ namespace TimeSheet.Models
                 for (int j = 0; j < 3; j++)
                 {
                     TimeRecord newTimeRecord = new TimeRecord(startDate.AddDays(i * 3 + j));
-                    newTimeRecord.UserID = "d.wang@m.nantien.edu.au";
+                    newTimeRecord.UserID = "d.yang@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)((i + 1) % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
                     newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);

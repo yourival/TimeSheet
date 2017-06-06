@@ -51,7 +51,7 @@ namespace TimeSheet.Controllers
 
         // POST: LeaveApplication/Create
         [HttpPost]
-        public async Task<ActionResult> Create(LeaveApplicationViewModel applicationVM)
+        public ActionResult Create(LeaveApplicationViewModel applicationVM)
         {
             if (!ModelState.IsValid)
             {
@@ -147,29 +147,7 @@ namespace TimeSheet.Controllers
 
                 if (applicationModel != null)
                 {
-                    string link = "http://localhost/Admin/Approval/ApplicationDetails/" + applicationModel.id;
-                    EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
-                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='{1}'>{1}</a>";
-                    var message = new MailMessage();
-                    message.To.Add(new MailAddress(applicationModel.ManagerID));
-                    message.From = new MailAddress(model.FromEmail);
-                    message.Subject = model.Subject;
-                    message.Body = string.Format(body, model.Message, link);
-                    message.IsBodyHtml = true;
-
-                    using (var smtp = new SmtpClient())
-                    {
-                        var credential = new NetworkCredential
-                        {
-                            UserName = model.FromEmail,
-                            Password = model.Password
-                        };
-                        smtp.Credentials = credential;
-                        smtp.Host = model.SMTPHost;
-                        smtp.Port = model.SMTPPort;
-                        smtp.EnableSsl = model.EnableSsl;
-                        await smtp.SendMailAsync(message);
-                    }
+                    Task.Run(() => EmailSetting.SendEmail(applicationModel.ManagerID, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
                 }    
             }
             catch(Exception e)
@@ -210,6 +188,6 @@ namespace TimeSheet.Controllers
             applicationVM.TimeRecords = newTimeRecords;
             
             return PartialView(@"~/Views/LeaveApplication/_Create.cshtml", applicationVM);
-        } 
+        }
     }
 }

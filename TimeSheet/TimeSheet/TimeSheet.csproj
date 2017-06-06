@@ -259,6 +259,18 @@
     <Content Include="App_Data\aspnet-TimeSheet-20161125111829_log.ldf">
       <DependentUpon>aspnet-TimeSheet-20161125111829.mdf</DependentUpon>
     </Content>
+    <Content Include="App_Data\Template\LeaveApplication.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Template\LeaveApproval.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Template\TimesheetApplication.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Template\TimesheetApproval.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -376,6 +388,11 @@
     <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
     <Content Include="Views\Admin\TimesheetExport.cshtml" />
     <Content Include="Views\Admin\_SelectPeriod.cshtml" />
+    <Content Include="Views\Admin\CreateManager.cshtml" />
+    <Content Include="Views\Admin\EditManager.cshtml" />
+    <Content Include="Views\Admin\EmailSetting.cshtml" />
+    <Content Include="Views\Admin\Holidays.cshtml" />
+    <Content Include="Views\Admin\ManagerSetting.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
