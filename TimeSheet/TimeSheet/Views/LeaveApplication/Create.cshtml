@@ -17,12 +17,13 @@
     <br />
 
     <div align="center">
+        <h3>Your Leave Balance</h3>
         <table class="table-fill table-responsive">
             <thead>
                 <tr>
                     @for (int i = 0; i < 3; i++)
                     {
-                    <th>@LeaveNames[i]</th>
+                        <th>@LeaveNames[i]</th>
                     }
                     <th></th>
                 </tr>
@@ -30,7 +31,7 @@
             <tr>
                 @for (int i = 0; i < 3; i++)
                 {
-                <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</td>
+                    <td class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</td>
                 }
                 <td>Hours</td>
             </tr>
@@ -72,7 +73,7 @@
                                 @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
                             </td>
                             <td>
-                                @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, htmlAttributes: new { @class = "form-control", @id = "leaveType" })
+                                @Html.DropDownListFor(model => model.LeaveApplication.leaveType, (IEnumerable<SelectListItem>)ViewBag.LeaveType, htmlAttributes: new { @class = "form-control", @id = "leavetypeMain" })
                                 @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
                             </td>
                             <td>
@@ -83,6 +84,7 @@
                 </table>
             </div>
             <br />
+            <div id="alert"></div>
 
             <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" disabled="disabled" />
         </div>
@@ -102,7 +104,8 @@
     function renderLeaveForm() {
         var start = $('#start').val();
         var end = $('#end').val();
-        var leaveType = $('#leaveType').val();
+        var leavetypeMain = $('#leavetypeMain').val();
+        var lefthours = $(".lefthours");
 
         $("#leave-form").text("Loading...");
 
@@ -113,14 +116,18 @@
         $.ajax({
             url: "/LeaveApplication/CreateLeaveForm",
             type: "GET",
-            data: { start: start, end: end, leaveType: leaveType }
+            data: { start: start, end: end, leaveType: leavetypeMain }
         })
         .done(function (partialViewResult) {
             $("#leave-form").html(partialViewResult);
+
+            // Enable submit button
             $("#submit-btn").prop("disabled", false);
 
             //Enable jquery validation
             $.validator.unobtrusive.parse("#leave-form");
+            
+ 
         });
     }
 
@@ -135,6 +142,10 @@
 
     $(document).ready(function () {
         var fullDate = new Date();
+        var lefthours = [];
+        $(".lefthours").each(function (i) {
+            lefthours.push($(this).text());
+        });
 
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
@@ -142,6 +153,7 @@
             e.preventDefault();
             $(this).toggleClass("active");
         })
+        // When there is any change on dates
         $("#start").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#end").val($("#start").val());
@@ -152,43 +164,39 @@
                 $("#start").val($("#end").val());
             renderLeaveForm();
         });
-        $("#leaveType").on("change", function () {
+        // When there is any change on leave type
+        $("#leavetypeMain").on("change", function () {
             renderLeaveForm();
         });
-        $("form").submit(function (e) {
-            var leavetimes = $(".leavetime");
-            var leavetypes = $(".leavetype");
-            var lefthours = [];
-            $(".lefthours").each(function (i) {
-                lefthours.push($(this).text());
-            });
-            leavetypes.each(function (i) {
-                alert($(this).val());
-            });
-            var length = leavetimes.length;
-            var msg = "";
+        // Test if applied leave time is excess available leave balance
+        var leavetypes = $(".leavetype");
 
-            for (var i = 0; i < length; i++) {
-                lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
-            }
+        var length = leavetimes.length;
+        var msg = "";
 
-            for (var i = 0; i < 3; i++) {
-                if (lefthours[i] < 0) {
-                    switch (i) {
-                        case 0:
-                            msg += "Sick ";
-                            break;
-                        case 1:
-                            msg += "Flexi ";
-                            break;
-                        case 2:
-                            msg += "Annual ";
-                            break;
-                        default:
-                            msg = "Something went wrong";
-                    }
+        for (var i = 0; i < length; i++) {
+            lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
+        }
+
+        for (var i = 0; i < 3; i++) {
+            if (lefthours[i] < 0) {
+                switch (i) {
+                    case 0:
+                        msg += "<strong>Sick</strong> ";
+                        break;
+                    case 1:
+                        msg += "<strong>Flexi</strong> ";
+                        break;
+                    case 2:
+                        msg += "<strong>Annual</strong> ";
+                        break;
+                    default:
+                        msg = "Something went wrong";
                 }
             }
+        }
+        // When the 'submit' button is pressed
+        $("form").submit(function (e) {
             if (msg != "") {
                 $("#alert").attr('class', "alert alert-danger");
                 $("#alert").html("<strong>Warning!</strong> " +

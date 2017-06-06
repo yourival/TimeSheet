@@ -101,7 +101,7 @@ namespace TimeSheet.Controllers
         public ActionResult ApprovalPartial(string type)
         {
             List<LeaveApplication> applications = GetApplicationList(type);
-            //ViewBag.Type = type;
+            ViewBag.Type = type;
 
             return PartialView(@"~/Views/LeaveApproval/_Approval.cshtml", applications);
         }
