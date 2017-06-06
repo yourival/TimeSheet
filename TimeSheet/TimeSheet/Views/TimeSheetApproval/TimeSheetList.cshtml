@@ -1,7 +1,7 @@
-﻿@model List<TimeSheet.Models.LeaveApplication>
+﻿@model List<TimeSheet.Models.TimeRecordForm>
 
 @{
-    ViewBag.Title = "Leave Application List";
+    ViewBag.Title = "Timesheet Application List";
 }
 
 <table class="table table-hover">
@@ -12,21 +12,19 @@
             <th>Year</th>
             <th>Period</th>
             <th>Totoal Working Hours</th>
-            <th>Total Leave Time</th>
             <th>Status</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr onclick="location.href = '@(Url.Action("ApprovalDetails", "TimeSheetApproval", new { id = item.id }))'">
-                <td>@Html.DisplayFor(m => item.id)</td>
+            <tr onclick="location.href = '@(Url.Action("ApprovalDetails", "TimeSheetApproval", new { id = item.TimeRecordFormID }))'">
+                <td>@Html.DisplayFor(m => item.TimeRecordFormID)</td>
                 <td>@Html.DisplayFor(m => item.UserID)</td>
-                <td>@Html.DisplayFor(m => item.leaveType)</td>
-                <td>@Html.DisplayFor(m => item.StartTime)</td>
-                <td>@Html.DisplayFor(m => item.EndTime)</td>
-                <td>@Html.DisplayFor(m => item.TotalLeaveTime)</td>
-                <td class=@getStatusClass(item.status)>@Html.DisplayFor(m => item.status)</td>
+                <td>@Html.DisplayFor(m => item.Year)</td>
+                <td>@Html.DisplayFor(m => item.Period)</td>
+                <td>@Html.DisplayFor(m => item.TotalWorkingHours)</td>
+                <td class=@getStatusClass(item.FormStatus)>@Html.DisplayFor(m => item.FormStatus)</td>
             </tr>
         }
     </tbody>
@@ -35,21 +33,21 @@
 
 
 @functions {
-    string getStatusClass(TimeSheet.Models._status status)
+    string getStatusClass(TimeSheet.Models.TimeRecordForm._formstatus status)
     {
         string className;
         switch (status)
         {
-            case TimeSheet.Models._status.submited:
+            case TimeSheet.Models.TimeRecordForm._formstatus.submitted:
                 className = "text-primary";
                 break;
-            case TimeSheet.Models._status.approved:
+            case TimeSheet.Models.TimeRecordForm._formstatus.approved:
                 className = "text-success";
                 break;
-            case TimeSheet.Models._status.rejected:
+            case TimeSheet.Models.TimeRecordForm._formstatus.rejected:
                 className = "text-danger";
                 break;
-            case TimeSheet.Models._status.modified:
+            case TimeSheet.Models.TimeRecordForm._formstatus.modified:
                 className = "text-warning";
                 break;
             default:

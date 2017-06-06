@@ -14,22 +14,25 @@
         <th>
             @Html.DisplayNameFor(model => model.LunchBreak)
         </th>
+        <th>Working Hours</th>
         <th>
             @Html.DisplayNameFor(model => model.Flexi)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LeaveType)
-        </th>
+
         <th>
             @Html.DisplayNameFor(model => model.LeaveTime)
         </th>
-        <th></th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.LeaveType)
+        </th>
+
     </tr>
 
 @foreach (var item in Model) {
     <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.RecordDate)
+        <td class="@(item.IsHoliday? "th-holiday" : "th-weekday")">
+            @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate, new { htmlAttributes = new { @class = "form-control", @style = "width:auto" } })
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.StartTime)
@@ -40,16 +43,23 @@
         <td>
             @Html.DisplayFor(modelItem => item.LunchBreak)
         </td>
+
+        <td>@item.GetWorkHours()</td>
+
         <td>
             @Html.DisplayFor(modelItem => item.Flexi)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.LeaveType)
-        </td>
+
         <td>
             @Html.DisplayFor(modelItem => item.LeaveTime)
+        </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.LeaveType)
         </td>
     </tr>
 }
 
 </table>
+
+<a href="javascript:;" id=" timesheetLink" onclick="HideTimesheetDetail()">Hide</a>
