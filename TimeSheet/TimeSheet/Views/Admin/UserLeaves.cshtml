@@ -1,34 +1,30 @@
 ﻿@model List<TimeSheet.Models.LeaveRecord>
 
 @{
-    ViewBag.Title = "UserLeaves";
+    ViewBag.Title = "User Leaves";
 }
 
 <head>
     @Styles.Render("~/Content/css")
 </head>
 
-
-@using (Html.BeginForm())
-{
-    <br/>
-    <h3>User Leaves Management</h3>
-    <div class="form-inline">
-        <div class="form-group">
-            <label>User Id</label>
-            <input type="text" id="user-id" />
-            <input type="button" value="Search" id="search-btn" class="btn btn-default" />
+<body>
+    <div class="container" align="center">
+    @using (Html.BeginForm())
+    {
+        <br />
+        <h3>User Leaves Management</h3>
+        <div class="searchform">
+                <input class="userID" type="text" id="user-id" placeholder="User ID"/>
+                <input type="button" value="Search" id="search-btn" class="btn searchbutton" />
         </div>
+        <br />
+        <div id="leave-form"></div>
+        <br/>
+        
+    }
     </div>
-
-    <div id="leave-form"></div>
-
-    <div class="form-inline">
-        <div class="form-group">
-            <input type="submit" value="Save" id="submit-btn" class="btn btn-default" disabled="disabled" />
-        </div>
-    </div>
-}
+</body>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

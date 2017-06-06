@@ -6,53 +6,61 @@
 </head>
 
 <body>
-    <div class="container" align="center">
-        <h2>Fortnightly Pay Period</h2>
+    <h2 align="center">Fortnightly Pay Period</h2>
         <hr />
         @using (Html.BeginForm("SendEmail", "TimeSheet", FormMethod.Post))
         {
-            <div class="row">
-                <div class="col-md-2 col-lg-3 col-xs-6">
-                    <h4>Select Year</h4>
-                    @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
-                </div>
-                <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
-                    <h4>Select Pay period</h4>
-                    @{Html.RenderAction("SelectDefaultYear");}
-                </div>
-                <div class="col-md-2 col-lg-3 col-xs-6">
-                    <h4>Select Manager</h4>
-                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-                </div>
-            </div>
+        <div class="container" align="center">
+            <table class="table-fill table-responsive">
+                <tr>
+                    <th>Select Year</th>
+                    <th>Select Pay period</th>
+                    <th>Select Manager</th>
+                </tr>
+                <tr>
+                    <td>@Html.DropDownList("year", Model.YearList, new { @class = "form-control" })</td>
+                    <td id="periodDiv">@{Html.RenderAction("SelectDefaultYear");}</td>
+                    <td>@Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })</td>
+                </tr>
+            </table>
 
-            <div class="form-group" style="padding-top:10px">
-                <input type="submit" value="Submit" class="btn btn-primary" />
+            <div class="container leaveDetail" style="padding-top:20px">
+                <input type="submit" value="Submit" class="btn btn-primary"/>
+                <button type="button" style="margin-left:1.5em" class="btn btn-default" data-toggle="collapse" data-target="#accordion">Click for detail</button>
             </div>
-            
+        </div>
+        @*if (ViewBag.Message != "")
+        {
+            <script type="text/javascript">
+                alert('@ViewBag.Message');
+            </script>
+        }*@
         }
-
 
         <div id="timesheetDiv">
             @Html.Partial(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", Model)
         </div>
-
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="close">&times;</span>
-                    <h4>Modal Header</h4>
-                </div>
-                <div class="modal-body">
-                    <p>@ViewBag.Message</p>
+        
+    @if (ViewBag.Message != "")
+    {
+        <div id="myModal" class="modal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close" data-dismiss="modal">&times;</span>
+                        <h4>Reminder</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>@ViewBag.Message</p>
+                    </div>
                 </div>
             </div>
         </div>
-
+    }
+   
         <input type="hidden" value="@ViewBag.Message" id="viewbagMessage" />
 
-    </div>
 </body>
 
 

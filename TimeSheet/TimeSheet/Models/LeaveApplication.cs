@@ -5,6 +5,7 @@ using System.Linq;
 using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
+using System.Diagnostics;
 
 namespace TimeSheet.Models
 {
@@ -49,13 +50,13 @@ namespace TimeSheet.Models
             DateTime start = StartTime;
             DateTime end = EndTime;
             TimeSheetDb contextDb = new TimeSheetDb();
-
+            Debug.WriteLine(contextDb.TimeRecords.FirstOrDefault());
             for (int i = 0; i <= (end - start).Days; i++)
             {
                 DateTime currentDate = start.AddDays(i);
                 var newTimeRecord = (from r in contextDb.TimeRecords
-                                     where DbFunctions.TruncateTime(r.RecordDate) == currentDate.Date &&
-                                           r.UserID == UserID
+                                     where DbFunctions.TruncateTime(r.RecordDate) == currentDate.Date /*&&
+                                           r.UserID == UserID*/
                                      select r).FirstOrDefault();
                 if (newTimeRecord != null)
                 {

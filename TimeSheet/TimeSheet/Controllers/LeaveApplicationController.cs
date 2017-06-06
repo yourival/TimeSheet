@@ -186,7 +186,10 @@ namespace TimeSheet.Controllers
                 newTimeRecords.Add(newTimeRecord);
             }
             applicationVM.TimeRecords = newTimeRecords;
-            
+
+            if (applicationVM.TimeRecords.Count == 0)
+                return Content("No working days found.");
+
             return PartialView(@"~/Views/LeaveApplication/_Create.cshtml", applicationVM);
         }
     }

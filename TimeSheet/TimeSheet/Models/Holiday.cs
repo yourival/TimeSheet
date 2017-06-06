@@ -11,8 +11,9 @@ namespace TimeSheet.Models
         public int id { get; set; }
 
         [DataType(DataType.Date)]
+        [Display(Name = "Holiday Date")]
         public DateTime HolidayDate { get; set; }
-
+        [Display(Name = "Holiday Name")]
         public string HolidayName { get; set; }
     }
 }

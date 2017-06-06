@@ -6,7 +6,7 @@ using System.Data.Entity;
 
 namespace TimeSheet.Models
 {
-    public class TimeSheetInitializer : DropCreateDatabaseAlways<TimeSheetDb>
+    public class TimeSheetInitializer : CreateDatabaseIfNotExists<TimeSheetDb>
     {
         // Puts sample data into the database
         protected override void Seed(TimeSheetDb context)
