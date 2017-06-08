@@ -115,8 +115,9 @@ namespace TimeSheet.Controllers
                     TimeRecord r = new TimeRecord(date);
                     r.UserID = User.Identity.Name;
                     PayPeriod.SetPublicHoliday(r);
+                    if (r.IsHoliday)
+                        r.SetAttendence(null, null, 0);
                     model.TimeRecords.Add(r);
-                    Debug.WriteLine(r.GetWorkHours());
                 }
                 else
                 {
@@ -253,7 +254,7 @@ namespace TimeSheet.Controllers
             DateTime current = DateTime.Now.Date;
             for(int i=0;i<=Convert.ToInt32((current - model.TimeRecords[0].RecordDate).TotalDays); i++)
             {
-                workingHours += model.TimeRecords[i].GetWorkHours();
+                workingHours += model.TimeRecords[i].WorkHours;
             }
             return workingHours;
         }

@@ -304,7 +304,6 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
-    <Content Include="Content\Test.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -360,7 +359,6 @@
     <Content Include="Views\TimeSheet\Index.cshtml" />
     <Content Include="Views\TimeSheet\SelectYear.cshtml" />
     <Content Include="Views\TimeSheet\_CreateTimeSheet.cshtml" />
-    <Content Include="Views\LeaveApplication\Create.cshtml" />
     <Content Include="Views\LeaveApplication\_Create.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
@@ -378,6 +376,9 @@
     <Content Include="Views\Admin\EditManager.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />
     <Content Include="Views\Admin\ManagerSetting.cshtml" />
+    <Content Include="Views\LeaveApplication\Index.cshtml" />
+    <Content Include="Views\LeaveApplication\_Casual.cshtml" />
+    <Content Include="Views\LeaveApplication\_Leave.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
