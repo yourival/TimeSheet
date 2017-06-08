@@ -114,12 +114,6 @@ namespace TimeSheet.Controllers
         {
             EmailSetting model;
             model = adminDb.EmailSetting.ToList().FirstOrDefault();
-            if (model == null)
-            {
-                model = new EmailSetting();
-                adminDb.EmailSetting.Add(model);
-                adminDb.SaveChanges();
-            }
             return View(model);
         }
 
