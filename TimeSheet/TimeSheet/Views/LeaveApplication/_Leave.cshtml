@@ -4,11 +4,6 @@
     string[] LeaveNames = {"Sick Leave", "Flexi Leave", "Annual Leave" };
 }
 
-<head>
-    @Styles.Render("~/Content/css")
-</head>
-
-
 <div class="hrForm-content">
     <div>
         @using (Html.BeginForm("Index", "LeaveApplication", FormMethod.Post))
@@ -34,7 +29,7 @@
 
             </div>
             <hr>
-            <form>
+            <form id="#lform">
                 <div class="form-group">
                     <label class="col-sm-offset-1 col-sm-2" for="startTime">
                         @Html.LabelFor(model => model.LeaveApplication.StartTime)
@@ -117,12 +112,7 @@
     </div>
 </div>
 
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
     function renderLeaveForm() {
         var start = $('#start').val();
@@ -140,14 +130,11 @@
             data: { start: start, end: end, leaveType: leavetypeMain }
         })
         .done(function (partialViewResult) {
+            //Render partial view
             $("#leave-form").html(partialViewResult);
-
-            // Enable submit button
-            $("#submit-btn").prop("disabled", false);
 
             //Enable jquery validation
             $.validator.unobtrusive.parse("#leave-form");
-            alert()
         });
     }
 

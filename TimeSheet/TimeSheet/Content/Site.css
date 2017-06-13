@@ -687,4 +687,8 @@ form span {
     .footer .dropup {
         display: none;
     }
+
+    span .highlight {
+        color:red;
+    }
 }
