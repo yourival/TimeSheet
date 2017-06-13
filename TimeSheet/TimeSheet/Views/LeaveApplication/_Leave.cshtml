@@ -12,9 +12,9 @@
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
             <div>
                 <label>Balance (hrs):&nbsp;</label>
-                <text style="color:black">
+                <text class="textStyleBefore">
                     @for (int i = 0; i < 3; i++)
-                {
+                    {
                         @LeaveNames[i]
                         @:   :&nbsp;
 
@@ -24,7 +24,7 @@
                         {
                             @: ,&nbsp;&nbsp;
                         }
-                }
+                    }
                 </text>
 
             </div>
@@ -95,18 +95,35 @@
 
                 <div class="appDetails">
                     <div class="col-sm-offset-1 col-sm-2"></div>
-                    <div id="leave-form" class="col-sm-8"></div>                    
+                    <div id="leave-form" class="col-sm-8"></div>
+                </div>
+                <div class="balanceAfter row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <label>Balance After(hrs):&nbsp;</label>
+                        <text class="textStyleAfter">
+                            @for (int i = 0; i < 3; i++)
+                            {
+                                @LeaveNames[i]
+                                @:   :&nbsp;
+
+                                <span class="lefthours modified">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</span>
+
+                                if (i != 2)
+                                {
+                                    @: ,&nbsp;&nbsp;
+                            }
+                            }
+                        </text>
+                        </div>
+                    </div>
+                <div class="row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                            <label>Total:</label>
+                    </div>
                 </div>
                 <div class="button-group">
-                        
                     <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
-                    
-                        
-                    @*<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#leaveDetail">
-                        Click for Detail
-                    </button>*@
                 </div>
-                
             </form>
         }
     </div>

@@ -198,9 +198,7 @@ form p {
     color:dimgray;
 }
 
-form span {
-    color: #1F618D;
-}
+
 
 .button-group {
     display:block;
@@ -210,9 +208,26 @@ form span {
 /*leave application page end*/
 
 /*leave balance style*/
-.lefthours {
-    border-bottom: 1px solid #808B96;
+.textStyleBefore span,
+.textStyleAfter span {
+    color: #31708f;
+    font-weight:bold;
 }
+
+.textStyleAfter .modified {
+    color:#51a47b;
+    font-weight:bold;
+}
+
+.textStyleBefore,
+.textStyleAfter {
+    color:black;
+}
+
+.totalApplication {
+    text-align:left;
+}
+
 
 /*tab setting start*/
 #tabs .nav-tabs > li > a {
@@ -692,3 +707,5 @@ form span {
         color:red;
     }
 }
+
+
