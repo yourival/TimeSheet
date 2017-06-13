@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "ADManagement";
+}
+
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+
+<br />
+<h3 align="center">Active Directory Management</h3>
+
+<div class="container">
+    <div class="row AdminBox" style="text-align:center">
+        <div class="col-md-2 square1">
+            @Html.ActionLink("User", "User", "ADManagement")
+        </div>
+        <div class="col-md-2 square2">
+            @Html.ActionLink("Group", "Group", "ADManagement")
+        </div>
+        <div class="col-md-2 square3">
+            @Html.ActionLink("Role", "Role", "ADManagement")
+        </div>
+    </div>
+</div>

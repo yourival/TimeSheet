@@ -20,22 +20,18 @@ namespace TimeSheet.Controllers
     public class UserProfileController : Controller
     {
         private ApplicationDb db = new ApplicationDb();
-        private string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
-        private string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
-        private string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        private string graphResourceID = "https://graph.windows.net";
+        public static string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        public static string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
+        public static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        public static string graphResourceID = "https://graph.windows.net";
 
         // GET: UserProfile
         public async Task<ActionResult> Index()
         {
-            string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             try
             {
-                Uri servicePointUri = new Uri(graphResourceID);
-                Uri serviceRoot = new Uri(servicePointUri, tenantID);
-                ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
-                      async () => await GetTokenForApplication());
+                ActiveDirectoryClient activeDirectoryClient = GetActiveDirectoryClient();
 
                 // use the token for querying the graph to get the user details
 
@@ -65,7 +61,7 @@ namespace TimeSheet.Controllers
                 OpenIdConnectAuthenticationDefaults.AuthenticationType);
         }
 
-        public async Task<string> GetTokenForApplication()
+        public static async Task<string> GetTokenForApplication()
         {
             string signedInUserID = ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value;
             string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
@@ -77,6 +73,17 @@ namespace TimeSheet.Controllers
             AuthenticationContext authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return authenticationResult.AccessToken;
+        }
+
+        public static ActiveDirectoryClient GetActiveDirectoryClient()
+        {
+            string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+            string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            Uri servicePointUri = new Uri(graphResourceID);
+            Uri serviceRoot = new Uri(servicePointUri, tenantID);
+            ActiveDirectoryClient client = new ActiveDirectoryClient(serviceRoot,
+                async () => await GetTokenForApplication());
+            return client;
         }
 
     }

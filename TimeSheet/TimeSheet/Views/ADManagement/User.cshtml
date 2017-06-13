@@ -1,0 +1,54 @@
+﻿@using Microsoft.Azure.ActiveDirectory.GraphClient
+@model IEnumerable<User>
+
+<h2>/Users</h2>
+<p>
+    @Html.ActionLink("Create New", "UserCreate")
+</p>
+<table id="directoryObjects" class="table table-bordered table-striped">
+    <tr>
+        <th>
+            UserPrincipalName
+        </th>
+        <th>
+            DisplayName
+        </th>
+        <th>
+            JobTitle
+        </th>
+        <th>
+            ObjectId
+        </th>
+        <th />
+    </tr>
+    @foreach (var item in Model)
+    {
+        var user = item as User;
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => user.UserPrincipalName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.DisplayName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.JobTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.ObjectId)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "UserEdit", new { objectId = item.ObjectId }) <br />
+                @Html.ActionLink("Details", "UserDetails", new { objectId = item.ObjectId }) <br />
+                @Html.ActionLink("Delete", "UserDelete", new { objectId = item.ObjectId })  <br />
+                @Html.ActionLink("GroupMembership", "UserGetGroups", new { objectId = item.ObjectId }) <br />
+                @Html.ActionLink("DirectReports", "UserGetDirectReports", new { objectId = item.ObjectId }) <br />
+            </td>
+        </tr>
+    }
+</table>
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see Users. Click @Html.ActionLink("here", "User", "ADManagement", new { reauth = true }, null) to sign-in.</p>
+}

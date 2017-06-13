@@ -50,6 +50,6 @@ namespace TimeSheet.Models
             return (EndTime - StartTime).TotalHours - LunchBreak;
         }
 
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<ADUser> Users { get; set; }
     }
 }

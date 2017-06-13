@@ -17,7 +17,7 @@ namespace TimeSheet.Models
         public DbSet<LeaveApplication> LeaveApplications { get; set; }
         public DbSet<TimeRecordForm> TimeRecordForms { get; set; }
 
-        public DbSet<User> UserInfo { get; set; }
+        public DbSet<ADUser> ADUsers { get; set; }
     }
 
 }

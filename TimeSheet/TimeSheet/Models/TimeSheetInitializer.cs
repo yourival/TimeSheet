@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace TimeSheet.Models
 {
@@ -109,20 +110,8 @@ namespace TimeSheet.Models
             });
             context.SaveChanges();
 
-            // Initialise users
-            context.UserInfo.Add(new User()
-            {
-                Email = "r.lin@m.nantien.edu.au",
-                UserName = "Lin, Yichia",
-                JobCode = "102"
-            });
-            context.UserInfo.Add(new User()
-            {
-                Email = "y.ben@m.nantien.edu.au",
-                UserName = "Ben, Yanhong",
-                JobCode = "110A"
-            });
-            context.SaveChanges();
+            Task.Run(() => ADUser.GetADUser());
+
         }
     }
 }
