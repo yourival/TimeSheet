@@ -1,0 +1,192 @@
+﻿@model TimeSheet.Models.TimeRecordForm
+
+@{
+    ViewBag.Title = "Timesheet Detail";
+    if (Model.Comments == null)
+    {
+        ViewBag.Comments = "Add";
+    }
+    else
+    {
+        ViewBag.Comments = "View";
+    }
+}
+
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+<br />
+<div class="container">
+    <div>
+        <h3>@ViewBag.Title</h3>
+        <table class="table" >
+            <tbody>
+                <tr>
+                    <td>@Html.Label("Name:")</td>
+                    <td>@ViewBag.UserName</td>
+                    <td>@Html.Label("Approved By:")</td>
+                    <td>@ViewBag.ManagerName</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.Label("Empl ID:")</td>
+                    <td>@Html.DisplayFor(m=>m.UserID)</td>
+                    <td>@Html.Label("Empl ID:")</td>
+                    <td>@Html.DisplayFor(m=>m.ManagerID)</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.Label("SubmitTime:")</td>
+                    <td>@Html.DisplayFor(m=>m.SubmitTime)</td>
+                    <td>@Html.Label("Status:")</td>
+                    <td>@Html.DisplayFor(m=>m.FormStatus)</td>
+                </tr>
+
+                <tr>
+                    <td>@Html.Label("Period Begin:")</td>
+                    <td>@String.Format("{0:dd/MM/yyyy}",ViewBag.PeriodBegin)</td>
+                    <td>@Html.Label("Period End:")</td>
+                    <td>@String.Format("{0:dd/MM/yyyy}", ViewBag.PeriodEnd)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Period/Year</td>
+                    <td>Total Working Hours</td>
+                    <td>Requested Working Hours</td>
+                    <td>Total Leave Hours</td>
+                    <td>Comments</td>
+                </tr>
+
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayFor(m => m.TimeRecordFormID)</td>
+                    <td>@ViewBag.PeriodYear</td>
+                    <td>@Html.DisplayFor(m => m.TotalWorkingHours)</td>
+                    <td>@ViewBag.RequestedHours</td>
+                    <td>@Html.DisplayFor(m => m.TotalLeaveHours)</td>
+                    <td><a href="javascript:CommentEditor()">@ViewBag.Comments</a></td>
+                </tr>
+                <tr>
+                    <td><button id="approveBtn" value="@Model.TimeRecordFormID">Approved</button></td>
+                    <td><button id="rejectBtn" value="@Model.TimeRecordFormID">Rejected</button></td>
+                </tr>
+            </tbody>
+        </table>
+        @Html.ActionLink("Return to Timesheet Approval","Approval")
+        <br />
+        <a href="javascript:LoadTimesheetDetail(@Model.TimeRecordFormID)" id=" timesheetLink">View Timesheet Details</a>
+    </div>
+    <br />
+</div>
+<div id="timesheetDiv" class="container"></div>
+<br />
+
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h4>CommentEditor</h4>
+        </div>
+        <div class="modal-body form-group">
+            @Html.Label("Comments:")
+            <textarea id="comment" class="form-control" rows="3">@Model.Comments</textarea>
+            <button id="commentBtn" class="btn-default" value="@Model.TimeRecordFormID" onclick="SaveComment()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+
+    function LoadTimesheetDetail(elem) {
+        var id = elem;
+        $.ajax({
+            url: "/TimesheetApproval/LoadTimesheetDetail/",
+            type: "POST",
+            data: { id: id }
+        })
+            .done(function (result) {
+                $("#timesheetDiv").html(result);
+            });
+    }
+
+    function CommentEditor() {
+        var modal = document.getElementById('myModal');
+        var span = document.getElementsByClassName("close")[0];
+        modal.style.display = "block";
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
+    function SaveComment() {
+        var comment = document.getElementById("comment").value;
+        var id = document.getElementById("commentBtn").value;
+        location.href = '@Url.Action("SaveComment", "TimesheetApproval")' + '/' + id + '/' + comment;
+    }
+
+    function HideTimesheetDetail() {
+        document.getElementById("timesheetDiv").innerHTML ="";
+    }
+
+    $(document).ready(function () {
+
+        $("#approveBtn").on("click", function () {
+            var approveID = $(this).val();
+            var approveDec = $(this).text();
+            alert(approveDec);
+            location.href = '@Url.Action("ApprovalDetailPost", "TimesheetApproval")' + '/' + approveID + '/' + approveDec;
+        });
+
+        $("#rejectBtn").on("click", function () {
+            var rejectID = $(this).val();
+            var rejectDec = $(this).text();
+            location.href = '@Url.Action("ApprovalDetailPost", "TimesheetApproval")' + '/' + rejectID + '/' + rejectDec;
+        });
+
+        //var commentBtn = document.getElementById("commentBtn");
+        //commentBtn.addEventListener("click", SaveComment, false);
+
+
+    });
+</script>
+
+        @functions {
+            string getStatusClass(TimeSheet.Models._status status)
+            {
+                string className;
+                switch (status)
+                {
+                    case TimeSheet.Models._status.submited:
+                        className = "text-primary";
+                        break;
+                    case TimeSheet.Models._status.approved:
+                        className = "text-success";
+                        break;
+                    case TimeSheet.Models._status.rejected:
+                        className = "text-danger";
+                        break;
+                    case TimeSheet.Models._status.modified:
+                        className = "text-warning";
+                        break;
+                    default:
+                        className = "";
+                        break;
+                }
+                return className;
+            }
+        }
+

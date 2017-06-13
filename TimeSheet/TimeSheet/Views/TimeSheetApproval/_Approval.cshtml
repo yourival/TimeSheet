@@ -1,0 +1,119 @@
+﻿@model List<TimeSheet.Models.TimeRecordForm>
+
+@{
+    Layout = null;
+}
+
+<table class="table table-hover" @*data-table-type="@ViewBag.Type"*@>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Year</th>
+            <th>Period</th>
+            <th>Total Working Hours</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody style="cursor:pointer">
+        @for (int i = 0; i < 5 && i < Model.Count; i++)
+        {
+            <tr class="table-row" data-value="@Model[i].TimeRecordFormID" onclick="location.href='@Url.Action("ApprovalDetail", "TimesheetApproval", new { id = Model[i].TimeRecordFormID })'">
+                <td>@Html.DisplayFor(m => m[i].TimeRecordFormID)</td>
+                <td>@Html.DisplayFor(m => m[i].UserID)</td>
+                <td>@Html.DisplayFor(m => m[i].Year)</td>
+                <td>@Html.DisplayFor(m => m[i].Period)</td>
+                <td>@Html.DisplayFor(m => m[i].TotalWorkingHours)</td>
+                <td id="status-@Model[i].TimeRecordFormID" class=@getStatusClass(Model[i].FormStatus)>@Html.DisplayFor(m => m[i].FormStatus)</td>
+                <td class="action">
+                    <button class="btn btn-success" value="@Model[i].TimeRecordFormID">Approved</button>
+                    <button class="btn btn-danger" value="@Model[i].TimeRecordFormID">Rejected</button>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="7">
+            <td>
+                @if (Model.Count > 5)
+                {
+                    @Html.ActionLink("More...", "TimeSheetList", new { type = @ViewBag.Type })
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="alert-danger" id="error"></div>
+
+
+
+@functions {
+    string getStatusClass(TimeSheet.Models.TimeRecordForm._formstatus status)
+    {
+        string className;
+        switch (status)
+        {
+            case TimeSheet.Models.TimeRecordForm._formstatus.submitted:
+                className = "text-primary";
+                break;
+            case TimeSheet.Models.TimeRecordForm._formstatus.approved:
+                className = "text-success";
+                break;
+            case TimeSheet.Models.TimeRecordForm._formstatus.rejected:
+                className = "text-danger";
+                break;
+            case TimeSheet.Models.TimeRecordForm._formstatus.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("button").on("click", function (e) {
+            e.stopPropagation();
+            var id = $(this).val();
+            var decision = $(this).text();
+            var container = $(this).closest("div");
+            var type = (container.attr("id") == "waiting-apps" ? "Waiting" : "Confirmed")
+            $(this).closest("tr").fadeOut(500, function () {
+                $.ajax({
+                    url: "/TimesheetApproval/ApprovalPartial/",
+                    type: "POST",
+                    data: { id: id, decision: decision, type: type }
+                })
+                    .done(function (result) {
+                        container.html(result);
+
+                        if (type == "Waiting")
+                            $.ajax({
+                                url: "/TimesheetApproval/ApprovalPartial/",
+                                type: "GET",
+                                data: { type: "Confirmed" }
+                            })
+                                .done(function (result) {
+                                    $("#confirmed-apps").html(result);
+                                })
+                                .fail(function (xmlHttpRequest, textStatus, errorThrown) {
+                                    $("#error").html(xmlHttpRequest.responseText);
+                                });
+                    })
+                    .fail(function (xmlHttpRequest, textStatus, errorThrown) {
+                        $("#error").html(xmlHttpRequest.responseText);
+                    });
+
+            });
+        });
+    });
+</script>

@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "TimesheetImport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <h2>Export payrolls by period</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2 col-lg-3 col-xs-6">
+                @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, new { @class = "form-control" })
+            </div>
+            <div id="periodDiv" class="col-md-2 col-lg-3 col-xs-6">
+                @{Html.RenderAction("SelectDefaultPeriod");}
+            </div>
+        </div>
+        <button id="expBtn" class="btn-primary">Export</button>
+    </div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#year").on("change", function () {
+            var val = $('#year').val();
+            $.ajax({
+                url: "/timesheet/selectyear",
+                type: "get",
+                data: { year: val }
+            })
+                .done(function (partialviewresult) {
+                    $("#perioddiv").html(partialviewresult);
+                });
+        });
+
+        $("#expBtn").on("click", function () {
+            var year = $('#year').val();
+            var period = $('#period').val();
+            location.href = '@Url.Action("TimesheetExportResult", "Admin")?year=' + year + '&period=' + period;
+        });
+    });
+</script>
