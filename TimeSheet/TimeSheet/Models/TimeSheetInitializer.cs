@@ -24,7 +24,7 @@ namespace TimeSheet.Models
                 newApplication.EndTime = startDate.AddDays(i * 4 + 3);
                 newApplication.leaveType = (_leaveType)(i % 4);
                 newApplication.status = (_status)(i % 4);
-                newApplication.TotalLeaveTime = 30;
+                newApplication.TotalTime = 30;
                 applications.Add(newApplication);
 
                 // TimeRecords
@@ -54,7 +54,7 @@ namespace TimeSheet.Models
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i + 1) % 4);
                 newApplication.status = (_status)(i % 4 + 1);
-                newApplication.TotalLeaveTime = 22.5;
+                newApplication.TotalTime = 22.5;
                 applications.Add(newApplication);
 
                 // TimeRecords
@@ -84,7 +84,7 @@ namespace TimeSheet.Models
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i +1) % 4);
                 newApplication.status = (_status)(i % 4 + 1);
-                newApplication.TotalLeaveTime = 22.5;
+                newApplication.TotalTime = 22.5;
                 applications.Add(newApplication);
 
                 // TimeRecords

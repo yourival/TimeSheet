@@ -1,7 +1,7 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
 
 @{
-    string[] LeaveNames = {"Sick Leave Left Hours", "Flexi Leave Left Hours", "Annual Leave Left Hours" };
+    string[] LeaveNames = {"Sick Leave", "Flexi Leave", "Annual Leave" };
 }
 
 <head>
@@ -16,20 +16,22 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
             <div>
-                <label>
+                <label>Balance (hrs):&nbsp;</label>
+                <text style="color:black">
                     @for (int i = 0; i < 3; i++)
                 {
-
                         @LeaveNames[i]
                         @:   :&nbsp;
 
-                        @Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)
+                        <span class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</span>
+
                         if (i != 2)
                         {
                             @: ,&nbsp;&nbsp;
                         }
                 }
-                </label>
+                </text>
+
             </div>
             <hr>
             <form>
@@ -61,7 +63,6 @@
                     <div class="col-sm-8">
                         <p>
                             @Html.DropDownListFor(model => model.LeaveApplication.leaveType, (IEnumerable<SelectListItem>)ViewBag.LeaveType, htmlAttributes: new { @class = "form-control", @id = "leavetypeMain" })
-                            @Html.ValidationMessageFor(model => model.LeaveApplication.leaveType, "", new { @class = "text-danger" })
                         </p>
                     </div>
                 </div>
@@ -75,11 +76,21 @@
                         </p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2" for="comment">
+                        @Html.LabelFor(model => model.LeaveApplication.Comment)
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "comment", @style = "resize: vertical" } })
+                        </p>
+                    </div>
+                </div>
                 <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
                         <a href="#leaveDetail" data-toggle="collapse">
                             <p>
-                                if you need to adjust hours please click here
+                                Click here if you want to edit details
                                 <span class="glyphicon glyphicon-pencil"></span>
 
                             </p>
@@ -89,10 +100,8 @@
 
                 <div class="appDetails">
                     <div class="col-sm-offset-1 col-sm-2"></div>
-                    <div id="leave-form" class="col-sm-8"></div>
-                    
+                    <div id="leave-form" class="col-sm-8"></div>                    
                 </div>
-                
                 <div class="button-group">
                         
                     <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
@@ -109,7 +118,6 @@
 </div>
 
 
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
@@ -123,8 +131,8 @@
 
 
         //Clear previous validation message
-        $("form").removeData("validator");
-        $("form").removeData("unobtrusiveValidation");
+        $("#leave-form").removeData("validator");
+        $("#leave-form").removeData("unobtrusiveValidation");
 
         $.ajax({
             url: "/LeaveApplication/CreateLeaveForm",
@@ -138,7 +146,8 @@
             $("#submit-btn").prop("disabled", false);
 
             //Enable jquery validation
-            $.validator.unobtrusive.parse("#leave-form"); 
+            $.validator.unobtrusive.parse("#leave-form");
+            alert()
         });
     }
 
@@ -160,10 +169,7 @@
 
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
-        $(".btn-default").on("click", function (e) {
-            e.preventDefault();
-            $(this).toggleClass("active");
-        })
+        renderLeaveForm();
         // When there is any change on main panel
         $("#start").on("change", function () {
             if ($("#start").val() > $("#end").val())
@@ -208,20 +214,19 @@
                     }
                 }
             }
-                alert("good");
 
-            //if (msg != "") {
-            //    alert(msg);
-            //    $("#alert").attr('class', "alert alert-danger");
-            //    $("#alert").html("<strong>Warning!</strong> " +
-            //                     "Your leaves application excesses in leave types: " + msg +
-            //                     "<br/>Please change them up and try submitting again");
-            //    e.preventDefault(e);
-            //    return false;
-            //} else {
-            //    $("#alert").attr('class', "alert alert-success");
-            //    $("#alert").text("Successfully submitted" + msg);
-            //}
+            if (msg != "") {
+                alert(msg);
+                $("#alert").attr('class', "alert alert-danger");
+                $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
+                                 "Your leaves application excesses in leave types: " + msg +
+                                 "<br/>Please change them up and try submitting again");
+                e.preventDefault(e);
+                return false;
+            } else {
+                $("#alert").attr('class', "alert alert-success");
+                $("#alert").text("Successfully submitted" + msg);
+            }
         });
     });
 </script>
