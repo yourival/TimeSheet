@@ -87,7 +87,7 @@ namespace TimeSheet.Controllers
                         r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
 
                     // Sum up total leave time
-                    applicationVM.LeaveApplication.TotalLeaveTime += r.LeaveTime;
+                    applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
 
                     // Try to fetch TimeRecord from DB if it exists
                     var timeRecord = (from a in contextDb.TimeRecords
@@ -123,7 +123,7 @@ namespace TimeSheet.Controllers
                     application.leaveType = applicationVM.LeaveApplication.leaveType;
                     application.ManagerID = applicationVM.LeaveApplication.ManagerID;
                     application.Comment = applicationVM.LeaveApplication.Comment;
-                    application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
+                    application.TotalTime = applicationVM.LeaveApplication.TotalTime;
                     contextDb.Entry(application).State = EntityState.Modified;
                 }
                 contextDb.SaveChanges();
@@ -182,20 +182,23 @@ namespace TimeSheet.Controllers
                 DateTime currentDate = start.AddDays(i);
                 var newTimeRecord = new TimeRecord(currentDate.Date);
                 newTimeRecord.SetAttendence(null, null, 0);
-                    newTimeRecord.UserID = User.Identity.Name;
-                    newTimeRecord.LeaveType = leaveType;
-                newTimeRecord.LeaveTime = 7.5;
+                newTimeRecord.UserID = User.Identity.Name;
+                newTimeRecord.LeaveType = leaveType;
+                newTimeRecord.LeaveTime = (leaveType == 0) ? 0 : 7.5;
                 newTimeRecord.WorkHours = 0;
                     PayPeriod.SetPublicHoliday(newTimeRecord);
                 if (!newTimeRecord.IsHoliday)
-                newTimeRecords.Add(newTimeRecord);
+                    newTimeRecords.Add(newTimeRecord);
             }
             applicationVM.TimeRecords = newTimeRecords;
 
             if (applicationVM.TimeRecords.Count == 0)
                 return Content("No working days were found.");
 
-            return PartialView(@"~/Views/LeaveApplication/_Create.cshtml", applicationVM);
-        } 
+            if(leaveType == 0)
+                return PartialView(@"~/Views/LeaveApplication/_CasualList.cshtml", applicationVM);
+            else
+                return PartialView(@"~/Views/LeaveApplication/_LeaveList.cshtml", applicationVM);
+        }
     }
 }

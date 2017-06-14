@@ -198,9 +198,7 @@ form p {
     color:dimgray;
 }
 
-form span {
-    color: #1F618D;
-}
+
 
 .button-group {
     display:block;
@@ -210,9 +208,35 @@ form span {
 /*leave application page end*/
 
 /*leave balance style*/
-.lefthours {
-    border-bottom: 1px solid #808B96;
+.textStyleBefore span,
+.textStyleAfter span {
+    color: #31708f;
+    font-weight:bold;
 }
+
+.textStyleAfter .modified {
+    color:#51a47b;
+    font-weight:bold;
+}
+
+.textStyleAfter .excess {
+    color: #a94442;
+    font-weight: bold;
+}
+
+.textStyleBefore,
+.textStyleAfter {
+    color:black;
+}
+
+.totalApplication {
+    text-align:left;
+}
+
+#total {
+    color: black;
+}
+
 
 /*tab setting start*/
 #tabs .nav-tabs > li > a {
@@ -227,12 +251,6 @@ form span {
 
 .nav > li > a {
     color: #808B96;
-}
-
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover,
-.nav-tabs > li.active > a:focus {
-    /*background-color: #808B96;*/
 }
 
 .tab-content {
@@ -683,14 +701,15 @@ form span {
         border-right: 1px solid lightgray;
     }
 
-
-
-
-
-
     /*footer*/
-
     .footer .dropup {
         display: none;
     }
+
+    /*alert*/
+    .alert {
+        text-align: left;
+    }
 }
+
+

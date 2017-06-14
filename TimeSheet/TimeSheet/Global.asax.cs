@@ -17,8 +17,8 @@ namespace TimeSheet
         protected void Application_Start()
         {
             // Seed the database with sample data for development. This code should be removed for production.
-            Database.SetInitializer<TimeSheetDb>(new TimeSheetInitializer()); 
-            Database.SetInitializer<AdminDb>(new AdminDbInitializer());
+            //Database.SetInitializer<TimeSheetDb>(new TimeSheetInitializer()); 
+            //Database.SetInitializer<AdminDb>(new AdminDbInitializer());
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
