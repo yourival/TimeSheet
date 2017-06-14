@@ -83,6 +83,6 @@ namespace TimeSheet.Models
             LunchBreak = lunchHour;
         }
 
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<ADUser> ADUsers { get; set; }
     }
 }

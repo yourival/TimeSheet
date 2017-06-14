@@ -332,7 +332,7 @@ namespace TimeSheet.Controllers
                     dr["Notes"] = null;
 
                     dr["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
-                    dr["Units"] = payrolls[i].GetWorkHours() * (payrolls[i].Flexi ? 1.5 : 1);
+                    dr["Units"] = payrolls[i].WorkHours * (payrolls[i].Flexi ? 1.5 : 1);
 
                     if (payrolls[i].IsHoliday)
                     {
