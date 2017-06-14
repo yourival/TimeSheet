@@ -97,16 +97,17 @@
                     <div class="col-sm-offset-1 col-sm-2"></div>
                     <div id="leave-form" class="col-sm-8"></div>
                 </div>
-                <div class="balanceAfter row" align="right">
+                <hr/>
+                <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
-                        <label>Balance After(hrs):&nbsp;</label>
+                        <label>Balance After (hrs):&nbsp;</label>
                         <text class="textStyleAfter">
                             @for (int i = 0; i < 3; i++)
                             {
                                 @LeaveNames[i]
                                 @:   :&nbsp;
 
-                                <span class="lefthours modified">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</span>
+                                <span class="lefthours">@Html.DisplayFor(m => m.LeaveRecords[i].AvailableLeaveHours)</span>
 
                                 if (i != 2)
                                 {
@@ -114,11 +115,12 @@
                             }
                             }
                         </text>
-                        </div>
                     </div>
+                </div>
                 <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
                             <label>Total:</label>
+                            <span id="total"></span>
                     </div>
                 </div>
                 <div class="button-group">
@@ -152,6 +154,17 @@
 
             //Enable jquery validation
             $.validator.unobtrusive.parse("#leave-form");
+
+            // When there is any change on detail leave time
+            $(".leavetime").on("change", function () {
+                sumLeavesByType();
+                var total = sumTotalHours();
+                $("#total").text(total + " (" + total / 7.5 + " days)");
+            });
+
+            sumLeavesByType();
+            var total = sumTotalHours();
+            $("#total").text(total + " (" + total / 7.5 + " day" + ((total / 7.5 > 1)?"s":"") + ")");
         });
     }
 
@@ -164,12 +177,43 @@
         return year + '-' + month + '-' + day;
     }
 
+    function sumLeavesByType() {
+        var leavetypes = $(".leavetype");
+        var leavetimes = $(".leavetime");
+        var length = leavetimes.length;
+        var lefthoursBefore = [];
+        var lefthours = [];
+        $(".textStyleBefore").children(".lefthours").each(function (i) {
+            lefthours.push($(this).text());
+            lefthoursBefore.push($(this).text());
+        });
+
+        for (var i = 0; i < length; i++) {
+            lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
+        }
+
+        $(".textStyleAfter").children(".lefthours").each(function (i) {
+            $(this).text(lefthours[i]);
+            if (lefthours[i] == lefthoursBefore[i]) {
+                $(this).attr("class", "lefthours");
+            } else if (lefthours[i] < 0) {
+                $(this).attr("class", "lefthours excess");
+            } else {
+                $(this).attr("class", "lefthours modified");
+            }
+        });
+    }
+
+    function sumTotalHours() {
+        var total = 0;
+        $(".leavetime").each(function (i) {
+            total += parseFloat($(this).val());
+        });
+        return total;
+    }
+
     $(document).ready(function () {
         var fullDate = new Date();
-        var lefthours = [];
-        $(".lefthours").each(function (i) {
-            lefthours.push($(this).text());
-        });
 
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
@@ -192,45 +236,19 @@
         // When the form is submitted
         $("form").submit(function (e) {
             // Test if applied leave times excess available leave balance
-            var leavetypes = $(".leavetype");
-            var leavetimes = $(".leavetime");
-            var length = leavetimes.length;
-            var msg = "";
-
-            for (var i = 0; i < length; i++) {
-                lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
-            }
-
-            for (var i = 0; i < 3; i++) {
-                if (lefthours[i] < 0) {
-                    switch (i) {
-                        case 0:
-                            msg += "<strong>Sick</strong> ";
-                            break;
-                        case 1:
-                            msg += "<strong>Flexi</strong> ";
-                            break;
-                        case 2:
-                            msg += "<strong>Annual</strong> ";
-                            break;
-                        default:
-                            msg = "Something went wrong";
-                    }
+            $(".textStyleAfter").children(".lefthours").each(function (i) {
+                if ($(this).text() < 0) {
+                    $("#alert").attr('class', "alert alert-danger");
+                    $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
+                        "Your leaves application excesses your leave balance.  " +
+                        "<br>Please change them up and try submitting again");
+                    e.preventDefault(e);
+                    return false;
                 }
-            }
-
-            if (msg != "") {
-                alert(msg);
-                $("#alert").attr('class', "alert alert-danger");
-                $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
-                                 "Your leaves application excesses in leave types: " + msg +
-                                 "<br/>Please change them up and try submitting again");
-                e.preventDefault(e);
-                return false;
-            } else {
-                $("#alert").attr('class', "alert alert-success");
-                $("#alert").text("Successfully submitted" + msg);
-            }
+            });
+            
+            //$("#alert").attr('class', "alert alert-success");
+            //$("#alert").text("Successfully submitted" + msg);            
         });
     });
 </script>

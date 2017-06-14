@@ -32,7 +32,7 @@
                             @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
                         </td>
                         <td class="leaveTimeColumn">
-                            @Html.EditorFor(m => m.TimeRecords[i].WorkHours, new { htmlAttributes = new { @class = "leavetime form-control", @type="number", @step="0.5", @min = 0, @max = 7.5 } })
+                            @Html.EditorFor(m => m.TimeRecords[i].WorkHours, new { htmlAttributes = new { @class = "worktime form-control", @type="number", @step="0.5", @min = 0, @max = 7.5 } })
                             @Html.ValidationMessageFor(m => m.TimeRecords[i].WorkHours, "", new { @class = "text-danger" })
                         </td>
                     </tr>

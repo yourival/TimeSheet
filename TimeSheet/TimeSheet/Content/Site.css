@@ -219,6 +219,11 @@ form p {
     font-weight:bold;
 }
 
+.textStyleAfter .excess {
+    color: #a94442;
+    font-weight: bold;
+}
+
 .textStyleBefore,
 .textStyleAfter {
     color:black;
@@ -226,6 +231,10 @@ form p {
 
 .totalApplication {
     text-align:left;
+}
+
+#total {
+    color: black;
 }
 
 
@@ -242,12 +251,6 @@ form p {
 
 .nav > li > a {
     color: #808B96;
-}
-
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover,
-.nav-tabs > li.active > a:focus {
-    /*background-color: #808B96;*/
 }
 
 .tab-content {
@@ -703,8 +706,9 @@ form p {
         display: none;
     }
 
-    span .highlight {
-        color:red;
+    /*alert*/
+    .alert {
+        text-align: left;
     }
 }
 
