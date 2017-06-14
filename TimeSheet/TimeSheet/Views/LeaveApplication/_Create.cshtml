@@ -12,12 +12,8 @@
 
 <body>
     <div align="center" class="leaveDetail">
-        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#leaveDetail">
-        <span class="glyphicon glyphicon-chevron-down"></span>
-            Click for Application Detail
-        </button>
-        <div id="leaveDetail" class="collapse">
-            <table class="table table-fill table-responsive">
+        <div id="leaveDetail" class="collapse row">
+            <table class="table table-responsive">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <tr>
                     <th>Date</th>
@@ -51,7 +47,7 @@
                     </tr>
                 }
             </table>
-            <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
+            
         </div>
     </div>
 </body>

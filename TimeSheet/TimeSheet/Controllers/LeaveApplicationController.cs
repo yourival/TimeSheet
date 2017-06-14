@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace TimeSheet.Controllers
 {
+    [Authorize]
     public class LeaveApplicationController : Controller
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
@@ -23,17 +24,9 @@ namespace TimeSheet.Controllers
             return View();
         }
 
-        // GET: LeaveApplication/Details/5
-        public ActionResult Details(int id)
+        // GET: LeaveApplication/_Leave
+        public ActionResult Leave()
         {
-            return View(contextDb.LeaveApplications);
-        }
-
-        // GET: LeaveApplication/Create
-        [Authorize]
-        public ActionResult Create()
-        {
-            // Fetch Available Leaves in DB
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
             //get manager droplist
@@ -46,12 +39,24 @@ namespace TimeSheet.Controllers
             }
             applicationVM.LeaveRecords = leaveRecords;
 
-            return View(applicationVM);
+            return PartialView(@"~/Views/LeaveApplication/_Leave.cshtml", applicationVM);
         }
 
-        // POST: LeaveApplication/Create
+        // GET: LeaveApplication/_Casual
+        public ActionResult Casual()
+        {
+            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
+            List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            //get manager droplist
+            ViewBag.Manager = AdminController.GetManagerItems();
+            applicationVM.LeaveRecords = leaveRecords;
+
+            return PartialView(@"~/Views/LeaveApplication/_Casual.cshtml", applicationVM);
+        }
+
+        // POST: LeaveApplication/_Leave
         [HttpPost]
-        public ActionResult Create(LeaveApplicationViewModel applicationVM)
+        public async Task<ActionResult> Index(LeaveApplicationViewModel applicationVM)
         {
             if (!ModelState.IsValid)
             {
@@ -77,6 +82,10 @@ namespace TimeSheet.Controllers
 
                 foreach(var r in applicationVM.TimeRecords)
                 {
+                    // Configure time record if it's not a full day off
+                    if(r.LeaveTime != 7.5)
+                        r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
+
                     // Sum up total leave time
                     applicationVM.LeaveApplication.TotalLeaveTime += r.LeaveTime;
 
@@ -86,7 +95,7 @@ namespace TimeSheet.Controllers
                                                  a.UserID == r.UserID
                                          select a).FirstOrDefault();
 
-                    // Update if exists, Add if not
+                    // Update TimeRecord if exists, Add if not
                     if (timeRecord == null)
                     {
                         contextDb.TimeRecords.Add(r);
@@ -102,7 +111,7 @@ namespace TimeSheet.Controllers
                     contextDb.SaveChanges();
                 }
 
-                // Update if exists, Add if not
+                // Update LeaveApplication if exists, add if not
                 if (application == null)
                 {
                     applicationVM.LeaveApplication.status = _status.submited;
@@ -113,6 +122,7 @@ namespace TimeSheet.Controllers
                     application.status = _status.modified;
                     application.leaveType = applicationVM.LeaveApplication.leaveType;
                     application.ManagerID = applicationVM.LeaveApplication.ManagerID;
+                    application.Comment = applicationVM.LeaveApplication.Comment;
                     application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
                     contextDb.Entry(application).State = EntityState.Modified;
                 }
@@ -155,7 +165,7 @@ namespace TimeSheet.Controllers
                 Debug.WriteLine(e.Message);
                 Debug.WriteLine(e.StackTrace);
             }
-            return RedirectToAction("Create");
+            return RedirectToAction("Index");
         }
 
         // GET: LeaveApplication/CreateLeaveForm
@@ -170,27 +180,22 @@ namespace TimeSheet.Controllers
             {
                 // Fetch each timerecord in DB if it exists
                 DateTime currentDate = start.AddDays(i);
-                var newTimeRecord = (from r in contextDb.TimeRecords
-                                            where DbFunctions.TruncateTime(r.RecordDate) == currentDate.Date &&
-                                                  r.UserID == User.Identity.Name
-                                            select r).FirstOrDefault();
-                if (newTimeRecord == null)
-                {
-                    newTimeRecord = new TimeRecord(currentDate.Date);
+                var newTimeRecord = new TimeRecord(currentDate.Date);
+                newTimeRecord.SetAttendence(null, null, 0);
                     newTimeRecord.UserID = User.Identity.Name;
                     newTimeRecord.LeaveType = leaveType;
+                newTimeRecord.LeaveTime = 7.5;
+                newTimeRecord.WorkHours = 0;
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
-                }
                 if (!newTimeRecord.IsHoliday)
                 newTimeRecords.Add(newTimeRecord);
             }
             applicationVM.TimeRecords = newTimeRecords;
 
             if (applicationVM.TimeRecords.Count == 0)
-                return Content("No working days found.");
+                return Content("No working days were found.");
 
             return PartialView(@"~/Views/LeaveApplication/_Create.cshtml", applicationVM);
-        }
+        } 
     }
 }

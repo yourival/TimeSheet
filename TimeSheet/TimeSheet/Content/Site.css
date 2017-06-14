@@ -1,7 +1,7 @@
 ﻿@import url(https://fonts.googleapis.com/css?family=Lato:400,900);
 
 * {
-    font-family:"Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
+    font-family: "Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
 }
 
 /*make sure navbar doesn't go beyonod main picture*/
@@ -13,9 +13,7 @@
     max-width: 1000px;
 }
 
-.table {
-    width: auto;
-}
+
 
 /*footer style*/
 .footer {
@@ -57,51 +55,46 @@
 .leaveDetail .btn-default:active:focus,
 .leaveDetail .btn-default.active,
 .leaveDetail .btn-default.active:hover,
-.leaveDetail .btn-default.active:focus
- {
+.leaveDetail .btn-default.active:focus {
     outline: none;
     color: white;
     background-color: #264D78;
     border-color: white;
     border: none;
     transition: top 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
+    border-radius:2px;
 }
 
 .leaveDetail .btn-default:hover,
-.leaveDetail .btn-default:active
-{
+.leaveDetail .btn-default:active {
     color: white;
 }
 
-.leaveDetail .btn-default span
-{
+.leaveDetail .btn-default span {
     transition: transform 0.3s;
 }
 
-.leaveDetail .btn-default.active span 
-{
+.leaveDetail .btn-default.active span {
     transform: rotate(180deg);
 }
 
 .leaveDetail .btn:hover,
 .leaveDetail .btn:active:focus,
 .leaveDetail .btn.active,
-.leaveDetail .btn-default.active:focus
- {
+.leaveDetail .btn-default.active:focus {
     outline: none;
     outline-offset: 5px;
     background-color: #a7a7a7;
 }
 
 .leaveDetail .btn:hover,
-.leaveDetail .btn:focus 
-{
+.leaveDetail .btn:focus {
     color: white;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 /*leave balance button color animation end*/
 
-/*leave balance table style change start*/
+/*table template start*/
 .table-fill {
     margin-top: 2em;
     border-color: blue;
@@ -115,10 +108,10 @@
 }
 
 .table-fill th {
-    color: #D5DDE5;
-    background: #1b1e24;
+    color: #fff;
+    background: black;
     border-bottom: 2px solid #9ea7af;
-    border-right: 1px solid #343a45;
+    border-right: 1px solid #fff;
     text-align: center;
     font-size: 1em;
     font-weight: 200;
@@ -138,11 +131,11 @@
 
 .table-fill tr td {
     background: #FFFFFF;
+    color: black;
     padding: 0.8em;
     text-align: center;
-    vertical-align: middle;
-    font-weight: 200;
     font-size: 1.1em;
+    font-weight: 300;
     text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #C1C3D1;
 }
@@ -150,34 +143,102 @@
 .table-fill td:last-child {
     border-right: 0px;
 }
-/*leave balance table style change end*/
+/*table template change end*/
 
-
-/*leave application table style start*/
-.applicationTable h3 {
-    font-family:"Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
-    font-weight: 200;
+/*leave application page start*/
+.hrForm-bk {
+    margin-top: 1.5em;
+    display: block;
+    padding: 0.5em;
+    width: 70%;
 }
 
-.applicationTable .table-fill td {
-    text-align: left;
+.hrForm-content {
+    padding: 1em;
+    margin-bottom: 4em;
+    border-radius: 2px;
+    border:1px solid lightgray;
 }
 
-.applicationTable .table-fill td:last-child,
-#leaveDetail .table-fill td:last-child {
-    border-right: 1px solid #DDDDDD;
-    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.1);
+.hrForm-content h3 {
+    color: black;
+    border-bottom: 1px solid #CFD8DC;
 }
 
-#leaveDetail .table-fill td {
+.hrForm-content label {
+    color: black;
     font-size: 1em;
-    vertical-align: middle;
+    text-align:right;
+    padding-top:3px;
 }
 
-#leaveDetail .table-fill td {
-    border-left: 1px solid #DDDDDD;
+.hrForm-content hr {
+    width:80%;
+    border-color: lightgray;
 }
-/*leave application table style end*/
+
+.hrForm-content table {
+    color: black;
+}
+
+
+.hrForm-content table th {
+    background-color: #d9edf7;
+    color:#31708f;
+}
+
+
+.form-control {
+    border-radius:2px;
+}
+
+form p {
+    color:black;
+    font-size:1em;
+    color:dimgray;
+}
+
+form span {
+    color: #1F618D;
+}
+
+.button-group {
+    display:block;
+    margin-top:50px;
+}
+
+/*leave application page end*/
+
+/*leave balance style*/
+.lefthours {
+    border-bottom: 1px solid #808B96;
+}
+
+/*tab setting start*/
+#tabs .nav-tabs > li > a {
+    border-radius: 4px 4px 0 0;
+}
+
+#tabs .tab-content {
+    color: white;
+    /*background-color: #808B96;*/
+    padding: 5px 15px;
+}
+
+.nav > li > a {
+    color: #808B96;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+    /*background-color: #808B96;*/
+}
+
+.tab-content {
+    border-radius: 2px;
+}
+/*tab setting end*/
 
 
 /*time sheet detain holiday indication*/
@@ -250,12 +311,12 @@
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-}
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
 .modal-header {
     padding: 2px 16px;
@@ -269,62 +330,67 @@
 /*modal style on timesheet page end*/
 
 /*admin page square setting start*/
-.square1,.square2,.square3,.square4,.square5 {
-    padding:0.5em;
-    margin:1.5em;
-    width:10em;
-    height:10em;
-    float:none;
+.square1, .square2, .square3, .square4, .square5 {
+    padding: 0.5em;
+    margin: 1.5em;
+    width: 10em;
+    height: 10em;
+    float: none;
     display: inline-block;
-    padding-top:50px;
+    padding-top: 50px;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-.AdminBox a{
-    font-size:0.9em;
-    color:white;
+.AdminBox a {
+    font-size: 0.9em;
+    color: white;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-    font-family:"Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
-    text-transform:uppercase;
+    font-family: "Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
+    text-transform: uppercase;
 }
 
 .square1 {
-    background-color:#1A5276;
+    background-color: #1A5276;
 }
+
 .square1:hover {
-    background-color:#7FB3D5;
+    background-color: #7FB3D5;
 }
 
 
 .square2 {
-    background-color:#1F618D;
+    background-color: #1F618D;
 }
+
 .square2:hover {
-    background-color:#7FB3D5;
+    background-color: #7FB3D5;
 }
 
 
 .square3 {
-    background-color:#2471A3;
+    background-color: #2471A3;
 }
+
 .square3:hover {
-    background-color:#7FB3D5;
+    background-color: #7FB3D5;
 }
 
 
 .square4 {
-    background-color:#1F618D;
+    background-color: #1F618D;
 }
+
 .square4:hover {
-    background-color:#7FB3D5;
+    background-color: #7FB3D5;
 }
 
 
 .square5 {
-    background-color:#1A5276;
+    background-color: #1A5276;
 }
+
 .square5:hover {
-    background-color:#7FB3D5;
+    background-color: #7FB3D5;
 }
 /*admin page square setting end*/
 
@@ -332,28 +398,28 @@
 .searchform {
     border: 1px solid #d3d3d3;
     padding: 2px 5px;
-    width:17em;
-    height:2.3em;
-    box-shadow:0 2px 2px rgba(0,0,0,.37);
+    width: 17em;
+    height: 2.3em;
+    box-shadow: 0 2px 2px rgba(0,0,0,.37);
     border-radius: 10px;
 }
 
 .searchform .userID {
-	float: left;
+    float: left;
     border-radius: 9px;
 }
 
 .searchform .searchbutton {
     float: right;
-    color:white;
-    font-size:1em;
-    padding:2px;
-    background-color:#1F618D;
+    color: white;
+    font-size: 1em;
+    padding: 2px;
+    background-color: #1F618D;
 }
 
 /*emal setting column width setting*/
 .emailSetting td {
-    width:500px;
+    width: 500px;
 }
 
 
@@ -424,8 +490,6 @@
     .glyphicon-list-alt {
         font-size: 3em;
     }
-
-
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -525,14 +589,14 @@
         display: inline;
     }
 
-    .nav > li > a {
-        display: inline;
-    }
+        .nav > li > a {
+            display: inline;
+        }
 
     /*email setting column width*/
     .emailSetting td {
-    width:auto;
-}
+        width: auto;
+    }
 
     /*body*/
     .glyphicon-edit {
@@ -553,44 +617,14 @@
 
     /*small table responsive attribute*/
     .table-responsive {
-    border: 1px solid #ffffff;
+        border: 1px solid #ffffff;
     }
 
-    /*leave application selector table*/
-    /*leave application table*/
-    /* Force table to not be like tables anymore */
-    .nomoretable table, 
-    .nomoretable thead,
-    .nomoretable tbody,
-    .nomoretable th,
-    .nomoretable td,
-    .nomoretable tr {
-        display: block;
-    }
 
-    /* Hide table headers (but not display: none;, for accessibility) */
-    .nomoretable thead tr { 
-        position:absolute;
-		top: -9999px;
-		left: -9999px;
-	}
-
-    .nomoretable tr { 
-        border: 1px solid #ccc; 
-    }
-
-    .nomoretable td:nth-of-type(1):before {content:"Start Time"}
-    .nomoretable td:nth-of-type(2):before {content:"End Time";}
-    .nomoretable td:nth-of-type(3):before {content:"Leave Type";}
-    .nomoretable td:nth-of-type(4):before {content:"Manager";}
-
-    .leaveTimeColumn input {
-        width:5em;
-    }
 
     /*time sheet responsive*/
     .hidetr {
-        display:none;
+        display: none;
     }
 
     .nomoresheet table,
@@ -598,34 +632,55 @@
     .nomoresheet th,
     .nomoresheet td {
         display: block;
-        border:1px solid lightgray;
+        border: 1px solid lightgray;
     }
 
     .nomoresheet thead {
-        display:none;
+        display: none;
     }
 
-    .nomoresheet td:nth-of-type(1):before {content:"Start Time";}
-    .nomoresheet td:nth-of-type(2):before {content:"Lunch Break";}
-    .nomoresheet td:nth-of-type(3):before {content:"End Time";}
-    .nomoresheet td:nth-of-type(4):before {content:"Working Hours"; margin-right:0.5em;}
-    .nomoresheet td:nth-of-type(5):before {content:"Flexi";}
-    .nomoresheet td:nth-of-type(6):before {content:"Leave Time";}
-    .nomoresheet td:nth-of-type(7):before {content:"Type";}
-    
+    .nomoresheet td:nth-of-type(1):before {
+        content: "Start Time";
+    }
+
+    .nomoresheet td:nth-of-type(2):before {
+        content: "Lunch Break";
+    }
+
+    .nomoresheet td:nth-of-type(3):before {
+        content: "End Time";
+    }
+
+    .nomoresheet td:nth-of-type(4):before {
+        content: "Working Hours";
+        margin-right: 0.5em;
+    }
+
+    .nomoresheet td:nth-of-type(5):before {
+        content: "Flexi";
+    }
+
+    .nomoresheet td:nth-of-type(6):before {
+        content: "Leave Time";
+    }
+
+    .nomoresheet td:nth-of-type(7):before {
+        content: "Type";
+    }
+
 
 
     .nomoresheet input[type=checkbox] {
-        width:3em;
+        width: 3em;
     }
 
     .nomoresheet td::before {
-        padding-top:0.3em;
-        float:left;
+        padding-top: 0.3em;
+        float: left;
     }
 
     .nomoresheet td:last-child {
-        border-right:1px solid lightgray;
+        border-right: 1px solid lightgray;
     }
 
 
@@ -636,9 +691,6 @@
     /*footer*/
 
     .footer .dropup {
-        display:none;
+        display: none;
     }
-
 }
-
-

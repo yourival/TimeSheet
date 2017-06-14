@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "HR Application";
+    string[] LeaveNames = { "Sick Leaves", "Flexi Leaves", "Annual Leaves" };
+}
+
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+
+<body>
+    <div class="container">
+        <div id="tabs">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#leave" data-toggle="tab">Leave Application</a>
+                </li>
+                <li>
+                    <a href="#casual" data-toggle="tab">Casual Submission</a>
+                </li>
+            </ul>
+            <div class="tab-content clearfix">
+                <div id="leave" class="hrForm-bk tab-pane active" align="center">
+                    @Html.Action("Leave", "LeaveApplication")
+                </div>
+                <div id="casual" class="hrForm-bk tab-pane" align="center">
+                    @Html.Action("Casual", "LeaveApplication")
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

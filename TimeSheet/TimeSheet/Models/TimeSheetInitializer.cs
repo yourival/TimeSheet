@@ -35,7 +35,14 @@ namespace TimeSheet.Models
                     newTimeRecord.UserID = "r.lin@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)(i % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
+                    if (newTimeRecord.IsHoliday && newTimeRecord.LeaveType == _leaveType.none)
+                    {
+                        newTimeRecord.LeaveTime = 7.5;
+                        newTimeRecord.SetAttendence(null, null, 0);
+                    }
+                    else
+                        newTimeRecord.LeaveTime = 0;
+
                     timeRecords.Add(newTimeRecord);
                 }
             }
@@ -58,7 +65,13 @@ namespace TimeSheet.Models
                     newTimeRecord.UserID = "y.ben@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)((i + 1) % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
+                    if (newTimeRecord.IsHoliday && newTimeRecord.LeaveType == _leaveType.none)
+                    {
+                        newTimeRecord.LeaveTime = 7.5;
+                        newTimeRecord.SetAttendence(null, null, 0);
+                    }
+                    else
+                        newTimeRecord.LeaveTime = 0;
                     timeRecords.Add(newTimeRecord);
                 }
             }
@@ -82,7 +95,13 @@ namespace TimeSheet.Models
                     newTimeRecord.UserID = "d.yang@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)((i + 1) % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
+                    if (newTimeRecord.IsHoliday && newTimeRecord.LeaveType == _leaveType.none)
+                    {
+                        newTimeRecord.LeaveTime = 7.5;
+                        newTimeRecord.SetAttendence(null, null, 0);
+                    }
+                    else
+                        newTimeRecord.LeaveTime = 0;
                     timeRecords.Add(newTimeRecord);
                 }
             }

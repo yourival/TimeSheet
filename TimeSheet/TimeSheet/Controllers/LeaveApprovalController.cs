@@ -59,7 +59,7 @@ namespace TimeSheet.Controllers
                                                 select r).ToList();
                     records.ForEach(r => approvalVM.TakenLeaves.Add(r));
                 }
-                approvalVM.TakenLeaves.Sort((x, y) => x.StartTime.CompareTo(y.StartTime));
+                approvalVM.TakenLeaves.Sort((x, y) => x.RecordDate.CompareTo(y.RecordDate));
                 approvalVM.UserApplicationVM = applicationVM;
 
                 return View(approvalVM);
