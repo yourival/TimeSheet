@@ -128,24 +128,27 @@ namespace TimeSheet.Controllers
                 }
                 contextDb.SaveChanges();
                 
-                // Update user leaves data in Db after submitting
-                for (int i = 1; i < 4; i++)
+                // Update user leaves data in Db after submitting if it's leave application
+                if(applicationVM.LeaveApplication.leaveType != _leaveType.none)
                 {
-                    var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
-                    if (leaveRecord == null)
+                    for (int i = 1; i < 4; i++)
                     {
-                        leaveRecord = new LeaveRecord();
-                        leaveRecord.LeaveType = (_leaveType)i;
-                        leaveRecord.UserID = User.Identity.Name;
-                        leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                        contextDb.LeaveRecords.Add(leaveRecord);
+                        var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
+                        if (leaveRecord == null)
+                        {
+                            leaveRecord = new LeaveRecord();
+                            leaveRecord.LeaveType = (_leaveType)i;
+                            leaveRecord.UserID = User.Identity.Name;
+                            leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
+                            contextDb.LeaveRecords.Add(leaveRecord);
+                        }
+                        else
+                        {
+                            leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
+                            contextDb.Entry(leaveRecord).State = EntityState.Modified;
+                        }
+                        contextDb.SaveChanges();
                     }
-                    else
-                    {
-                        leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                        contextDb.Entry(leaveRecord).State = EntityState.Modified;
-                    }
-                    contextDb.SaveChanges();
                 }
 
                 // Send an email to manager

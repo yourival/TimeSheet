@@ -97,7 +97,7 @@
                     <div class="col-sm-offset-1 col-sm-2"></div>
                     <div id="leave-form" class="col-sm-8"></div>
                 </div>
-                <hr/>
+                <hr />
                 <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
                         <label>Balance After (hrs):&nbsp;</label>
@@ -120,7 +120,7 @@
                 <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
                             <label>Total:</label>
-                            <span id="total"></span>
+                            <span class="total" id="leave-total"></span>
                     </div>
                 </div>
                 <div class="button-group">
@@ -155,16 +155,14 @@
             //Enable jquery validation
             $.validator.unobtrusive.parse("#leave-form");
 
-            // When there is any change on detail leave time
-            $(".leavetime").on("change", function () {
+            // When there is any change on detail of leave time
+            $(".leavetime, .leavetype").on("change", function () {
                 sumLeavesByType();
-                var total = sumTotalHours();
-                $("#total").text(total + " (" + total / 7.5 + " days)");
+                sumTotalLeaveHours();
             });
 
             sumLeavesByType();
-            var total = sumTotalHours();
-            $("#total").text(total + " (" + total / 7.5 + " day" + ((total / 7.5 > 1)?"s":"") + ")");
+            sumTotalLeaveHours();
         });
     }
 
@@ -188,10 +186,12 @@
             lefthoursBefore.push($(this).text());
         });
 
+        // Subtract each time in detail
         for (var i = 0; i < length; i++) {
             lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
         }
 
+        // Display summary and change style according to content
         $(".textStyleAfter").children(".lefthours").each(function (i) {
             $(this).text(lefthours[i]);
             if (lefthours[i] == lefthoursBefore[i]) {
@@ -204,12 +204,12 @@
         });
     }
 
-    function sumTotalHours() {
+    function sumTotalLeaveHours() {
         var total = 0;
         $(".leavetime").each(function (i) {
             total += parseFloat($(this).val());
         });
-        return total;
+        $("#leave-total").text(total + " (" + total / 7.5 + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
     }
 
     $(document).ready(function () {
@@ -234,21 +234,26 @@
         });
 
         // When the form is submitted
-        $("form").submit(function (e) {
+        $("#lform").submit(function (e) {
             // Test if applied leave times excess available leave balance
+            var isValid = true;
             $(".textStyleAfter").children(".lefthours").each(function (i) {
                 if ($(this).text() < 0) {
-                    $("#alert").attr('class', "alert alert-danger");
-                    $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
-                        "Your leaves application excesses your leave balance.  " +
-                        "<br>Please change them up and try submitting again");
-                    e.preventDefault(e);
-                    return false;
+                    isValid = false;
                 }
             });
-            
-            //$("#alert").attr('class', "alert alert-success");
-            //$("#alert").text("Successfully submitted" + msg);            
+
+            if (isValid) {
+                $("#alert").attr('class', "alert alert-success");
+                $("#alert").text("Successfully submitted"); 
+            } else {
+                $("#alert").attr('class', "alert alert-danger");
+                $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
+                    "Your leaves application excesses your leave balance.");
+                e.preventDefault(e);
+                return false;
+            }
+                       
         });
     });
 </script>

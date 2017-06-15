@@ -1,14 +1,9 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
-
-<head>
-    @Styles.Render("~/Content/css")
-</head>
-
 <br />
 
 <body>
     <div align="center" class="leaveDetail">
-        <div id="CasualDetail" class="collapse row">
+        <div id="CasualDetail" class="collapse in row">
             <table class="table table-responsive">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <tr>

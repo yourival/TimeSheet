@@ -6,24 +6,19 @@
     ViewBag.Title = "ADManagement";
 }
 
-<head>
-    @Styles.Render("~/Content/css")
-</head>
-
-
 <br />
 <h3 align="center">Active Directory Management</h3>
 
 <div class="container">
     <div class="row AdminBox" style="text-align:center">
-        <div class="col-md-2 square1">
-            @Html.ActionLink("User", "User", "ADManagement")
+        <div class="col-md-2 square1" onclick="location.href='@Url.Action("User", "ADManagement")'">
+            <span>User</span>
         </div>
-        <div class="col-md-2 square2">
-            @Html.ActionLink("Group", "Group", "ADManagement")
+        <div class="col-md-2 square2" onclick="location.href='@Url.Action("Group", "ADManagement")'">
+            <span>Group</span>
         </div>
-        <div class="col-md-2 square3">
-            @Html.ActionLink("Role", "Role", "ADManagement")
+        <div class="col-md-2 square3" onclick="location.href='@Url.Action("Role", "ADManagement")'">
+            <span>Role</span>
         </div>
     </div>
 </div>

@@ -51,9 +51,9 @@
                 </div>
                 <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
-                        <a href="#CasualDetail" data-toggle="collapse">
+                        <a href="#CasualDetail" id="toggle-details" data-toggle="collapse">
                             <p>
-                                Click here if you want to edit details
+                                Click here if you want to hide details
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </p>
                         </a>
@@ -65,7 +65,13 @@
                     <div id="casual-form" class="col-sm-8"></div>
 
                 </div>
-
+                <hr />
+                <div class="row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <label>Total:</label>
+                        <span class="total" id="worktime-total"></span>
+                    </div>
+                </div>
                 <div class="button-group">
                     <input type="submit" value="Submit" class="btn btn-primary" />
                 </div>
@@ -92,24 +98,35 @@
             type: "GET",
             data: { start: start, end: end, leaveType: 0 }
         })
-        .done(function (partialViewResult) {
+            .done(function (partialViewResult) {
+            //Render partial view
             $("#casual-form").html(partialViewResult);
-
-            // Enable submit button
-            $("#submit-btn").prop("disabled", false);
 
             //Enable jquery validation
             $.validator.unobtrusive.parse("#casual-form");
 
+            // When there is any change on detail of leave time
+            $(".worktime").on("change", function () {
+                sumTotalWorkHours();
+            });
+            sumTotalWorkHours();
+
         });
+    }
+
+    function sumTotalWorkHours() {
+        var total = 0;
+        $(".worktime").each(function (i) {
+            total += parseFloat($(this).val());
+        });
+        $("#worktime-total").text(total + " (" + (total / 7.5).toFixed(2) + " days)");
     }
 
     $(document).ready(function () {
         //var fullDate = new Date();
-
         $("#casual-start").val(getFormattedDate(new Date()));
         $("#casual-end").val(getFormattedDate(new Date()));
-        renderCasualForm();
+        renderCasualForm();       
 
         // When there is any change on dates
         $("#casual-start").on("change", function () {
