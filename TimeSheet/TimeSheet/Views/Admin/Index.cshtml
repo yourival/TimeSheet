@@ -6,33 +6,28 @@
     ViewBag.Title = "Amin";
 }
 
-<head>
-    @Styles.Render("~/Content/css")
-</head>
-
-
-    <br />
-    <h3 align="center">ADMINISTATOR SETTINGS</h3>
+<br />
+<h3 align="center">ADMINISTATOR SETTINGS</h3>
     
-    <div class="container">
-        <div class="row AdminBox" style="text-align:center">
-            <div class="col-md-2 square1">
-                @Html.ActionLink("Public Holiday", "Holidays", "Admin")
-            </div>
-            <div class="col-md-2 square2">
-                @Html.ActionLink("User Leaves", "UserLeaves", "Admin")
-            </div>
-            <div class="col-md-2 square3">
-                @Html.ActionLink("Leave Approval", "Approval", "LeaveApproval")
-            </div>
-            <div class="col-md-2 square4">
-                @Html.ActionLink("Email Setting", "EmailSetting", "Admin")
-            </div>
-            <div class="col-md-2  square5">
-                @Html.ActionLink("Manager Setting", "ManagerSetting", "Admin")
-            </div>
+<div class="container">
+    <div class="row AdminBox" style="text-align:center">
+        <div class="col-md-2 square1" onclick="location.href='@Url.Action("Holidays", "Admin")'">
+            <span>Public<br />Holiday</span>
+        </div>
+        <div class="col-md-2 square2" onclick="location.href='@Url.Action("UserLeaves", "Admin")'">
+            <span>User<br />Leaves</span>
+        </div>
+        <div class="col-md-2 square3" onclick="location.href='@Url.Action("Approval", "LeaveApproval")'">
+            <span>Leave<br />Approval</span>
+        </div>
+        <div class="col-md-2 square2" onclick="location.href='@Url.Action("EmailSetting", "Admin")'">
+            <span>Email<br />Setting</span>
+        </div>
+        <div class="col-md-2  square1" onclick="location.href='@Url.Action("ManagerSetting", "Admin")'">
+            <span>Manager<br />Setting</span>
         </div>
     </div>
+</div>
 
 
 

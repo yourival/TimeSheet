@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
 using TimeSheet.Models;
+using System.Threading.Tasks;
 
 namespace TimeSheet.Controllers
 {
@@ -81,9 +82,10 @@ namespace TimeSheet.Controllers
             return formList;
         }
 
-        public ActionResult ApprovalDetail (int id)
+        public ActionResult ApprovalDetail (string id)
         {
-            TimeRecordForm form = contextDb.TimeRecordForms.Find(id);
+            int formID = Convert.ToInt32(id);
+            TimeRecordForm form = contextDb.TimeRecordForms.Find(formID);
             if (form != null)
             {
                 ViewBag.PeriodYear = string.Format("{0}/{1}", form.Period, form.Year);
@@ -115,6 +117,7 @@ namespace TimeSheet.Controllers
                     form.FormStatus = TimeRecordForm._formstatus.rejected;
                 contextDb.Entry(form).State = EntityState.Modified;
                 contextDb.SaveChanges();
+                Task.Run(() => EmailSetting.SendEmail(form.UserID, string.Empty, "TimesheetApproval",id));
                 return RedirectToAction("ApprovalDetail", new { id = formID });
             }
             else

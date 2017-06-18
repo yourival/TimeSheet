@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -115,8 +113,9 @@ namespace TimeSheet.Controllers
                     TimeRecord r = new TimeRecord(date);
                     r.UserID = User.Identity.Name;
                     PayPeriod.SetPublicHoliday(r);
+                    if (r.IsHoliday)
+                        r.SetAttendence(null, null, 0);
                     model.TimeRecords.Add(r);
-                    Debug.WriteLine(r.GetWorkHours());
                 }
                 else
                 {
@@ -140,8 +139,6 @@ namespace TimeSheet.Controllers
                         for (int i = 0; i < model.TimeRecords.Count; i++)
                         {
                             timesheetDb.TimeRecords.Add(model.TimeRecords[i]);
-                            Debug.WriteLine(model.TimeRecords[i].StartTime);
-                            Debug.WriteLine(model.TimeRecords[i].UserID);
                         }
                         model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
                         model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
@@ -192,7 +189,7 @@ namespace TimeSheet.Controllers
             }  
         }
 
-        public async Task<ActionResult> SendEmail(FormCollection form)
+        public ActionResult SendEmail(FormCollection form)
         {
             string managerID = form["manager"].ToString();
             int year = Convert.ToInt32(form["year"].ToString());
@@ -209,7 +206,6 @@ namespace TimeSheet.Controllers
             }
             else
             {
-                string Link = "www.nantien.com/Timesheet/ReceiveEmail/message?=" + formModel.TimeRecordFormID;
                 formModel.ManagerID = managerID;
                 formModel.SumbitStatus = TimeRecordForm._sumbitstatus.submitted;
                 formModel.SubmitTime = DateTime.Now;
@@ -217,31 +213,9 @@ namespace TimeSheet.Controllers
                 timesheetDb.Entry(formModel).State = EntityState.Modified;
                 timesheetDb.SaveChanges();
 
-                EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
-                if (ModelState.IsValid)
-                {
-                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='http://www.google.com'>{1}</a>";
-                    var message = new MailMessage();
-                    message.To.Add(new MailAddress(managerID));
-                    message.From = new MailAddress(model.FromEmail);
-                    message.Subject = model.Subject;
-                    message.Body = string.Format(body, model.Message, Link);
-                    message.IsBodyHtml = true;
+                //do not wait for the async task to complete
+                Task.Run(() => EmailSetting.SendEmail(managerID,string.Empty, "TimesheetApplication", formModel.TimeRecordFormID.ToString()));
 
-                    using (var smtp = new SmtpClient())
-                    {
-                        var credential = new NetworkCredential
-                        {
-                            UserName = model.FromEmail,
-                            Password = model.Password
-                        };
-                        smtp.Credentials = credential;
-                        smtp.Host = model.SMTPHost;
-                        smtp.Port = model.SMTPPort;
-                        smtp.EnableSsl = model.EnableSsl;
-                        //await smtp.SendMailAsync(message);
-                    }
-                }
                 return RedirectToAction("Index", new { message = 2});
             }
         }
@@ -253,7 +227,7 @@ namespace TimeSheet.Controllers
             DateTime current = DateTime.Now.Date;
             for(int i=0;i<=Convert.ToInt32((current - model.TimeRecords[0].RecordDate).TotalDays); i++)
             {
-                workingHours += model.TimeRecords[i].GetWorkHours();
+                workingHours += model.TimeRecords[i].WorkHours;
             }
             return workingHours;
         }

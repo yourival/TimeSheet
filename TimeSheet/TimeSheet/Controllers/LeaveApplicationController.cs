@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace TimeSheet.Controllers
 {
+    [Authorize]
     public class LeaveApplicationController : Controller
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
@@ -23,17 +24,9 @@ namespace TimeSheet.Controllers
             return View();
         }
 
-        // GET: LeaveApplication/Details/5
-        public ActionResult Details(int id)
+        // GET: LeaveApplication/_Leave
+        public ActionResult Leave()
         {
-            return View(contextDb.LeaveApplications);
-        }
-
-        // GET: LeaveApplication/Create
-        [Authorize]
-        public ActionResult Create()
-        {
-            // Fetch Available Leaves in DB
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
             //get manager droplist
@@ -46,12 +39,24 @@ namespace TimeSheet.Controllers
             }
             applicationVM.LeaveRecords = leaveRecords;
 
-            return View(applicationVM);
+            return PartialView(@"~/Views/LeaveApplication/_Leave.cshtml", applicationVM);
         }
 
-        // POST: LeaveApplication/Create
+        // GET: LeaveApplication/_Casual
+        public ActionResult Casual()
+        {
+            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
+            List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            //get manager droplist
+            ViewBag.Manager = AdminController.GetManagerItems();
+            applicationVM.LeaveRecords = leaveRecords;
+
+            return PartialView(@"~/Views/LeaveApplication/_Casual.cshtml", applicationVM);
+        }
+
+        // POST: LeaveApplication/_Leave
         [HttpPost]
-        public async Task<ActionResult> Create(LeaveApplicationViewModel applicationVM)
+        public async Task<ActionResult> Index(LeaveApplicationViewModel applicationVM)
         {
             if (!ModelState.IsValid)
             {
@@ -77,8 +82,12 @@ namespace TimeSheet.Controllers
 
                 foreach(var r in applicationVM.TimeRecords)
                 {
+                    // Configure time record if it's not a full day off
+                    if(r.LeaveTime != 7.5)
+                        r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
+
                     // Sum up total leave time
-                    applicationVM.LeaveApplication.TotalLeaveTime += r.LeaveTime;
+                    applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
 
                     // Try to fetch TimeRecord from DB if it exists
                     var timeRecord = (from a in contextDb.TimeRecords
@@ -86,7 +95,7 @@ namespace TimeSheet.Controllers
                                                  a.UserID == r.UserID
                                          select a).FirstOrDefault();
 
-                    // Update if exists, Add if not
+                    // Update TimeRecord if exists, Add if not
                     if (timeRecord == null)
                     {
                         contextDb.TimeRecords.Add(r);
@@ -102,7 +111,7 @@ namespace TimeSheet.Controllers
                     contextDb.SaveChanges();
                 }
 
-                // Update if exists, Add if not
+                // Update LeaveApplication if exists, add if not
                 if (application == null)
                 {
                     applicationVM.LeaveApplication.status = _status.submited;
@@ -113,29 +122,33 @@ namespace TimeSheet.Controllers
                     application.status = _status.modified;
                     application.leaveType = applicationVM.LeaveApplication.leaveType;
                     application.ManagerID = applicationVM.LeaveApplication.ManagerID;
-                    application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
+                    application.Comment = applicationVM.LeaveApplication.Comment;
+                    application.TotalTime = applicationVM.LeaveApplication.TotalTime;
                     contextDb.Entry(application).State = EntityState.Modified;
                 }
                 contextDb.SaveChanges();
                 
-                // Update user leaves data in Db after submitting
-                for (int i = 1; i < 4; i++)
+                // Update user leaves data in Db after submitting if it's leave application
+                if(applicationVM.LeaveApplication.leaveType != _leaveType.none)
                 {
-                    var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
-                    if (leaveRecord == null)
+                    for (int i = 1; i < 4; i++)
                     {
-                        leaveRecord = new LeaveRecord();
-                        leaveRecord.LeaveType = (_leaveType)i;
-                        leaveRecord.UserID = User.Identity.Name;
-                        leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                        contextDb.LeaveRecords.Add(leaveRecord);
+                        var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
+                        if (leaveRecord == null)
+                        {
+                            leaveRecord = new LeaveRecord();
+                            leaveRecord.LeaveType = (_leaveType)i;
+                            leaveRecord.UserID = User.Identity.Name;
+                            leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
+                            contextDb.LeaveRecords.Add(leaveRecord);
+                        }
+                        else
+                        {
+                            leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
+                            contextDb.Entry(leaveRecord).State = EntityState.Modified;
+                        }
+                        contextDb.SaveChanges();
                     }
-                    else
-                    {
-                        leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                        contextDb.Entry(leaveRecord).State = EntityState.Modified;
-                    }
-                    contextDb.SaveChanges();
                 }
 
                 // Send an email to manager
@@ -147,29 +160,7 @@ namespace TimeSheet.Controllers
 
                 if (applicationModel != null)
                 {
-                    string link = "http://localhost/Admin/Approval/ApplicationDetails/" + applicationModel.id;
-                    EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
-                    string body = "<p>Message: </p><p>{0}</p><p>Link: </p><a href='{1}'>{1}</a>";
-                    var message = new MailMessage();
-                    message.To.Add(new MailAddress(applicationModel.ManagerID));
-                    message.From = new MailAddress(model.FromEmail);
-                    message.Subject = model.Subject;
-                    message.Body = string.Format(body, model.Message, link);
-                    message.IsBodyHtml = true;
-
-                    using (var smtp = new SmtpClient())
-                    {
-                        var credential = new NetworkCredential
-                        {
-                            UserName = model.FromEmail,
-                            Password = model.Password
-                        };
-                        smtp.Credentials = credential;
-                        smtp.Host = model.SMTPHost;
-                        smtp.Port = model.SMTPPort;
-                        smtp.EnableSsl = model.EnableSsl;
-                        await smtp.SendMailAsync(message);
-                    }
+                    Task.Run(() => EmailSetting.SendEmail(applicationModel.ManagerID, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
                 }    
             }
             catch(Exception e)
@@ -177,7 +168,7 @@ namespace TimeSheet.Controllers
                 Debug.WriteLine(e.Message);
                 Debug.WriteLine(e.StackTrace);
             }
-            return RedirectToAction("Create");
+            return RedirectToAction("Index");
         }
 
         // GET: LeaveApplication/CreateLeaveForm
@@ -192,27 +183,25 @@ namespace TimeSheet.Controllers
             {
                 // Fetch each timerecord in DB if it exists
                 DateTime currentDate = start.AddDays(i);
-                var newTimeRecord = (from r in contextDb.TimeRecords
-                                            where DbFunctions.TruncateTime(r.RecordDate) == currentDate.Date &&
-                                                  r.UserID == User.Identity.Name
-                                            select r).FirstOrDefault();
-                if (newTimeRecord == null)
-                {
-                    newTimeRecord = new TimeRecord(currentDate.Date);
-                    newTimeRecord.UserID = User.Identity.Name;
-                    newTimeRecord.LeaveType = leaveType;
+                var newTimeRecord = new TimeRecord(currentDate.Date);
+                newTimeRecord.SetAttendence(null, null, 0);
+                newTimeRecord.UserID = User.Identity.Name;
+                newTimeRecord.LeaveType = leaveType;
+                newTimeRecord.LeaveTime = (leaveType == 0) ? 0 : 7.5;
+                newTimeRecord.WorkHours = 0;
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
-                }
                 if (!newTimeRecord.IsHoliday)
-                newTimeRecords.Add(newTimeRecord);
+                    newTimeRecords.Add(newTimeRecord);
             }
             applicationVM.TimeRecords = newTimeRecords;
 
             if (applicationVM.TimeRecords.Count == 0)
-                return Content("No working days found.");
+                return Content("No working days were found.");
 
-            return PartialView(@"~/Views/LeaveApplication/_Create.cshtml", applicationVM);
-        } 
+            if(leaveType == 0)
+                return PartialView(@"~/Views/LeaveApplication/_CasualList.cshtml", applicationVM);
+            else
+                return PartialView(@"~/Views/LeaveApplication/_LeaveList.cshtml", applicationVM);
+        }
     }
 }

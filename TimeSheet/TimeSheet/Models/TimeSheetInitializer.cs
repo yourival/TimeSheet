@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace TimeSheet.Models
 {
@@ -24,7 +25,7 @@ namespace TimeSheet.Models
                 newApplication.EndTime = startDate.AddDays(i * 4 + 3);
                 newApplication.leaveType = (_leaveType)(i % 4);
                 newApplication.status = (_status)(i % 4);
-                newApplication.TotalLeaveTime = 30;
+                newApplication.TotalTime = 30;
                 applications.Add(newApplication);
 
                 // TimeRecords
@@ -34,7 +35,14 @@ namespace TimeSheet.Models
                     newTimeRecord.UserID = "r.lin@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)(i % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
+                    if (newTimeRecord.IsHoliday && newTimeRecord.LeaveType == _leaveType.none)
+                    {
+                        newTimeRecord.LeaveTime = 7.5;
+                        newTimeRecord.SetAttendence(null, null, 0);
+                    }
+                    else
+                        newTimeRecord.LeaveTime = 0;
+
                     timeRecords.Add(newTimeRecord);
                 }
             }
@@ -47,7 +55,7 @@ namespace TimeSheet.Models
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i + 1) % 4);
                 newApplication.status = (_status)(i % 4 + 1);
-                newApplication.TotalLeaveTime = 22.5;
+                newApplication.TotalTime = 22.5;
                 applications.Add(newApplication);
 
                 // TimeRecords
@@ -57,7 +65,13 @@ namespace TimeSheet.Models
                     newTimeRecord.UserID = "y.ben@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)((i + 1) % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
+                    if (newTimeRecord.IsHoliday && newTimeRecord.LeaveType == _leaveType.none)
+                    {
+                        newTimeRecord.LeaveTime = 7.5;
+                        newTimeRecord.SetAttendence(null, null, 0);
+                    }
+                    else
+                        newTimeRecord.LeaveTime = 0;
                     timeRecords.Add(newTimeRecord);
                 }
             }
@@ -71,17 +85,23 @@ namespace TimeSheet.Models
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i +1) % 4);
                 newApplication.status = (_status)(i % 4 + 1);
-                newApplication.TotalLeaveTime = 22.5;
+                newApplication.TotalTime = 22.5;
                 applications.Add(newApplication);
 
                 // TimeRecords
                 for (int j = 0; j < 3; j++)
                 {
                     TimeRecord newTimeRecord = new TimeRecord(startDate.AddDays(i * 3 + j));
-                    newTimeRecord.UserID = "d.wang@m.nantien.edu.au";
+                    newTimeRecord.UserID = "d.yang@m.nantien.edu.au";
                     newTimeRecord.LeaveType = (_leaveType)((i + 1) % 4);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday ? 0 : 7.5);
+                    if (newTimeRecord.IsHoliday && newTimeRecord.LeaveType == _leaveType.none)
+                    {
+                        newTimeRecord.LeaveTime = 7.5;
+                        newTimeRecord.SetAttendence(null, null, 0);
+                    }
+                    else
+                        newTimeRecord.LeaveTime = 0;
                     timeRecords.Add(newTimeRecord);
                 }
             }
@@ -109,20 +129,8 @@ namespace TimeSheet.Models
             });
             context.SaveChanges();
 
-            // Initialise users
-            context.UserInfo.Add(new User()
-            {
-                Email = "r.lin@m.nantien.edu.au",
-                UserName = "Lin, Yichia",
-                JobCode = "102"
-            });
-            context.UserInfo.Add(new User()
-            {
-                Email = "y.ben@m.nantien.edu.au",
-                UserName = "Ben, Yanhong",
-                JobCode = "110A"
-            });
-            context.SaveChanges();
+            Task.Run(() => ADUser.GetADUser());
+
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Text;
 
+
 namespace TimeSheet.Controllers
 {
     [Authorize]
@@ -38,7 +39,7 @@ namespace TimeSheet.Controllers
             for (int i = 1; i < 4; i++)
             {
                 var leaveRecord = timesheetDb.LeaveRecords.Find(userId, (_leaveType)i);
-                if(leaveRecord == null)
+                if (leaveRecord == null)
                 {
                     leaveRecord = new LeaveRecord();
                     leaveRecord.LeaveType = (_leaveType)i;
@@ -58,11 +59,11 @@ namespace TimeSheet.Controllers
                 var leaveRecord = timesheetDb.LeaveRecords.Find(leaveRecords.First().UserID, (_leaveType)i);
                 if (leaveRecord == null)
                 {
-                    timesheetDb.LeaveRecords.Add(leaveRecords[i-1]);
+                    timesheetDb.LeaveRecords.Add(leaveRecords[i - 1]);
                 }
                 else
                 {
-                    leaveRecord.AvailableLeaveTime = leaveRecords[i-1].AvailableLeaveTime;
+                    leaveRecord.AvailableLeaveTime = leaveRecords[i - 1].AvailableLeaveTime;
                     timesheetDb.Entry(leaveRecord).State = EntityState.Modified;
                 }
                 timesheetDb.SaveChanges();
@@ -114,12 +115,6 @@ namespace TimeSheet.Controllers
         {
             EmailSetting model;
             model = adminDb.EmailSetting.ToList().FirstOrDefault();
-            if (model == null)
-            {
-                model = new EmailSetting();
-                adminDb.EmailSetting.Add(model);
-                adminDb.SaveChanges();
-            }
             return View(model);
         }
 
@@ -140,7 +135,7 @@ namespace TimeSheet.Controllers
             catch (Exception ex)
             {
                 throw ex;
-            }   
+            }
         }
 
         public ActionResult ManagerSetting()
@@ -228,7 +223,7 @@ namespace TimeSheet.Controllers
             AdminDb adminDb = new AdminDb();
             List<SelectListItem> listItems = new List<SelectListItem>();
             List<Manager> managerList = adminDb.ManagerSetting.ToList();
-            for(int i = 0; i < managerList.Count(); i++)
+            for (int i = 0; i < managerList.Count(); i++)
             {
                 if (i == 0)
                 {
@@ -268,16 +263,19 @@ namespace TimeSheet.Controllers
             ViewBag.Period = PayPeriod.GetPeriodItems(year);
             return PartialView("_SelectPeriod");
         }
-        
-        public FileContentResult TimesheetExportResult(string year, string period)
+
+        public async Task<FileContentResult> TimesheetExportResult(string year, string period)
         {
+            //update the ADUser from AD first before exporting the csv file
+            await ADUser.GetADUser();
+
             int y = Convert.ToInt32(year);
             int p = Convert.ToInt32(period);
             DateTime StartDate = PayPeriod.GetStartDay(y, p);
             DateTime EndDate = PayPeriod.GetEndDay(y, p);
 
             List<Payroll> payrolls = (from t in timesheetDb.TimeRecords
-                                      join u in timesheetDb.UserInfo on t.UserID equals u.Email // Email used as UserID in TimeRecord table
+                                      join u in timesheetDb.ADUsers on t.UserID equals u.Email // Email used as UserID in TimeRecord table
                                       where t.RecordDate >= StartDate && t.RecordDate <= EndDate
                                       select new Payroll
                                       {
@@ -307,7 +305,7 @@ namespace TimeSheet.Controllers
             DataColumn Job = new DataColumn("Job", typeof(string));
             dt.Columns.Add(Job);
 
-            DataColumn Notes = new DataColumn("Notes",typeof(string));
+            DataColumn Notes = new DataColumn("Notes", typeof(string));
             dt.Columns.Add(Notes);
 
             DataColumn date = new DataColumn("Date", typeof(string));
@@ -319,9 +317,9 @@ namespace TimeSheet.Controllers
             DataColumn ID = new DataColumn("Employee Card ID", typeof(int));
             dt.Columns.Add(ID);
 
-            if(payrolls != null)
+            if (payrolls != null)
             {
-                for(int i=0; i < payrolls.Count; i++)
+                for (int i = 0; i < payrolls.Count; i++)
                 {
                     string[] words = payrolls[i].UserName.Split(',');
 
@@ -334,11 +332,11 @@ namespace TimeSheet.Controllers
                     dr["Notes"] = null;
 
                     dr["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
-                    dr["Units"] = payrolls[i].GetWorkHours() * (payrolls[i].Flexi ?  1.5 : 1);
+                    dr["Units"] = payrolls[i].WorkHours * (payrolls[i].Flexi ? 1.5 : 1);
 
                     if (payrolls[i].IsHoliday)
                     {
-                        if(payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Saturday ||
+                        if (payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Saturday ||
                             payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Sunday)
                             dr["Payroll Category"] = "Holiday Pay";
                         else
@@ -350,7 +348,7 @@ namespace TimeSheet.Controllers
                     }
                     dt.Rows.Add(dr);
 
-                    if(payrolls[i].LeaveTime != 0 && payrolls[i].LeaveType != _leaveType.none)
+                    if (payrolls[i].LeaveTime != 0 && payrolls[i].LeaveType != _leaveType.none)
                     {
                         DataRow drw = dt.NewRow();
                         drw["Employee Last Name"] = words[0];
@@ -383,8 +381,6 @@ namespace TimeSheet.Controllers
             return GetCSV(dt);
         }
 
-
-
         public FileContentResult GetCSV(DataTable dt)
         {
             StringBuilder sb = new StringBuilder();
@@ -397,8 +393,9 @@ namespace TimeSheet.Controllers
                 IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
                 sb.AppendLine(string.Join(",", fields));
             }
-            
+
             return File(new UTF8Encoding().GetBytes(sb.ToString()), "text/csv", "Payroll.csv");
         }
+
     }
 }
