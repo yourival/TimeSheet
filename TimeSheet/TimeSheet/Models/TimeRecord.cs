@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Configuration;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TimeSheet.Models
 {
@@ -20,6 +21,7 @@ namespace TimeSheet.Models
             Flexi = false;
             LeaveTime = 0;
             LeaveType = _leaveType.none;
+            CasualWorkHours = 0;
         }
 
         public int id { get; set; }
@@ -47,6 +49,8 @@ namespace TimeSheet.Models
 
         // Automatically get work hours by attendence, or ignore attendence for casual workers
         private double CasualWorkHours;
+
+        [NotMapped]
         public double WorkHours
         {
             get
