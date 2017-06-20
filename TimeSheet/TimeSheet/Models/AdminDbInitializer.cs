@@ -21,15 +21,6 @@ namespace TimeSheet.Models
                 ManagerID = "d.yang@m.nantien.edu.au",
                 ManagerName = "Dawen Yang"
             });
-
-            context.EmailSetting.Add(new EmailSetting()
-            {
-                FromEmail = "d.yang@m.nantien.edu.au",
-                Password = "Y137196506dw",
-                Message = "Please Click the link below to approve the leave application",
-                SMTPHost = "smtp.office365.com",
-                SMTPPort = 587
-            });
             context.SaveChanges();
         }
     }

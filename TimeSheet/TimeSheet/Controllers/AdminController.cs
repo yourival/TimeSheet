@@ -10,7 +10,9 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Data;
 using System.Text;
-
+using System.Configuration;
+using System.Net.Configuration;
+using System.Web.Configuration;
 
 namespace TimeSheet.Controllers
 {
@@ -113,8 +115,17 @@ namespace TimeSheet.Controllers
         //Get Email setting from AdminDb
         public ActionResult EmailSetting()
         {
-            EmailSetting model;
-            model = adminDb.EmailSetting.ToList().FirstOrDefault();
+            EmailSetting model = new EmailSetting();
+            Configuration config = WebConfigurationManager.OpenWebConfiguration("~/");
+            MailSettingsSectionGroup mailSettings = config.GetSectionGroup("system.net/mailSettings") as MailSettingsSectionGroup;
+            if (mailSettings != null)
+            {
+                model.FromEmail = mailSettings.Smtp.From;
+                model.Password = mailSettings.Smtp.Network.Password;
+                model.Username = mailSettings.Smtp.Network.UserName;
+                model.SMTPHost = mailSettings.Smtp.Network.Host;
+                model.SMTPPort = mailSettings.Smtp.Network.Port;
+            }
             return View(model);
         }
 
@@ -126,9 +137,18 @@ namespace TimeSheet.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    adminDb.EmailSetting.Attach(model);
-                    adminDb.Entry(model).State = EntityState.Modified;
-                    adminDb.SaveChanges();
+                    Configuration config = WebConfigurationManager.OpenWebConfiguration("~/");
+                    MailSettingsSectionGroup mailSettings = config.GetSectionGroup("system.net/mailSettings") as MailSettingsSectionGroup;
+                    if (model != null)
+                    {
+                        mailSettings.Smtp.From = model.FromEmail;
+                        mailSettings.Smtp.Network.Password = model.Password;
+                        mailSettings.Smtp.Network.UserName = model.Username;
+                        mailSettings.Smtp.Network.Host = model.SMTPHost;
+                        mailSettings.Smtp.Network.Port = model.SMTPPort;
+                        config.Save();
+                    }
+                    
                 }
                 return RedirectToAction("EmailSetting");
             }

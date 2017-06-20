@@ -15,18 +15,16 @@ namespace TimeSheet.Models
     public class EmailSetting
     {
 
-        [Key]
-        public int id { get; set; }
-
         [Required]
         [EmailAddress]
         public string FromEmail { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public string Message { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Username { get; set; }
 
         [Required]
         public string SMTPHost { get; set; }
@@ -38,13 +36,12 @@ namespace TimeSheet.Models
         {
             AdminDb adminDb = new AdminDb();
             TimeSheetDb timesheetDb = new TimeSheetDb();
-            EmailSetting model = adminDb.EmailSetting.FirstOrDefault();
             int ID = Convert.ToInt32(id);
             string link = "http://localhost:44300/";
             string body = string.Empty;
             string subject = string.Empty;
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            string path = Directory.GetCurrentDirectory();
+            string path = Directory.GetCurrentDirectory();// path for loading email template file
             switch (EmailType)
             {
                 case "TimesheetApplication":
@@ -111,7 +108,6 @@ namespace TimeSheet.Models
             }
             var message = new MailMessage();
             message.To.Add(new MailAddress(EmailReceiver));
-            message.From = new MailAddress(model.FromEmail);
             message.Subject = subject;
             message.Body = body;
             message.IsBodyHtml = true;
@@ -127,15 +123,6 @@ namespace TimeSheet.Models
             {
                 using (var smtp = new SmtpClient())
                 {
-                    var credential = new NetworkCredential
-                    {
-                        UserName = model.FromEmail,
-                        Password = model.Password
-                    };
-                    smtp.Credentials = credential;
-                    smtp.Host = model.SMTPHost;
-                    smtp.Port = model.SMTPPort;
-                    smtp.EnableSsl = true;
                     await smtp.SendMailAsync(message);
                 }
             }

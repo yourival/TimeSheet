@@ -8,22 +8,24 @@
 
 @using (Html.BeginForm("UpdateEmailSetting", "Admin", FormMethod.Post))
 {
-    @Html.HiddenFor(m => m.id)
     <div class="form-group">
         @Html.LabelFor(m => m.FromEmail, new { @class= "control-label" })
         @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.FromEmail)
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Username, new { @class = "control-label" })
+        @Html.TextAreaFor(m => m.Username, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Username)
+    </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.Password, new { @class = "control-label" })
         @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Password)
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Message, new { @class = "control-label" })
-        @Html.TextAreaFor(m => m.Message, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Message)
-    </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.SMTPHost, new { @class = "control-label" })
         @Html.TextBoxFor(m => m.SMTPHost, new { @class = "form-control" })
