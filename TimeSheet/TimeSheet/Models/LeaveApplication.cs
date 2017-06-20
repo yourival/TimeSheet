@@ -23,17 +23,20 @@ namespace TimeSheet.Models
         [Display(Name = "User Name")]
         public string UserName { get; set; }
 
+        [Required]
         [DataType(DataType.Date)]
-        [Display(Name = "Start Time")]
+        [Display(Name = "Start Date")]
         public DateTime StartTime { get; set; }
 
+        [Required]
         [DataType(DataType.Date)]
-        [Display(Name = "End Time")]
+        [Display(Name = "End Date")]
         public DateTime EndTime { get; set; }
 
         [Display(Name = "Total Hours")]
-        public double TotalLeaveTime { get; set; }
+        public double TotalTime { get; set; }
 
+        [Required]
         [Display(Name = "Type")]
         public _leaveType leaveType { get; set; }
 
@@ -42,6 +45,7 @@ namespace TimeSheet.Models
         [Display(Name = "Status")]
         public _status status { get; set; }
 
+        [DataType(DataType.MultilineText)]
         public string Comment { get; set; }
 
         public List<TimeRecord> GetTimeRecords()

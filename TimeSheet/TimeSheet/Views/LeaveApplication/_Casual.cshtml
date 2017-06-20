@@ -1,178 +1,143 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
 
-@{
-    ViewBag.Title = "Leave Application";
-}
-
-<head>
-    @Styles.Render("~/Content/css")
-</head>
-
-
-<body class="center-block">
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-        <br />
-
-        <div class="container" align="center">
-            <div class="applicationTable">
-                <h3>Leave Application</h3>
-
-                <div class="form-inline form-group">
-                    <table class="table table-condensed table-fill nomoretable">
-                        @Html.HiddenFor(model => model.LeaveApplication.UserID)
-                        <thead>
-                            <tr>
-                                <th>
-                                    @Html.LabelFor(model => model.LeaveApplication.StartTime, htmlAttributes: new { @class = "control-label" })
-                                </th>
-                                <th>
-                                    @Html.LabelFor(model => model.LeaveApplication.EndTime, htmlAttributes: new { @class = "control-label" })
-                                </th>
-                                <th>
-                                    @Html.Label("Manager", htmlAttributes: new { @class = "control-label" })
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
-                                    @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
-                                </td>
-                                <td>
-                                    @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
-                                </td>
-                                <td>
-                                    @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+<div class="hrForm-content">
+    <div>
+        @using (Html.BeginForm("Index", "LeaveApplication", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.LeaveApplication.UserID)
+            <form>
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2" for="casual-start">
+                        @Html.LabelFor(model => model.LeaveApplication.StartTime)
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "casual-start" } })
+                            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                        </p>
+                    </div>
                 </div>
-                <br />
-                <div id="alert"></div>
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2" for="casual-end">
+                        @Html.LabelFor(model => model.LeaveApplication.EndTime)
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "casual-end" } })
+                            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2" for="casual-manager">
+                        @Html.Label("Manager")
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control", @id = "casual-manager" })
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2" for="casual-comment">
+                        @Html.LabelFor(model => model.LeaveApplication.Comment)
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "casual-comment", @style = "resize: vertical" } })
+                        </p>
+                    </div>
+                </div>
+                <div class="row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <a href="#CasualDetail" id="toggle-details" data-toggle="collapse">
+                            <p>
+                                Click here if you want to hide details
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </p>
+                        </a>
+                    </div>
+                </div>
 
-                <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" disabled="disabled" />
-            </div>
+                <div class="appDetails">
+                    <div class="col-sm-offset-1 col-sm-2"></div>
+                    <div id="casual-form" class="col-sm-8"></div>
 
-            <div id="leave-form"></div>
-        </div>
-        <br />
-    }
-</body>
+                </div>
+                <hr />
+                <div class="row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <label>Total:</label>
+                        <span class="total" id="worktime-total"></span>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+            </form>
+        }
+    </div>
+</div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
-    function renderLeaveForm() {
-        var start = $('#start').val();
-        var end = $('#end').val();
+    function renderCasualForm() {
+        var start = $('#casual-start').val();
+        var end = $('#casual-end').val();
 
-        $("#leave-form").text("Loading...");
+        $("#casual-form").text("Loading...");
 
         //Clear previous validation message
-        $("form").removeData("validator");
-        $("form").removeData("unobtrusiveValidation");
+        $("#casual-form").removeData("validator");
+        $("#casual-form").removeData("unobtrusiveValidation");
 
         $.ajax({
             url: "/LeaveApplication/CreateLeaveForm",
             type: "GET",
             data: { start: start, end: end, leaveType: 0 }
         })
-        .done(function (partialViewResult) {
-            $("#leave-form").html(partialViewResult);
-
-            // Enable submit button
-            $("#submit-btn").prop("disabled", false);
+            .done(function (partialViewResult) {
+            //Render partial view
+            $("#casual-form").html(partialViewResult);
 
             //Enable jquery validation
-            $.validator.unobtrusive.parse("#leave-form");
+            $.validator.unobtrusive.parse("#casual-form");
+
+            // When there is any change on detail of leave time
+            $(".worktime").on("change", function () {
+                sumTotalWorkHours();
+            });
+            sumTotalWorkHours();
 
         });
     }
 
-    function getFormattedDate(date) {
-        var year = date.getFullYear();
-        var month = (1 + date.getMonth()).toString();
-        month = month.length > 1 ? month : '0' + month;
-        var day = date.getDate().toString();
-        day = day.length > 1 ? day : '0' + day;
-        return year + '-' + month + '-' + day;
+    function sumTotalWorkHours() {
+        var total = 0;
+        $(".worktime").each(function (i) {
+            total += parseFloat($(this).val());
+        });
+        $("#worktime-total").text(total + " (" + (total / 7.5).toFixed(2) + " days)");
     }
 
     $(document).ready(function () {
-        var fullDate = new Date();
-        var lefthours = [];
-        $(".lefthours").each(function (i) {
-            lefthours.push($(this).text());
-        });
+        //var fullDate = new Date();
+        $("#casual-start").val(getFormattedDate(new Date()));
+        $("#casual-end").val(getFormattedDate(new Date()));
+        renderCasualForm();       
 
-        $("#start").val(getFormattedDate(new Date()));
-        $("#end").val(getFormattedDate(new Date()));
-        $(".btn-default").on("click", function (e) {
-            e.preventDefault();
-            $(this).toggleClass("active");
-        })
         // When there is any change on dates
-        $("#start").on("change", function () {
-            if ($("#start").val() > $("#end").val())
-                $("#end").val($("#start").val());
-            renderLeaveForm();
+        $("#casual-start").on("change", function () {
+            if ($("#casual-start").val() > $("#casual-end").val())
+                $("#casual-end").val($("#casual-start").val());
+            renderCasualForm();
         });
-        $("#end").on("change", function () {
-            if ($("#start").val() > $("#end").val())
-                $("#start").val($("#end").val());
-            renderLeaveForm();
-        });
-        // When there is any change on leave type
-        $("#leavetypeMain").on("change", function () {
-            renderLeaveForm();
-        });
-        // Test if applied leave times excess available leave balance
-        var leavetypes = $(".leavetype");
-
-        var length = leavetimes.length;
-        var msg = "";
-
-        for (var i = 0; i < length; i++) {
-            lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
-        }
-
-        for (var i = 0; i < 3; i++) {
-            if (lefthours[i] < 0) {
-                switch (i) {
-                    case 0:
-                        msg += "<strong>Sick</strong> ";
-                        break;
-                    case 1:
-                        msg += "<strong>Flexi</strong> ";
-                        break;
-                    case 2:
-                        msg += "<strong>Annual</strong> ";
-                        break;
-                    default:
-                        msg = "Something went wrong";
-                }
-            }
-        }
-        // When the 'submit' button is pressed
-        $("form").submit(function (e) {
-            if (msg != "") {
-                $("#alert").attr('class', "alert alert-danger");
-                $("#alert").html("<strong>Warning!</strong> " +
-                                 "Your leaves application excesses in leave types: " + msg +
-                                 "<br/>Please change them up and try submitting again");
-                e.preventDefault(e);
-                return false;
-            } else {
-                $("#alert").attr('class', "alert alert-success");
-                $("#alert").text("Successfully submitted" + msg);
-            }
+        $("#casual-end").on("change", function () {
+            if ($("#casual-start").val() > $("#casual-end").val())
+                $("#casual-start").val($("#casual-end").val());
+            renderCasualForm();
         });
     });
 </script>

@@ -198,9 +198,7 @@ form p {
     color:dimgray;
 }
 
-form span {
-    color: #1F618D;
-}
+
 
 .button-group {
     display:block;
@@ -210,9 +208,35 @@ form span {
 /*leave application page end*/
 
 /*leave balance style*/
-.lefthours {
-    border-bottom: 1px solid #808B96;
+.textStyleBefore span,
+.textStyleAfter span {
+    color: #31708f;
+    font-weight:bold;
 }
+
+.textStyleAfter .modified {
+    color:#51a47b;
+    font-weight:bold;
+}
+
+.textStyleAfter .excess {
+    color: #a94442;
+    font-weight: bold;
+}
+
+.textStyleBefore,
+.textStyleAfter {
+    color:black;
+}
+
+.totalApplication {
+    text-align:left;
+}
+
+.total {
+    color: black;
+}
+
 
 /*tab setting start*/
 #tabs .nav-tabs > li > a {
@@ -227,12 +251,6 @@ form span {
 
 .nav > li > a {
     color: #808B96;
-}
-
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover,
-.nav-tabs > li.active > a:focus {
-    /*background-color: #808B96;*/
 }
 
 .tab-content {
@@ -330,23 +348,25 @@ form span {
 /*modal style on timesheet page end*/
 
 /*admin page square setting start*/
-.square1, .square2, .square3, .square4, .square5 {
-    padding: 0.5em;
+.AdminBox .square1, .square2, .square3 {
     margin: 1.5em;
     width: 10em;
     height: 10em;
+    line-height: 10em;
     float: none;
-    display: inline-block;
-    padding-top: 50px;
+    display: inline-table;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-.AdminBox a {
-    font-size: 0.9em;
+.AdminBox span {
+    font-size: 1em;
     color: white;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
     font-family: "Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
     text-transform: uppercase;
+    display: table-cell;
+    vertical-align: middle;
+    line-height: normal;
 }
 
 .square1 {
@@ -355,6 +375,7 @@ form span {
 
 .square1:hover {
     background-color: #7FB3D5;
+    cursor: pointer;
 }
 
 
@@ -364,6 +385,7 @@ form span {
 
 .square2:hover {
     background-color: #7FB3D5;
+    cursor: pointer;
 }
 
 
@@ -373,25 +395,9 @@ form span {
 
 .square3:hover {
     background-color: #7FB3D5;
+    cursor: pointer;
 }
 
-
-.square4 {
-    background-color: #1F618D;
-}
-
-.square4:hover {
-    background-color: #7FB3D5;
-}
-
-
-.square5 {
-    background-color: #1A5276;
-}
-
-.square5:hover {
-    background-color: #7FB3D5;
-}
 /*admin page square setting end*/
 
 /*User ID search bar start*/
@@ -683,14 +689,15 @@ form span {
         border-right: 1px solid lightgray;
     }
 
-
-
-
-
-
     /*footer*/
-
     .footer .dropup {
         display: none;
     }
+
+    /*alert*/
+    .alert {
+        text-align: left;
+    }
 }
+
+
