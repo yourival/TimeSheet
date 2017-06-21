@@ -107,6 +107,7 @@ namespace TimeSheet.Models
                     break;
             }
             var message = new MailMessage();
+            //message.From = new MailAddress("d.yang@m.nantien.edu.au");
             message.To.Add(new MailAddress(EmailReceiver));
             message.Subject = subject;
             message.Body = body;
