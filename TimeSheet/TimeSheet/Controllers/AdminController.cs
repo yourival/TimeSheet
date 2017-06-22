@@ -266,7 +266,7 @@ namespace TimeSheet.Controllers
             return listItems;
         }
 
-        public ActionResult TimesheetExport()
+        public ActionResult CSVExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();
             return View();
@@ -274,17 +274,50 @@ namespace TimeSheet.Controllers
 
         public ActionResult SelectDefaultPeriod()
         {
-            ViewBag.Period = PayPeriod.GetPeriodItems(DateTime.Now.Year);
-            return PartialView("_SelectPeriod");
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.PeriodList = PayPeriod.GetPeriodItems(DateTime.Now.Year);
+            foreach(var item in model.PeriodList)
+            {
+                if (item.Selected == true)
+                {
+                    int period = Convert.ToInt32(item.Value);
+                    PeriodDetails(DateTime.Now.Year, period);
+                }
+            }
+
+            return PartialView("_SelectPeriod",model);
         }
 
         public ActionResult SelectPeriod(int year)
         {
-            ViewBag.Period = PayPeriod.GetPeriodItems(year);
-            return PartialView("_SelectPeriod");
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.PeriodList = PayPeriod.GetPeriodItems(year);
+            return PartialView("_SelectPeriod",model);
         }
 
-        public async Task<FileContentResult> TimesheetExportResult(string year, string period)
+        public ActionResult DefaultPeriodDetails()
+        {
+            int year = DateTime.Now.Year;
+            foreach (var item in PayPeriod.GetPeriodItems(DateTime.Now.Year))
+            {
+                if (item.Selected == true)
+                {
+                    int period = Convert.ToInt32(item.Value);
+                    ViewBag.PeriodBegin = PayPeriod.GetStartDay(year, period);
+                    ViewBag.PeriodEnd = PayPeriod.GetEndDay(year, period);
+                }
+            }
+            return PartialView("_PeriodDetails");
+        }
+
+        public ActionResult PeriodDetails(int year, int period)
+        {
+            ViewBag.PeriodBegin = PayPeriod.GetStartDay(year, period);
+            ViewBag.PeriodEnd = PayPeriod.GetEndDay(year, period);
+            return PartialView("_PeriodDetails");
+        }
+
+        public async Task<FileContentResult> CSVExportResult(string year, string period)
         {
             //update the ADUser from AD first before exporting the csv file
             await ADUser.GetADUser();
@@ -341,11 +374,11 @@ namespace TimeSheet.Controllers
             {
                 for (int i = 0; i < payrolls.Count; i++)
                 {
-                    string[] words = payrolls[i].UserName.Split(',');
+                    string[] words = payrolls[i].UserName.Split(' ');
 
                     DataRow dr = dt.NewRow();
-                    dr["Employee Last Name"] = words[0];
-                    dr["Employee First Name"] = words[1];
+                    dr["Employee Last Name"] = words[1];
+                    dr["Employee First Name"] = words[0];
 
                     dr["Job"] = payrolls[i].JobCode;
                     dr["Employee Card ID"] = payrolls[i].EmployeeID;

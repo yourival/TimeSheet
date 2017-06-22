@@ -79,6 +79,11 @@ namespace TimeSheet.Models
                     timesheetDb.ADUsers.Add(user);
                     timesheetDb.SaveChanges();
                 }
+                ADUser u = new ADUser();
+                u.UserName = "Dawen Yang";
+                u.Email = "d.yang@m.nantien.edu.au";
+                timesheetDb.ADUsers.Add(u);
+                timesheetDb.SaveChanges();
             }
         }
     }

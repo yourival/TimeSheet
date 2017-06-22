@@ -57,9 +57,6 @@ namespace TimeSheet.Controllers
         public ActionResult SelectYear(int year)
         {
             TimeSheetContainer model = new TimeSheetContainer();
-            model.TimeRecordForm = new TimeRecordForm();
-            model.TimeRecords = new List<TimeRecord>();
-            model.TimeRecords.Add(new TimeRecord());
             model.PeriodList = PayPeriod.GetPeriodItems(year);
             return PartialView("SelectYear", model);
         }
