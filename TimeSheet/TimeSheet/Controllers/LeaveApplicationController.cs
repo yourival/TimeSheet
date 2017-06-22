@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net.Mail;
 using System.Net;
 using System.Threading.Tasks;
+using System.Data.Entity.Infrastructure;
 
 namespace TimeSheet.Controllers
 {
@@ -58,112 +59,143 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public async Task<ActionResult> Index(LeaveApplicationViewModel applicationVM)
         {
-            if (!ModelState.IsValid)
-            {
-                return RedirectToAction("Create");
-            }
+            
 
             try
             {
-                double[] takenLeaves = new double[3];
-                foreach (var l in applicationVM.TimeRecords)
+                if (ModelState.IsValid)
                 {
-                    int index = (int)l.LeaveType-1;
-                    takenLeaves[index] += l.LeaveTime;
-                }
-
-                // Try to fetch Leaveapplication from DB if it exists
-                applicationVM.LeaveApplication.UserID = User.Identity.Name;
-                var application = (from a in contextDb.LeaveApplications
-                                                 where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
-                                                       DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
-                                                       a.UserID == applicationVM.LeaveApplication.UserID
-                                                 select a).FirstOrDefault();
-
-                foreach(var r in applicationVM.TimeRecords)
-                {
-                    // Configure time record if it's not a full day off
-                    if(r.LeaveTime != 7.5)
-                        r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
-
-                    // Sum up total leave time
-                    applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
-
-                    // Try to fetch TimeRecord from DB if it exists
-                    var timeRecord = (from a in contextDb.TimeRecords
-                                         where DbFunctions.TruncateTime(a.RecordDate) == r.RecordDate.Date &&
-                                                 a.UserID == r.UserID
-                                         select a).FirstOrDefault();
-
-                    // Update TimeRecord if exists, Add if not
-                    if (timeRecord == null)
+                    double[] takenLeaves = new double[3];
+                    foreach (var l in applicationVM.TimeRecords)
                     {
-                        contextDb.TimeRecords.Add(r);
+                        int index = (int)l.LeaveType-1;
+                        takenLeaves[index] += l.LeaveTime;
                     }
-                    else
-                    {
-                        int index = (int)timeRecord.LeaveType - 1;
-                        takenLeaves[index] -= timeRecord.LeaveTime;
-                        timeRecord.LeaveTime = r.LeaveTime;
-                        timeRecord.LeaveType = r.LeaveType;
-                        contextDb.Entry(timeRecord).State = EntityState.Modified;
-                    }
-                    contextDb.SaveChanges();
-                }
 
-                // Update LeaveApplication if exists, add if not
-                if (application == null)
-                {
-                    applicationVM.LeaveApplication.status = _status.submited;
-                    contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
-                }
-                else
-                {
-                    application.status = _status.modified;
-                    application.leaveType = applicationVM.LeaveApplication.leaveType;
-                    application.ManagerID = applicationVM.LeaveApplication.ManagerID;
-                    application.Comment = applicationVM.LeaveApplication.Comment;
-                    application.TotalTime = applicationVM.LeaveApplication.TotalTime;
-                    contextDb.Entry(application).State = EntityState.Modified;
-                }
-                contextDb.SaveChanges();
-                
-                // Update user leaves data in Db after submitting if it's leave application
-                if(applicationVM.LeaveApplication.leaveType != _leaveType.none)
-                {
-                    for (int i = 1; i < 4; i++)
+                    // Transfer attachments to ViewModel
+                    if (applicationVM.Attachments.Count > 0)
                     {
-                        var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
-                        if (leaveRecord == null)
+                        List<LeaveAttachment> files = new List<LeaveAttachment>();
+                        foreach (var file in applicationVM.Attachments)
                         {
-                            leaveRecord = new LeaveRecord();
-                            leaveRecord.LeaveType = (_leaveType)i;
-                            leaveRecord.UserID = User.Identity.Name;
-                            leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                            contextDb.LeaveRecords.Add(leaveRecord);
+                            if (file.ContentLength > 0)
+                            {
+                                var attachment = new LeaveAttachment
+                                {
+                                    FileName = System.IO.Path.GetFileName(file.FileName),
+                                    ContentType = file.ContentType
+                                };
+                                using (var reader = new System.IO.BinaryReader(file.InputStream))
+                                {
+                                    attachment.Content = reader.ReadBytes(file.ContentLength);
+                                }
+                                files.Add(attachment);
+
+                            }
+                        }
+                        applicationVM.LeaveApplication.Files = files;
+                    }
+
+                    // Try to fetch Leaveapplication from DB if it exists
+                    applicationVM.LeaveApplication.UserID = User.Identity.Name;
+                    var application = (from a in contextDb.LeaveApplications
+                                                     where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
+                                                           DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
+                                                           a.UserID == applicationVM.LeaveApplication.UserID
+                                                     select a).FirstOrDefault();
+
+                    foreach(var r in applicationVM.TimeRecords)
+                    {
+                        // Configure time record if it's not a full day off
+                        if(r.LeaveTime != 7.5)
+                            r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
+
+                        // Sum up total leave time
+                        applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
+
+                        // Try to fetch TimeRecord from DB if it exists
+                        var timeRecord = (from a in contextDb.TimeRecords
+                                             where DbFunctions.TruncateTime(a.RecordDate) == r.RecordDate.Date &&
+                                                     a.UserID == r.UserID
+                                             select a).FirstOrDefault();
+
+                        // Update TimeRecord if exists, Add if not
+                        if (timeRecord == null)
+                        {
+                            contextDb.TimeRecords.Add(r);
                         }
                         else
                         {
-                            leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                            contextDb.Entry(leaveRecord).State = EntityState.Modified;
+                            int index = (int)timeRecord.LeaveType - 1;
+                            takenLeaves[index] -= timeRecord.LeaveTime;
+                            timeRecord.LeaveTime = r.LeaveTime;
+                            timeRecord.LeaveType = r.LeaveType;
+                            contextDb.Entry(timeRecord).State = EntityState.Modified;
                         }
                         contextDb.SaveChanges();
                     }
+
+                    // Update LeaveApplication if exists, add if not
+                    if (application == null)
+                    {
+                        applicationVM.LeaveApplication.status = _status.submited;
+                        contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
+                    }
+                    else
+                    {
+                        application.status = _status.modified;
+                        application.leaveType = applicationVM.LeaveApplication.leaveType;
+                        application.ManagerID = applicationVM.LeaveApplication.ManagerID;
+                        application.Comment = applicationVM.LeaveApplication.Comment;
+                        application.TotalTime = applicationVM.LeaveApplication.TotalTime;
+                        contextDb.Entry(application).State = EntityState.Modified;
+                    }
+                    contextDb.SaveChanges();
+                
+                    // Update user leaves data in Db after submitting if it's leave application
+                    if(applicationVM.LeaveApplication.leaveType != _leaveType.none)
+                    {
+                        for (int i = 1; i < 4; i++)
+                        {
+                            var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
+                            if (leaveRecord == null)
+                            {
+                                leaveRecord = new LeaveRecord();
+                                leaveRecord.LeaveType = (_leaveType)i;
+                                leaveRecord.UserID = User.Identity.Name;
+                                leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
+                                contextDb.LeaveRecords.Add(leaveRecord);
+                            }
+                            else
+                            {
+                                leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
+                                contextDb.Entry(leaveRecord).State = EntityState.Modified;
+                            }
+                            contextDb.SaveChanges();
+                        }
+                    }
+
+
+
+                    // Send an email to manager
+                    var applicationModel = (from a in contextDb.LeaveApplications
+                                            where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
+                                                  DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
+                                                  a.UserID == applicationVM.LeaveApplication.UserID
+                                            select a).FirstOrDefault();
+
+                    if (applicationModel != null)
+                    {
+                        Task.Run(() => EmailSetting.SendEmail(applicationModel.ManagerID, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
+                    }
                 }
-
-                // Send an email to manager
-                var applicationModel = (from a in contextDb.LeaveApplications
-                                        where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
-                                              DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
-                                              a.UserID == applicationVM.LeaveApplication.UserID
-                                        select a).FirstOrDefault();
-
-                if (applicationModel != null)
-                {
-                    Task.Run(() => EmailSetting.SendEmail(applicationModel.ManagerID, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
-                }    
             }
-            catch(Exception e)
+            catch (RetryLimitExceededException /* dex */)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            }
+            catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
                 Debug.WriteLine(e.StackTrace);
@@ -188,8 +220,7 @@ namespace TimeSheet.Controllers
                 newTimeRecord.UserID = User.Identity.Name;
                 newTimeRecord.LeaveType = leaveType;
                 newTimeRecord.LeaveTime = (leaveType == 0) ? 0 : 7.5;
-                newTimeRecord.WorkHours = 0;
-                    PayPeriod.SetPublicHoliday(newTimeRecord);
+                PayPeriod.SetPublicHoliday(newTimeRecord);
                 if (!newTimeRecord.IsHoliday)
                     newTimeRecords.Add(newTimeRecord);
             }

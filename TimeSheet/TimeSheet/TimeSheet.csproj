@@ -36,6 +36,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <IncludeIisSettings>false</IncludeIisSettings>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -247,6 +248,7 @@
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\ApprovalViewModel.cs" />
     <Compile Include="Controllers\LeaveApprovalController.cs" />
+    <Compile Include="Models\LeaveAttachment.cs" />
     <Compile Include="Models\EmailSetting.cs" />
     <Compile Include="Models\Payroll.cs" />
     <Compile Include="Models\TimeSheetInitializer.cs" />

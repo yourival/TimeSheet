@@ -6,7 +6,7 @@
 
 <div class="hrForm-content">
     <div>
-        @using (Html.BeginForm("Index", "LeaveApplication", FormMethod.Post))
+        @using (Html.BeginForm("Index", "LeaveApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
@@ -81,6 +81,21 @@
                         </p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2" for="files">
+                        Attachments
+                    </label>
+                    <div class="col-sm-8 ">
+                        <p class="left-aligh-cell">
+                                <text id="upload-file-info"></text>
+                                <label class="btn btn-default">
+                                    Browse...
+                                    @Html.TextBoxFor(model => model.Attachments, new { id = "files", type = "file", style = "display: none", multiple = "multiple" })
+                                </label>    
+                        </p>
+                        
+                    </div>
+                </div>
                 <div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
                         <a href="#leaveDetail" data-toggle="collapse">
@@ -112,7 +127,7 @@
                                 if (i != 2)
                                 {
                                     @: ,&nbsp;&nbsp;
-                            }
+                                }
                             }
                         </text>
                     </div>
@@ -255,5 +270,30 @@
             }
                        
         });
+
+        $(':file').on('fileselect', function (event, numFiles, label) {
+            var files = $('#files').prop("files");
+            var names = $.map(files, function (val) {
+                return val.name;
+            });
+            names = (names+"").replace(/,/g, ",\n");
+            var input = $(this).parents('.input-group').find(':text');
+            var log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+            if (input.length) {
+                input.val(log);
+            } else {
+                $("#upload-file-info").css("white-space", "pre-line");
+                $("#upload-file-info").text(names + '\n');
+            }
+
+        });
+    });
+
+    $(document).on('change', ':file', function () {
+        var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
     });
 </script>

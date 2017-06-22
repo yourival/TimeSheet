@@ -73,7 +73,7 @@ namespace TimeSheet.Controllers
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                if (decision == "Approved")
+                if (decision == "Approve")
                     application.status = _status.approved;
                 else
                     application.status = _status.rejected;
