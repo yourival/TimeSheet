@@ -17,7 +17,7 @@
                     <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</th>
                     <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</th>
                     <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalLeaveTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</th>
                     <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.status)</th>
                 </tr>
             </thead>
@@ -28,7 +28,7 @@
                     <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</td>
                     <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</td>
                     <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalLeaveTime)</td>
+                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</td>
                     <td id ="app-status" class= @getStatusClass(Model.UserApplicationVM.LeaveApplication.status)>
                         @Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.status)
                     </td>
@@ -68,8 +68,8 @@
                 <row>
                     <button class="btn btn-default" onclick="location.href='@Url.Action( "Approval", "LeaveApproval")'">Go back</button>
                     <input type="hidden" name="id" value=@Model.UserApplicationVM.LeaveApplication.id />
-                    <input type="submit" class="btn btn-success" name="decision" value="Approved">
-                    <input type="submit" class="btn btn-danger" name="decision" value="Rejected">
+                    <input type="submit" class="btn btn-danger" name="decision" value="Reject">
+                    <input type="submit" class="btn btn-success" name="decision" value="Approve">
                 </row>
             }
         </div>
@@ -107,46 +107,29 @@
         </table>
     }
 </div>
-<div id="myModal" class="modal small fade" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 class="modal-title">Done!</h3>
-            </div>
-            <div class="modal-body">
-                <p class="error-text">Are you sure you want to delete the user?</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                <button class="btn btn-danger" data-dismiss="modal">Delete</button>
-            </div>
-        </div>
-        </div>
-    </div>
-        @functions {
-            string getStatusClass(TimeSheet.Models._status status)
-            {
-                string className;
-                switch (status)
-                {
-                    case TimeSheet.Models._status.submited:
-                        className = "text-primary";
-                        break;
-                    case TimeSheet.Models._status.approved:
-                        className = "text-success";
-                        break;
-                    case TimeSheet.Models._status.rejected:
-                        className = "text-danger";
-                        break;
-                    case TimeSheet.Models._status.modified:
-                        className = "text-warning";
-                        break;
-                    default:
-                        className = "";
-                        break;
-                }
-                return className;
-            }
+@functions {
+    string getStatusClass(TimeSheet.Models._status status)
+    {
+        string className;
+        switch (status)
+        {
+            case TimeSheet.Models._status.submited:
+                className = "text-primary";
+                break;
+            case TimeSheet.Models._status.approved:
+                className = "text-success";
+                break;
+            case TimeSheet.Models._status.rejected:
+                className = "text-danger";
+                break;
+            case TimeSheet.Models._status.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
         }
+        return className;
+    }
+}
 

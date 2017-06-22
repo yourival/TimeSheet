@@ -693,11 +693,14 @@ form p {
     .footer .dropup {
         display: none;
     }
+}
 
-    /*alert*/
-    .alert {
-        text-align: left;
-    }
+/*alert*/
+.alert {
+    text-align: left;
 }
 
 
+.left-aligh-cell {
+    text-align:right;
+}
