@@ -1,31 +1,26 @@
-﻿@model TimeSheet.Models.LeaveApplicationViewModel
+﻿@model TimeSheetContainer
 
 <div class="hrForm-content">
     <div>
-        @using (Html.BeginForm("Index", "LeaveApplication", FormMethod.Post))
+        @using (Html.BeginForm("Casual", "LeaveApplication", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.LeaveApplication.UserID)
+            @Html.HiddenFor(model => model.TimeRecordForm.TimeRecordFormID)
             <form>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="casual-start">
-                        @Html.LabelFor(model => model.LeaveApplication.StartTime)
+                <div class="form-group">
+                    <label class="col-sm-offset-1 col-sm-2">
+                        Period
                     </label>
-                    <div class="col-sm-8">
+                    <div class="form form-inline col-sm-8">
                         <p>
-                            @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "casual-start" } })
-                            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
-                        </p>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
                     </div>
+                                <div id="periodDiv" class="col-sm-4">
+                                    @{Html.RenderAction("SelectYear");}
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="casual-end">
-                        @Html.LabelFor(model => model.LeaveApplication.EndTime)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "casual-end" } })
-                            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                            </div>
                         </p>
                     </div>
                 </div>
@@ -41,15 +36,15 @@
                 </div>
                 <div class="form-group row">
                     <label class="col-sm-offset-1 col-sm-2" for="casual-comment">
-                        @Html.LabelFor(model => model.LeaveApplication.Comment)
+                        @Html.LabelFor(model => model.TimeRecordForm.Comments)
                     </label>
                     <div class="col-sm-8">
                         <p>
-                            @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "casual-comment", @style = "resize: vertical" } })
+                            @Html.EditorFor(model => model.TimeRecordForm.Comments, new { htmlAttributes = new { @class = "form-control", @id = "casual-comment", @style = "resize: vertical" } })
                         </p>
                     </div>
                 </div>
-                <div class="row" align="right">
+                @*<div class="row" align="right">
                     <div class="col-sm-offset-1 col-sm-10">
                         <a href="#CasualDetail" id="toggle-details" data-toggle="collapse">
                             <p>
@@ -58,7 +53,8 @@
                             </p>
                         </a>
                     </div>
-                </div>
+                </div>*@
+
                 <div class="appDetails">
                     <div class="col-sm-offset-1 col-sm-2"></div>
                     <div id="casual-form" class="col-sm-8"></div>
@@ -92,7 +88,7 @@
         $("#casual-form").removeData("unobtrusiveValidation");
 
         $.ajax({
-            url: "/LeaveApplication/CreateLeaveForm",
+            url: "/LeaveApplication/GetTimeRecords",
             type: "GET",
             data: { start: start, end: end, leaveType: 0 }
         })
@@ -121,21 +117,25 @@
     }
 
     $(document).ready(function () {
-        //var fullDate = new Date();
-        $("#casual-start").val(getFormattedDate(new Date()));
-        $("#casual-end").val(getFormattedDate(new Date()));
-        renderCasualForm();       
+        $("#year").on("change", function () {
+            var val = $('#year').val();
+            $.ajax({
+                url: "/LeaveApplication/SelectYear",
+                type: "get",
+                data: { year: val }
+            })
+                .done(function (partialviewresult) {
+                    $("#periodDiv").html(partialviewresult);
+                });
+        });
 
-        // When there is any change on dates
-        $("#casual-start").on("change", function () {
-            if ($("#casual-start").val() > $("#casual-end").val())
-                $("#casual-end").val($("#casual-start").val());
-            renderCasualForm();
+        $("#periodDiv").on("change", function () {
+            var year = $('#year').val();
+            var period = $('#period').val();
+            var yp = year + "." + period;
+            $("#casual-form").load('@Url.Action("GetTimeRecords", "LeaveApplication",null,Request.Url.Scheme)?text=' + yp);
         });
-        $("#casual-end").on("change", function () {
-            if ($("#casual-start").val() > $("#casual-end").val())
-                $("#casual-start").val($("#casual-end").val());
-            renderCasualForm();
-        });
+        
+        //renderCasualForm();
     });
 </script>

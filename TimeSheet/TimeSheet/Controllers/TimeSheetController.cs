@@ -50,7 +50,7 @@ namespace TimeSheet.Controllers
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(DateTime.Now.Year);
-            return PartialView("SelectYear",model);
+            return PartialView("_SelectYear",model);
         }
 
         // POST: Year
@@ -58,7 +58,7 @@ namespace TimeSheet.Controllers
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(year);
-            return PartialView("SelectYear", model);
+            return PartialView("_SelectYear", model);
         }
 
         //Get year period user selected
@@ -68,7 +68,7 @@ namespace TimeSheet.Controllers
             var y = int.Parse(words[0]);
             var p = int.Parse(words[1]);
             var model = await this.GetTimeSheetModel(y, p);
-            return PartialView(@"~/Views/TimeSheet/_CreateTimeSheet.cshtml", model);
+            return PartialView("_CreateTimeSheet", model);
         }
 
         //get time records based on year period 

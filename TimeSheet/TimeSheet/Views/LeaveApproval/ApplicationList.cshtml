@@ -1,4 +1,4 @@
-﻿@model List<TimeSheet.Models.LeaveApplication>
+﻿@model List<LeaveApplication>
 
 @{
     ViewBag.Title = "Leave Application List";
@@ -35,21 +35,21 @@
 
 
 @functions {
-    string getStatusClass(TimeSheet.Models._status status)
+    string getStatusClass(_status status)
     {
         string className;
         switch (status)
         {
-            case TimeSheet.Models._status.submited:
+            case _status.submited:
                 className = "text-primary";
                 break;
-            case TimeSheet.Models._status.approved:
+            case _status.approved:
                 className = "text-success";
                 break;
-            case TimeSheet.Models._status.rejected:
+            case _status.rejected:
                 className = "text-danger";
                 break;
-            case TimeSheet.Models._status.modified:
+            case _status.modified:
                 className = "text-warning";
                 break;
             default:

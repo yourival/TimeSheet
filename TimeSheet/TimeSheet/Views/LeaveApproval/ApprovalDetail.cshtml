@@ -1,4 +1,4 @@
-﻿@model TimeSheet.Models.ApprovalViewModel
+﻿@model ApprovalViewModel
 
 @{
     ViewBag.Title = "Leave Application Detail";
@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-sm-3"></div>
         <div class="col-sm-6 col-xs-12 approval-detail">
-            <h3>General Information</h3>
+        <h3>General Information</h3>
             <hr />
             <table class="table-responsive">
                 <tr>
@@ -32,7 +32,7 @@
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</th>
                     <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</td>
-            </table>
+        </table>
             <hr>
             <div class="row" align="right">
                 <div class="col-sm-offset-1 col-sm-10">
@@ -43,100 +43,100 @@
                         </p>
                     </a>
                 </div>
-            </div>
+    </div>
             <div align="center" class="approve-detail">
                 <div id="approve-detail" class="collapse row">
                     <table class="table table-responsive">
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <tr>
-                            <th>Date</th>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <tr>
+                <th>Date</th>
                             <th>Type</th>
                             <th>Detail Hours</th>
                             <th>Availability</th>
-                        </tr>
-                        @foreach (var item in Model.UserApplicationVM.TimeRecords)
-                        {
-                            <tr>
+            </tr>
+            @foreach (var item in Model.TimeRecords)
+            {
+                <tr>
                                 <td>
-                                    @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
-                                </td>
+                        @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
+                    </td>
                                 <td>
-                                    @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
-                                </td>
+                        @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
+                    </td>
                                 <td>
-                                    @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
-                                </td>
+                        @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
+                    </td>
                                 <td></td>
-                            </tr>
-                        }
-                    </table>
+                </tr>
+            }
+        </table>
                 </div>
             </div>
             <hr>
             <row class="approve-button">
                 <input type="hidden" name="id" value=@Model.UserApplicationVM.LeaveApplication.id />
                 <input type="submit" class="btn btn-success" name="decision" value="Approve">
-                <input type="submit" class="btn btn-danger" name="decision" value="Reject">
-            </row>
+                    <input type="submit" class="btn btn-danger" name="decision" value="Reject">
+                </row>
         <div class="col-sm-3"></div>
     </div>
 </div>
 
-    <div class="container">
-        <h3>Taken Leaves</h3>
-        @if(Model.TakenLeaves.Count == 0)
+<div class="container">
+    <h3>Taken Leaves</h3>
+    @if(Model.TakenLeaves.Count == 0)
     {
-    <p>No leave is taken in the period.</p>
+        <p>No leave is taken in the period.</p>
     }
     else
     {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>User Id</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var leave in Model.TakenLeaves)
-                {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
-                    <td>@Html.DisplayFor(m => leave.UserID)</td>
-                    <td>@Html.DisplayFor(m => leave.StartTime)</td>
-                    <td>@Html.DisplayFor(m => leave.EndTime)</td>
+                    <th>Date</th>
+                    <th>User Id</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
                 </tr>
+            </thead>
+            <tbody>
+                @foreach (var leave in Model.TakenLeaves)
+                {
+                    <tr>
+                        <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
+                        <td>@Html.DisplayFor(m => leave.UserID)</td>
+                        <td>@Html.DisplayFor(m => leave.StartTime)</td>
+                        <td>@Html.DisplayFor(m => leave.EndTime)</td>
+                    </tr>
                 }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
     }
-    </div>
+</div>
 
-    @functions {
-        string getStatusClass(TimeSheet.Models._status status)
+@functions {
+    string getStatusClass(_status status)
+    {
+        string className;
+        switch (status)
         {
-            string className;
-            switch (status)
-            {
-                case TimeSheet.Models._status.submited:
-                    className = "text-primary";
-                    break;
-                case TimeSheet.Models._status.approved:
-                    className = "text-success";
-                    break;
-                case TimeSheet.Models._status.rejected:
-                    className = "text-danger";
-                    break;
-                case TimeSheet.Models._status.modified:
-                    className = "text-warning";
-                    break;
-                default:
-                    className = "";
-                    break;
-            }
-            return className;
+            case _status.submited:
+                className = "text-primary";
+                break;
+            case _status.approved:
+                className = "text-success";
+                break;
+            case _status.rejected:
+                className = "text-danger";
+                break;
+            case _status.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
         }
+        return className;
     }
+}
 
