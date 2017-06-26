@@ -14,24 +14,24 @@
             <hr />
             <table class="table-responsive">
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.UserID)</th>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.UserID)</td>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
                 </tr>
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</th>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</td>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
                 </tr>
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</th>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</td>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)</td>
                 </tr>
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</th>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</td>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.EndTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
                 </tr>
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</th>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</td>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalTime)</td>
         </table>
             <hr>
             <div class="row" align="right">
@@ -74,7 +74,7 @@
             </div>
             <hr>
             <row class="approve-button">
-                <input type="hidden" name="id" value=@Model.UserApplicationVM.LeaveApplication.id />
+                <input type="hidden" name="id" value=@Model.LeaveApplication.id />
                 <input type="submit" class="btn btn-success" name="decision" value="Approve">
                     <input type="submit" class="btn btn-danger" name="decision" value="Reject">
                 </row>

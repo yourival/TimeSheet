@@ -11,6 +11,10 @@ namespace TimeSheet.Models
         public List<TimeRecord> TimeRecords { get; set; }
         public List<TimeRecord> TakenLeaves { get; set; }
 
-        public ApprovalViewModel(): base() { }
+        public ApprovalViewModel(): base() {
+            LeaveApplication = new LeaveApplication();
+            TimeRecords = new List<TimeRecord>();
+            TakenLeaves = new List<TimeRecord>();
+        }
     }
 }
