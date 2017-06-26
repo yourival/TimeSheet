@@ -158,7 +158,7 @@
         $("#leave-form").removeData("unobtrusiveValidation");
 
         $.ajax({
-            url: "/LeaveApplication/CreateLeaveForm",
+            url: "/LeaveApplication/CreateLeaveList",
             type: "GET",
             data: { start: start, end: end, leaveType: leavetypeMain }
         })
