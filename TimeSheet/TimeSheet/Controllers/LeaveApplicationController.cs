@@ -29,16 +29,16 @@ namespace TimeSheet.Controllers
         public ActionResult Leave()
         {
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
-            List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             //get manager droplist
             ViewBag.Manager = AdminController.GetManagerItems();
             ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
             for (int i = 1; i < 4; i++)
             {
-                var availableLeave = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
-                leaveRecords.Add(availableLeave == null ? new LeaveRecord() : availableLeave);
+                var availableLeave = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
+                LeaveBalances.Add(availableLeave == null ? new LeaveBalance() : availableLeave);
             }
-            applicationVM.LeaveRecords = leaveRecords;
+            applicationVM.LeaveBalances = LeaveBalances;
 
             return PartialView(@"~/Views/LeaveApplication/_Leave.cshtml", applicationVM);
         }
@@ -46,20 +46,39 @@ namespace TimeSheet.Controllers
         // GET: LeaveApplication/_Casual
         public ActionResult Casual()
         {
-            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
-            List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            int year = DateTime.Now.Year;
+            int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
+            TimeSheetContainer model = CreateCasualList(year, period);
+            model.YearList = PayPeriod.GetYearItems();
             //get manager droplist
             ViewBag.Manager = AdminController.GetManagerItems();
-            applicationVM.LeaveRecords = leaveRecords;
 
-            return PartialView(@"~/Views/LeaveApplication/_Casual.cshtml", applicationVM);
+            return PartialView(@"~/Views/LeaveApplication/_Casual.cshtml", model);
+        }
+
+        // GET: Year
+        // POST: Year
+        public ActionResult SelectYear(int? year)
+        {
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.PeriodList = PayPeriod.GetPeriodItems((year == null) ? DateTime.Now.Year : year.Value);
+            return PartialView("_SelectYear", model);
+        }
+
+        //Get year period user selected
+        public ActionResult GetTimeRecords(string text)
+        {
+            string[] words = text.Split('.');
+            var y = int.Parse(words[0]);
+            var p = int.Parse(words[1]);
+            var model = CreateCasualList(y, p);
+            return PartialView("_CasualList", model);
         }
 
         // POST: LeaveApplication/_Leave
         [HttpPost]
-        public async Task<ActionResult> Index(LeaveApplicationViewModel applicationVM)
-        {
-            
+        public async Task<ActionResult> Leave(LeaveApplicationViewModel applicationVM)
+        {           
 
             try
             {
@@ -93,7 +112,7 @@ namespace TimeSheet.Controllers
 
                             }
                         }
-                        applicationVM.LeaveApplication.Files = files;
+                        applicationVM.LeaveApplication.Attachments = files;
                     }
 
                     // Try to fetch Leaveapplication from DB if it exists
@@ -157,25 +176,23 @@ namespace TimeSheet.Controllers
                     {
                         for (int i = 1; i < 4; i++)
                         {
-                            var leaveRecord = contextDb.LeaveRecords.Find(User.Identity.Name, (_leaveType)i);
-                            if (leaveRecord == null)
+                            var LeaveBalance = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
+                            if (LeaveBalance == null)
                             {
-                                leaveRecord = new LeaveRecord();
-                                leaveRecord.LeaveType = (_leaveType)i;
-                                leaveRecord.UserID = User.Identity.Name;
-                                leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                                contextDb.LeaveRecords.Add(leaveRecord);
+                                LeaveBalance = new LeaveBalance();
+                                LeaveBalance.LeaveType = (_leaveType)i;
+                                LeaveBalance.UserID = User.Identity.Name;
+                                LeaveBalance.AvailableLeaveHours -= takenLeaves[i-1];
+                                contextDb.LeaveBalances.Add(LeaveBalance);
                             }
                             else
                             {
-                                leaveRecord.AvailableLeaveHours -= takenLeaves[i-1];
-                                contextDb.Entry(leaveRecord).State = EntityState.Modified;
+                                LeaveBalance.AvailableLeaveHours -= takenLeaves[i-1];
+                                contextDb.Entry(LeaveBalance).State = EntityState.Modified;
                             }
                             contextDb.SaveChanges();
                         }
                     }
-
-
 
                     // Send an email to manager
                     var applicationModel = (from a in contextDb.LeaveApplications
@@ -202,9 +219,90 @@ namespace TimeSheet.Controllers
             }
             return RedirectToAction("Index");
         }
+        
+        // POST: LeaveApplication/_Casual
+        [HttpPost]
+        public ActionResult Casual(TimeSheetContainer model)
+        {
+            if (Startup.NoRecords == true)
+            {
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        for (int i = 0; i < model.TimeRecords.Count; i++)
+                        {
+                            contextDb.TimeRecords.Add(model.TimeRecords[i]);
+                        }
+                        model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
+                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.SubmitTime = DateTime.Now;
+
+                        //Calculate the total working hours to current date
+                        double workingHours = 0;
+                        DateTime current = DateTime.Now.Date;
+                        for (int i = 0; i <= Convert.ToInt32((current - model.TimeRecords[0].RecordDate).TotalDays); i++)
+                        {
+                            workingHours += model.TimeRecords[i].WorkHours;
+                        }
+                        model.TimeRecordForm.TotalWorkingHours = workingHours;
+
+                        model.TimeRecordForm.TotalLeaveHours = 0;
+                        contextDb.TimeRecordForms.Add(model.TimeRecordForm);
+                        contextDb.SaveChanges();
+                    }
+                    return RedirectToAction("Index", new { message = 3 });
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        for (int i = 0; i < model.TimeRecords.Count; i++)
+                        {
+                            contextDb.TimeRecords.Attach(model.TimeRecords[i]);
+                            var entry = contextDb.Entry(model.TimeRecords[i]);
+                            entry.Property(e => e.StartTime).IsModified = true;
+                            entry.Property(e => e.LunchBreak).IsModified = true;
+                            entry.Property(e => e.EndTime).IsModified = true;
+                            entry.Property(e => e.Flexi).IsModified = true;
+                            contextDb.SaveChanges();
+                        }
+                        model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
+                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+
+                        //Calculate the total working hours to current date
+                        double workingHours = 0;
+                        DateTime current = DateTime.Now.Date;
+                        for (int i = 0; i <= Convert.ToInt32((current - model.TimeRecords[0].RecordDate).TotalDays); i++)
+                        {
+                            workingHours += model.TimeRecords[i].WorkHours;
+                        }
+                        model.TimeRecordForm.TotalWorkingHours = workingHours;
+
+                        model.TimeRecordForm.TotalLeaveHours = 0;
+                        model.TimeRecordForm.SubmitTime = DateTime.Now;
+                        contextDb.TimeRecordForms.Attach(model.TimeRecordForm);
+                        contextDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
+                        contextDb.SaveChanges();
+                    }
+                    return RedirectToAction("Index", new { message = 3 });
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
 
         // GET: LeaveApplication/CreateLeaveForm
-        public ActionResult CreateLeaveForm(DateTime start, DateTime end, _leaveType leaveType)
+        public ActionResult CreateLeaveList(DateTime start, DateTime end, _leaveType leaveType)
         {
             // Try to fetch Leaveapplication from DB if it exists
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
@@ -228,11 +326,60 @@ namespace TimeSheet.Controllers
 
             if (applicationVM.TimeRecords.Count == 0)
                 return Content("No working days were found.");
+            
+            return PartialView(@"~/Views/LeaveApplication/_LeaveList.cshtml", applicationVM);
+        }
 
-            if(leaveType == 0)
-                return PartialView(@"~/Views/LeaveApplication/_CasualList.cshtml", applicationVM);
+        //get time records based on year period 
+        private TimeSheetContainer CreateCasualList(int year, int period)
+        {
+            TimeSheetContainer model = new TimeSheetContainer();
+            model.TimeRecordForm = new TimeRecordForm();
+            model.TimeRecords = new List<TimeRecord>();
+
+            DateTime firstPayDay = PayPeriod.GetStartDay(year, period);
+
+            var form = (from f in contextDb.TimeRecordForms
+                        where f.Year == year
+                        where f.Period == period
+                        where f.UserID == User.Identity.Name
+                        select f).FirstOrDefault();
+            if (form == null)
+            {
+                Startup.NoRecords = true;
+                model.TimeRecordForm.Year = year;
+                model.TimeRecordForm.Period = period;
+                model.TimeRecordForm.UserID = User.Identity.Name;
+            }
             else
-                return PartialView(@"~/Views/LeaveApplication/_LeaveList.cshtml", applicationVM);
+            {
+                Startup.NoRecords = false;
+                model.TimeRecordForm = form;
+            }
+
+            for (int i = 0; i < 14; i++)
+            {
+                DateTime date = firstPayDay.AddDays(i);
+                var record = (from r in contextDb.TimeRecords
+                              where r.RecordDate == date
+                              where r.UserID == User.Identity.Name
+                              select r).FirstOrDefault();
+                if (record == null)
+                {
+                    TimeRecord r = new TimeRecord(date);
+                    r.UserID = User.Identity.Name;
+                    PayPeriod.SetPublicHoliday(r);
+                    if (r.IsHoliday)
+                        r.SetAttendence(null, null, 0);
+                    model.TimeRecords.Add(r);
+                }
+                else
+                {
+                    PayPeriod.SetPublicHoliday(record);
+                    model.TimeRecords.Add(record);
+                }
+            }
+            return model;
         }
     }
 }

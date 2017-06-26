@@ -48,7 +48,7 @@ namespace TimeSheet.Models
         [DataType(DataType.MultilineText)]
         public string Comment { get; set; }
 
-        public virtual ICollection<LeaveAttachment> Files { get; set; }
+        public virtual ICollection<LeaveAttachment> Attachments { get; set; }
 
         public List<TimeRecord> GetTimeRecords()
         {

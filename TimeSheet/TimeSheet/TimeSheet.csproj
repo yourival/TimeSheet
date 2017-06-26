@@ -255,7 +255,7 @@
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\LeaveApplicationViewModel.cs" />
-    <Compile Include="Models\LeaveRecord.cs" />
+    <Compile Include="Models\LeaveBalance.cs" />
     <Compile Include="Models\Manager.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
@@ -381,7 +381,6 @@
     <Content Include="Views\UserProfile\Index.cshtml" />
     <Content Include="Views\UserProfile\Relogin.cshtml" />
     <Content Include="Views\TimeSheet\Index.cshtml" />
-    <Content Include="Views\TimeSheet\SelectYear.cshtml" />
     <Content Include="Views\TimeSheet\_CreateTimeSheet.cshtml" />
     <Content Include="Views\LeaveApplication\_LeaveList.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
@@ -397,7 +396,6 @@
     <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
     <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
     <Content Include="Views\Admin\CSVExport.cshtml" />
-    <Content Include="Views\Admin\_SelectPeriod.cshtml" />
     <Content Include="Views\Admin\CreateManager.cshtml" />
     <Content Include="Views\Admin\EditManager.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />
@@ -425,6 +423,7 @@
     <Content Include="Views\ADManagement\Role.cshtml" />
     <Content Include="Views\ADManagement\RoleDetails.cshtml" />
     <Content Include="Views\Admin\_PeriodDetails.cshtml" />
+    <Content Include="Views\Shared\_SelectYear.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

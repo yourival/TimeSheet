@@ -1,4 +1,4 @@
-﻿@model TimeSheet.Models.ApprovalViewModel
+﻿@model ApprovalViewModel
 
 @{
     ViewBag.Title = "Leave Application Detail";
@@ -12,25 +12,25 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.id)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.UserID)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.UserApplicationVM.LeaveApplication.status)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.id)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.EndTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.status)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td id="app-id">@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.id)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.UserID)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.leaveType)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.StartTime)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.EndTime)</td>
-                    <td>@Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.TotalTime)</td>
-                    <td id ="app-status" class= @getStatusClass(Model.UserApplicationVM.LeaveApplication.status)>
-                        @Html.DisplayFor(m => m.UserApplicationVM.LeaveApplication.status)
+                    <td id="app-id">@Html.DisplayFor(m => m.LeaveApplication.id)</td>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)</td>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalTime)</td>
+                    <td id ="app-status" class= @getStatusClass(Model.LeaveApplication.status)>
+                        @Html.DisplayFor(m => m.LeaveApplication.status)
                     </td>
                 </tr>
             </tbody>
@@ -47,7 +47,7 @@
                 <th>Leave Type</th>
                 <th>Apply Leave Time</th>
             </tr>
-            @foreach (var item in Model.UserApplicationVM.TimeRecords)
+            @foreach (var item in Model.TimeRecords)
             {
                 <tr>
                     <td class="form-group">
@@ -67,7 +67,7 @@
             {
                 <row>
                     <button class="btn btn-default" onclick="location.href='@Url.Action( "Approval", "LeaveApproval")'">Go back</button>
-                    <input type="hidden" name="id" value=@Model.UserApplicationVM.LeaveApplication.id />
+                    <input type="hidden" name="id" value=@Model.LeaveApplication.id />
                     <input type="submit" class="btn btn-danger" name="decision" value="Reject">
                     <input type="submit" class="btn btn-success" name="decision" value="Approve">
                 </row>
@@ -108,21 +108,21 @@
     }
 </div>
 @functions {
-    string getStatusClass(TimeSheet.Models._status status)
+    string getStatusClass(_status status)
     {
         string className;
         switch (status)
         {
-            case TimeSheet.Models._status.submited:
+            case _status.submited:
                 className = "text-primary";
                 break;
-            case TimeSheet.Models._status.approved:
+            case _status.approved:
                 className = "text-success";
                 break;
-            case TimeSheet.Models._status.rejected:
+            case _status.rejected:
                 className = "text-danger";
                 break;
-            case TimeSheet.Models._status.modified:
+            case _status.modified:
                 className = "text-warning";
                 break;
             default:
