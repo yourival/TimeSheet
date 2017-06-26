@@ -16,15 +16,15 @@
                             <div class="row">
                                 <div class="col-sm-4">
                                     @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
-                                </div>
+                    </div>
                                 <div id="periodDiv" class="col-sm-4">
                                     @{Html.RenderAction("SelectYear");}
-                                </div>
+                </div>
                             </div>
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label class="col-sm-offset-1 col-sm-2" for="casual-manager">
                         @Html.Label("Manager")
                     </label>
@@ -34,7 +34,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label class="col-sm-offset-1 col-sm-2" for="casual-comment">
                         @Html.LabelFor(model => model.TimeRecordForm.Comments)
                     </label>

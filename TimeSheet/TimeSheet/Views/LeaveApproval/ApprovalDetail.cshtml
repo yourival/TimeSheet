@@ -6,76 +6,82 @@
 
 
 <br />
-<div class="container">
-    <div>
+<div class="container" align="center">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6 col-xs-12 approval-detail">
         <h3>General Information</h3>
-        <table class="table">
-            <thead>
+            <hr />
+            <table class="table-responsive">
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.id)</th>
                     <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.EndTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalTime)</th>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.status)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td id="app-id">@Html.DisplayFor(m => m.LeaveApplication.id)</td>
                     <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)</td>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalTime)</td>
-                    <td id ="app-status" class= @getStatusClass(Model.LeaveApplication.status)>
-                        @Html.DisplayFor(m => m.LeaveApplication.status)
-                    </td>
                 </tr>
-            </tbody>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.EndTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalTime)</td>
         </table>
-        <div id="alert"></div>
+            <hr>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <a href="#approve-detail" data-toggle="collapse">
+                        <p>
+                            Click here if you want to see details
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </p>
+                    </a>
+                </div>
     </div>
-    <br />
-    <div>
-        <h3>Applied Leaves</h3>
-        <table class="table">
+            <div align="center" class="approve-detail">
+                <div id="approve-detail" class="collapse row">
+                    <table class="table table-responsive">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <tr>
                 <th>Date</th>
-                <th>Leave Type</th>
-                <th>Apply Leave Time</th>
+                            <th>Type</th>
+                            <th>Detail Hours</th>
+                            <th>Availability</th>
             </tr>
             @foreach (var item in Model.TimeRecords)
             {
                 <tr>
-                    <td class="form-group">
+                                <td>
                         @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
                     </td>
-                    <td class="form-group">
+                                <td>
                         @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
                     </td>
-                    <td class="form-group">
+                                <td>
                         @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
                     </td>
+                                <td></td>
                 </tr>
             }
         </table>
-        <div>
-            @using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
-            {
-                <row>
-                    <button class="btn btn-default" onclick="location.href='@Url.Action( "Approval", "LeaveApproval")'">Go back</button>
-                    <input type="hidden" name="id" value=@Model.LeaveApplication.id />
+                </div>
+            </div>
+            <hr>
+            <row class="approve-button">
+                <input type="hidden" name="id" value=@Model.LeaveApplication.id />
+                <input type="submit" class="btn btn-success" name="decision" value="Approve">
                     <input type="submit" class="btn btn-danger" name="decision" value="Reject">
-                    <input type="submit" class="btn btn-success" name="decision" value="Approve">
                 </row>
-            }
-        </div>
+        <div class="col-sm-3"></div>
     </div>
 </div>
-<hr />
+
 <div class="container">
     <h3>Taken Leaves</h3>
     @if(Model.TakenLeaves.Count == 0)
@@ -107,6 +113,7 @@
         </table>
     }
 </div>
+
 @functions {
     string getStatusClass(_status status)
     {
