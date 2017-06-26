@@ -2,7 +2,7 @@
 
 <div class="hrForm-content">
     <div>
-        @using (Html.BeginForm("Casual", "LeaveApplication", FormMethod.Post))
+        @using (Html.BeginForm("Casual", "HRApplication", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.TimeRecordForm.TimeRecordFormID)

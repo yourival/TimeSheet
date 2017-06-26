@@ -79,7 +79,6 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public async Task<ActionResult> Leave(LeaveApplicationViewModel applicationVM)
         {           
-
             try
             {
                 if (ModelState.IsValid)
@@ -92,12 +91,12 @@ namespace TimeSheet.Controllers
                     }
 
                     // Transfer attachments to ViewModel
-                    if (applicationVM.Attachments.Count > 0)
+                    if (applicationVM.Attachments.Any())
                     {
                         List<LeaveAttachment> files = new List<LeaveAttachment>();
                         foreach (var file in applicationVM.Attachments)
                         {
-                            if (file.ContentLength > 0)
+                            if (file.ContentLength > 0) 
                             {
                                 var attachment = new LeaveAttachment
                                 {
@@ -109,7 +108,6 @@ namespace TimeSheet.Controllers
                                     attachment.Content = reader.ReadBytes(file.ContentLength);
                                 }
                                 files.Add(attachment);
-
                             }
                         }
                         applicationVM.LeaveApplication.Attachments = files;

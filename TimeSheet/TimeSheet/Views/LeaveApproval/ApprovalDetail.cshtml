@@ -32,7 +32,19 @@
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalTime)</th>
                     <td>@Html.DisplayFor(m => m.LeaveApplication.TotalTime)</td>
-        </table>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.Attachments)</th>
+                    <td>
+                        @foreach (var file in Model.LeaveApplication.Attachments)
+                        {
+                            <a href="@Url.Action("Download","LeaveApproval", new { id=file.Id })">
+                                <span class="glyphicon glyphicon glyphicon-file"></span>@file.FileName 
+                            </a>@:&nbsp;
+                        }
+                    </td>
+                </tr>
+            </table>
             <hr>
             <div class="row" align="right">
                 <div class="col-sm-offset-1 col-sm-10">
@@ -43,7 +55,7 @@
                         </p>
                     </a>
                 </div>
-    </div>
+            </div>
             <div align="center" class="approve-detail">
                 <div id="approve-detail" class="collapse row">
                     <table class="table table-responsive">

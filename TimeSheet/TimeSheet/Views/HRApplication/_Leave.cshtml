@@ -6,7 +6,7 @@
 
 <div class="hrForm-content">
     <div>
-        @using (Html.BeginForm("Leave", "LeaveApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Leave", "HRApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
@@ -66,7 +66,7 @@
                     </label>
                     <div class="col-sm-8">
                         <p>
-                            @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                            @Html.DropDownListFor(model => model.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
                         </p>
                     </div>
                 </div>
@@ -275,7 +275,7 @@
             var names = $.map(files, function (val) {
                 return '<span class="glyphicon glyphicon glyphicon-file"></span>' + val.name;
             });
-            names = (names + "").replace(/,/g, '<br/>');
+            names = (names + "").replace(/,/g, '&nbsp;&nbsp;');
             var input = $(this).parents('.input-group').find(':text');
             var log = numFiles > 1 ? numFiles + ' files selected' : label;
 

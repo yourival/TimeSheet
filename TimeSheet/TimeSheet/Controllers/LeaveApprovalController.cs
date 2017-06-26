@@ -158,9 +158,11 @@ namespace TimeSheet.Controllers
             return applications;
         }
 
-        public ActionResult Test()
+        // GET: /File/1
+        public ActionResult Download(int id)
         {
-            return View();
+            var fileToRetrieve = contextDb.Attachments.Find(id);
+            return File(fileToRetrieve.Content, fileToRetrieve.ContentType);
         }
     }
 }
