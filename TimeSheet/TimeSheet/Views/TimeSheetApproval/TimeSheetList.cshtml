@@ -1,4 +1,4 @@
-﻿@model List<TimeSheet.Models.TimeRecordForm>
+﻿@model List<TimeRecordForm>
 
 @{
     ViewBag.Title = "Timesheet Application List";
@@ -33,21 +33,21 @@
 
 
 @functions {
-    string getStatusClass(TimeSheet.Models.TimeRecordForm._formstatus status)
+    string getStatusClass(TimeRecordForm._formstatus status)
     {
         string className;
         switch (status)
         {
-            case TimeSheet.Models.TimeRecordForm._formstatus.submitted:
+            case TimeRecordForm._formstatus.submitted:
                 className = "text-primary";
                 break;
-            case TimeSheet.Models.TimeRecordForm._formstatus.approved:
+            case TimeRecordForm._formstatus.approved:
                 className = "text-success";
                 break;
-            case TimeSheet.Models.TimeRecordForm._formstatus.rejected:
+            case TimeRecordForm._formstatus.rejected:
                 className = "text-danger";
                 break;
-            case TimeSheet.Models.TimeRecordForm._formstatus.modified:
+            case TimeRecordForm._formstatus.modified:
                 className = "text-warning";
                 break;
             default:

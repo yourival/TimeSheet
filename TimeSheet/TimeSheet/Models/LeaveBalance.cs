@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TimeSheet.Models
 {
-    public class LeaveRecord
+    public class LeaveBalance
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

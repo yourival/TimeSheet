@@ -37,13 +37,13 @@ namespace TimeSheet.Controllers
         // GET: Admin/_UserLeaves
         public ActionResult CreateForm(string userId)
         {
-            List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            List<LeaveBalance> leaveRecords = new List<LeaveBalance>();
             for (int i = 1; i < 4; i++)
             {
                 var leaveRecord = timesheetDb.LeaveRecords.Find(userId, (_leaveType)i);
                 if (leaveRecord == null)
                 {
-                    leaveRecord = new LeaveRecord();
+                    leaveRecord = new LeaveBalance();
                     leaveRecord.LeaveType = (_leaveType)i;
                     leaveRecord.UserID = userId;
                 }
@@ -54,7 +54,7 @@ namespace TimeSheet.Controllers
 
         // POST: Admin/UserLeaves
         [HttpPost]
-        public ActionResult UserLeaves(List<LeaveRecord> leaveRecords)
+        public ActionResult UserLeaves(List<LeaveBalance> leaveRecords)
         {
             for (int i = 1; i < 4; i++)
             {
@@ -292,7 +292,7 @@ namespace TimeSheet.Controllers
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(year);
-            return PartialView("_SelectPeriod",model);
+            return PartialView("_SelectYear",model);
         }
 
         public ActionResult DefaultPeriodDetails()
