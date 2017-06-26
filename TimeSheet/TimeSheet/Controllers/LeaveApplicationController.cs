@@ -30,7 +30,7 @@ namespace TimeSheet.Controllers
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
             //get manager droplist
-            ViewBag.Manager = AdminController.GetManagerItems();
+            ViewBag.Manager = Manager.GetManagerItems();
             ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
             for (int i = 1; i < 4; i++)
             {
@@ -48,7 +48,7 @@ namespace TimeSheet.Controllers
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
             //get manager droplist
-            ViewBag.Manager = AdminController.GetManagerItems();
+            ViewBag.Manager = Manager.GetManagerItems();
             applicationVM.LeaveRecords = leaveRecords;
 
             return PartialView(@"~/Views/LeaveApplication/_Casual.cshtml", applicationVM);

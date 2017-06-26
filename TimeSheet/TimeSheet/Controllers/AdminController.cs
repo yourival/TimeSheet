@@ -180,9 +180,6 @@ namespace TimeSheet.Controllers
                 {
                     if (model != null)
                     {
-                        string ID = model.ManagerID;
-                        int id = model.id;
-                        string name = model.ManagerName;
                         adminDb.ManagerSetting.Add(model);
                         adminDb.SaveChanges();
                     }
@@ -236,34 +233,6 @@ namespace TimeSheet.Controllers
             adminDb.ManagerSetting.Remove(model);
             adminDb.SaveChanges();
             return RedirectToAction("ManagerSetting");
-        }
-
-        public static List<SelectListItem> GetManagerItems()
-        {
-            AdminDb adminDb = new AdminDb();
-            List<SelectListItem> listItems = new List<SelectListItem>();
-            List<Manager> managerList = adminDb.ManagerSetting.ToList();
-            for (int i = 0; i < managerList.Count(); i++)
-            {
-                if (i == 0)
-                {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = managerList[i].ManagerName,
-                        Value = managerList[i].ManagerID,
-                        Selected = true
-                    });
-                }
-                else
-                {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = managerList[i].ManagerName,
-                        Value = managerList[i].ManagerID
-                    });
-                }
-            }
-            return listItems;
         }
 
         public ActionResult CSVExport()

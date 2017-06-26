@@ -19,7 +19,7 @@ namespace TimeSheet.Controllers
         // GET: TimeSheet
         public async Task<ActionResult> Index(int message = 0)
         {
-            ViewBag.Manager = AdminController.GetManagerItems();
+            ViewBag.Manager = Manager.GetManagerItems();
             int year = DateTime.Now.Year;
             int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
             TimeSheetContainer model = await GetTimeSheetModel(year, period);

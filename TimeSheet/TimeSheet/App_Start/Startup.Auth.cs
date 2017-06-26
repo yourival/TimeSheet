@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.IdentityModel.Claims;
+using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -43,6 +43,12 @@ namespace TimeSheet
                     Authority = Authority,
                     PostLogoutRedirectUri = postLogoutRedirectUri,
 
+                    TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        // map the claimsPrincipal's roles to the roles claim
+                        RoleClaimType = "roles",
+                    },
+
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
                         // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
@@ -54,6 +60,9 @@ namespace TimeSheet
                            AuthenticationContext authContext = new AuthenticationContext(Authority, new ADALTokenCache(signedInUserID));
                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
                            code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
+
+                           if(AADHelper.IsUserAdmin(context.AuthenticationTicket.Identity.Name))
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Admin"));
 
                            return Task.FromResult(0);
                        }
