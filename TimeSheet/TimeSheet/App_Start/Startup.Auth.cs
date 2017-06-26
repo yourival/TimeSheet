@@ -61,10 +61,19 @@ namespace TimeSheet
                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
                            code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
 
-                           if(AADHelper.IsUserAdmin(context.AuthenticationTicket.Identity.Name))
+                           if (AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name) == "IsAdmin")
+                           {
                                context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Admin"));
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                           }
 
-                           return Task.FromResult(0);
+                           if (AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name) == "IsManager")
+                           {
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                           }
+
+
+                               return Task.FromResult(0);
                        }
                     }
                 });

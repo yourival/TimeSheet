@@ -28,6 +28,7 @@ namespace TimeSheet.Controllers
             return View();
         }
 
+        [AuthorizeUser(Roles = "Manager")]
         // GET: Admin/UserLeaves
         public ActionResult UserLeaves()
         {
@@ -74,6 +75,7 @@ namespace TimeSheet.Controllers
             return View();
         }
 
+        [AuthorizeUser(Roles = "Admin")]
         //get holidays
         public ActionResult Holidays()
         {
@@ -112,6 +114,7 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Holidays");
         }
 
+        [AuthorizeUser(Roles = "Admin")]
         //Get Email setting from AdminDb
         public ActionResult EmailSetting()
         {
@@ -158,6 +161,7 @@ namespace TimeSheet.Controllers
             }
         }
 
+        [AuthorizeUser(Roles = "Admin")]
         public ActionResult ManagerSetting()
         {
             List<Manager> ManagerList = adminDb.ManagerSetting.ToList();
@@ -235,6 +239,7 @@ namespace TimeSheet.Controllers
             return RedirectToAction("ManagerSetting");
         }
 
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult CSVExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();

@@ -31,7 +31,7 @@ namespace TimeSheet.Controllers
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             //get manager droplist
-            ViewBag.Manager = AdminController.GetManagerItems();
+            ViewBag.Manager = Manager.GetManagerItems();
             ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
             for (int i = 1; i < 4; i++)
             {
@@ -51,7 +51,7 @@ namespace TimeSheet.Controllers
             TimeSheetContainer model = CreateCasualList(year, period);
             model.YearList = PayPeriod.GetYearItems();
             //get manager droplist
-            ViewBag.Manager = AdminController.GetManagerItems();
+            ViewBag.Manager = Manager.GetManagerItems();
 
             return PartialView(@"~/Views/LeaveApplication/_Casual.cshtml", model);
         }

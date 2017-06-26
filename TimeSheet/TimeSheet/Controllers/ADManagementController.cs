@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace TimeSheet.Controllers
 {
-    [AuthorizeUser(Roles = "Admin")]
+    [AuthorizeUser(Roles = "Manager")]
     public class ADManagementController : Controller
     {
         // GET: ADManagement

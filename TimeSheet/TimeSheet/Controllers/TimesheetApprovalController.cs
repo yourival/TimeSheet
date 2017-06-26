@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace TimeSheet.Controllers
 {
+    [AuthorizeUser(Roles = "Manager")]
     public class TimesheetApprovalController : Controller
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
