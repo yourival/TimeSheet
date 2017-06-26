@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
 using TimeSheet.Models;
+using System.Net;
 
 namespace TimeSheet.Controllers
 {
@@ -27,40 +28,45 @@ namespace TimeSheet.Controllers
 
         // GET: Admin/Approval/1
         // GET: Admin/Approval/ApplicationDetails/1
-        public ActionResult ApprovalDetail(int id)
+        public ActionResult ApprovalDetail(int? id)
         {
+            if(id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             ApprovalViewModel approvalVM = new ApprovalViewModel();
-            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
 
             // Get the appliction from DB
-            var application = contextDb.LeaveApplications.Find(id);
+            var application = contextDb.LeaveApplications.Include(a => a.Attachments)
+                                      .SingleOrDefault(a => a.id == id);
             if (application == null)
             {
                 return HttpNotFound();
             }
             else
             {
-                applicationVM.LeaveApplication = application;
-                applicationVM.TimeRecords = application.GetTimeRecords();
+                approvalVM.LeaveApplication = application;
+                approvalVM.TimeRecords = application.GetTimeRecords();
 
-                // Get related applications
+                // Get related applications in the same periods
                 List<LeaveApplication> relatedApplications = (from a in contextDb.LeaveApplications
                                                               where DbFunctions.TruncateTime(a.EndTime) >= application.StartTime.Date &&
                                                                     DbFunctions.TruncateTime(a.StartTime) <= application.EndTime.Date &&
                                                                        a.status == _status.approved &&
                                                                        a.UserID != application.UserID
                                                               select a).ToList();
+                // Fetch each leave days in the same period and has been approved
                 foreach (var a in relatedApplications)
                 {
                     List<TimeRecord> records = (from r in contextDb.TimeRecords
                                                 where DbFunctions.TruncateTime(r.RecordDate) >= application.StartTime.Date &&
                                                       DbFunctions.TruncateTime(r.RecordDate) <= application.EndTime.Date &&
-                                                         r.UserID == a.UserID
+                                                         r.UserID == a.UserID &&
+                                                         r.LeaveType != _leaveType.none
                                                 select r).ToList();
                     records.ForEach(r => approvalVM.TakenLeaves.Add(r));
                 }
                 approvalVM.TakenLeaves.Sort((x, y) => x.RecordDate.CompareTo(y.RecordDate));
-                approvalVM.UserApplicationVM = applicationVM;
+                approvalVM.LeaveApplication = application;
 
                 return View(approvalVM);
             }
@@ -73,7 +79,7 @@ namespace TimeSheet.Controllers
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                if (decision == "Approved")
+                if (decision == "Approve")
                     application.status = _status.approved;
                 else
                     application.status = _status.rejected;

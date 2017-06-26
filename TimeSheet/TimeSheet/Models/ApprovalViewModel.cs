@@ -7,11 +7,13 @@ namespace TimeSheet.Models
 {
     public class ApprovalViewModel
     {
-        public LeaveApplicationViewModel UserApplicationVM { get; set; }
+        public LeaveApplication LeaveApplication { get; set; }
+        public List<TimeRecord> TimeRecords { get; set; }
         public List<TimeRecord> TakenLeaves { get; set; }
 
         public ApprovalViewModel(): base() {
-            UserApplicationVM = new LeaveApplicationViewModel();
+            LeaveApplication = new LeaveApplication();
+            TimeRecords = new List<TimeRecord>();
             TakenLeaves = new List<TimeRecord>();
         }
     }

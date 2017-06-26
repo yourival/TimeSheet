@@ -33,6 +33,7 @@ namespace TimeSheet.Models
 
         public DateTime SubmitTime { get; set; }
 
+        [DataType(DataType.MultilineText)]
         public string Comments { get; set; }
         
     }

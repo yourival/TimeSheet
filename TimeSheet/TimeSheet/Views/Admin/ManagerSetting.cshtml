@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TimeSheet.Models.Manager>
+﻿@model IEnumerable<Manager>
 
 @{
     ViewBag.Title = "ManagerSetting";
@@ -11,47 +11,22 @@
 
         <h4>@Html.ActionLink("Create New", "CreateManager")</h4>
         <table class="table-fill">
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.ManagerID)</th>
+                <tr>
+                    <th>Manager ID</th>
+                    <th>Name</th>
+                </tr>
                 @foreach (var item in Model)
                 {
-                    <td>@Html.DisplayFor(modelItem => item.ManagerID)</td>
+                    <tr>
+                        @Html.HiddenFor(modelItem => item.id)
+                        <td>@Html.DisplayFor(modelItem => item.ManagerID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ManagerName)</td>
+                        <td>
+                            @Html.ActionLink("Edit", "EditManager", "Admin", new { id = item.id }, null) |
+                            @Html.ActionLink("Delete", "DeleteManager", "Admin", new { id = item.id }, null)
+                        </td>
+                    </tr>
                 }
-            </tr>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.ManagerName)
-                </th>
-                @foreach (var item in Model)
-                {
-                <td>
-                    @Html.DisplayFor(modelItem => item.ManagerName)
-                </td>
-                }
-            </tr>
-
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.IsAdmin)</th>
-                @foreach (var item in Model)
-                {
-                    <td>
-                        @(item.IsAdmin? "Yes" : "No")
-                    </td>
-                }
-            </tr>
-
-            <tr>
-                <th></th>
-                @foreach (var item in Model)
-                {
-                    @Html.HiddenFor(modelItem => item.id)
-                    <td>
-                        @Html.ActionLink("Edit", "EditManager", "Admin", new { id = item.id }, null) |
-                        @Html.ActionLink("Delete", "DeleteManager", "Admin", new { id = item.id }, null)
-                    </td>
-                }
-            </tr>
-
         </table>
     </div>
 </body>

@@ -21,7 +21,6 @@ namespace TimeSheet.Models
             Flexi = false;
             LeaveTime = 0;
             LeaveType = _leaveType.none;
-            CasualWorkHours = 0;
         }
 
         public int id { get; set; }
@@ -47,9 +46,7 @@ namespace TimeSheet.Models
         [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "Fill in a number that is a multiple of 0.5 and not larger than 7.5")]
         public double LeaveTime { get; set; }
 
-        // Automatically get work hours by attendence, or ignore attendence for casual workers
-        private double CasualWorkHours;
-
+        // Automatically get work hours by attendence
         [NotMapped]
         public double WorkHours
         {
@@ -58,16 +55,7 @@ namespace TimeSheet.Models
                 if (EndTime != null && StartTime != null)
                     return (EndTime.Value - StartTime.Value).TotalHours - LunchBreak;
                 else
-                    return CasualWorkHours;
-            }
-            set
-            {
-                if (StartTime != null)
-                    EndTime = StartTime.Value.Add(TimeSpan.FromHours(value + LunchBreak));
-                else if (EndTime != null)
-                    StartTime = StartTime.Value.Subtract(TimeSpan.FromHours(value + LunchBreak));
-                else
-                    CasualWorkHours = value;
+                    return 0;
             }
         }
 

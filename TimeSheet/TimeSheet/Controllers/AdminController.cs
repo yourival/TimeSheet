@@ -37,36 +37,36 @@ namespace TimeSheet.Controllers
         // GET: Admin/_UserLeaves
         public ActionResult CreateForm(string userId)
         {
-            List<LeaveRecord> leaveRecords = new List<LeaveRecord>();
+            List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             for (int i = 1; i < 4; i++)
             {
-                var leaveRecord = timesheetDb.LeaveRecords.Find(userId, (_leaveType)i);
-                if (leaveRecord == null)
+                var LeaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
+                if (LeaveBalance == null)
                 {
-                    leaveRecord = new LeaveRecord();
-                    leaveRecord.LeaveType = (_leaveType)i;
-                    leaveRecord.UserID = userId;
+                    LeaveBalance = new LeaveBalance();
+                    LeaveBalance.LeaveType = (_leaveType)i;
+                    LeaveBalance.UserID = userId;
                 }
-                leaveRecords.Add(leaveRecord);
+                LeaveBalances.Add(LeaveBalance);
             }
-            return PartialView(@"~/Views/Admin/_UserLeaves.cshtml", leaveRecords);
+            return PartialView(@"~/Views/Admin/_UserLeaves.cshtml", LeaveBalances);
         }
 
         // POST: Admin/UserLeaves
         [HttpPost]
-        public ActionResult UserLeaves(List<LeaveRecord> leaveRecords)
+        public ActionResult UserLeaves(List<LeaveBalance> LeaveBalances)
         {
             for (int i = 1; i < 4; i++)
             {
-                var leaveRecord = timesheetDb.LeaveRecords.Find(leaveRecords.First().UserID, (_leaveType)i);
-                if (leaveRecord == null)
+                var LeaveBalance = timesheetDb.LeaveBalances.Find(LeaveBalances.First().UserID, (_leaveType)i);
+                if (LeaveBalance == null)
                 {
-                    timesheetDb.LeaveRecords.Add(leaveRecords[i - 1]);
+                    timesheetDb.LeaveBalances.Add(LeaveBalances[i - 1]);
                 }
                 else
                 {
-                    leaveRecord.AvailableLeaveTime = leaveRecords[i - 1].AvailableLeaveTime;
-                    timesheetDb.Entry(leaveRecord).State = EntityState.Modified;
+                    LeaveBalance.AvailableLeaveTime = LeaveBalances[i - 1].AvailableLeaveTime;
+                    timesheetDb.Entry(LeaveBalance).State = EntityState.Modified;
                 }
                 timesheetDb.SaveChanges();
             }
@@ -261,7 +261,7 @@ namespace TimeSheet.Controllers
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(year);
-            return PartialView("_SelectPeriod",model);
+            return PartialView("_SelectYear",model);
         }
 
         public ActionResult DefaultPeriodDetails()

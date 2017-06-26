@@ -4,6 +4,10 @@
     font-family: "Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
 }
 
+.navbar-default {
+    background-color:#fff;
+}
+
 /*make sure navbar doesn't go beyonod main picture*/
 .box1 {
     max-width: 1000px;
@@ -28,7 +32,7 @@
 .menu li a {
     font-size: 1em;
     font-weight: 500;
-    text-transform: uppercase;
+    text-transform: capitalize;
     padding-top: 0.5em;
 }
 
@@ -201,11 +205,11 @@ form p {
 
 
 .button-group {
-    display:block;
-    margin-top:50px;
+    display: block;
+    margin-top: 50px;
 }
-
 /*leave application page end*/
+
 
 /*leave balance style*/
 .textStyleBefore span,
@@ -257,6 +261,53 @@ form p {
     border-radius: 2px;
 }
 /*tab setting end*/
+
+/*approve detail page style start*/
+.approval-detail {
+    padding:0.8em;
+    border:1px solid lightgrey;
+    border-radius:2px;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+}
+
+.approval-detail th,
+.approval-detail td {
+    padding:0.8em 1.5em 0.8em 1em;
+}
+
+.approval-detail th {
+    text-align:left;
+}
+
+.approval-detail hr {
+    margin-bottom:10px;
+}
+
+.approve-detail table th {
+    background-color: #d9edf7;
+    color:#31708f;
+    border-top:1px solid lightgrey;
+}
+
+.approve-detail table td {
+    text-align:center;
+}
+
+.approve-detail table {
+    margin: 0 2em;
+    width:auto;
+}
+
+.approve-button .btn {
+    border:none;
+    border-radius:2px;
+}
+
+.approve-button input {
+    margin:5px;
+}
+
+/*aprrove detail page style end*/
 
 
 /*time sheet detain holiday indication*/
@@ -431,6 +482,8 @@ form p {
 
 /*User ID search bar end*/
 
+
+
 @media (min-width: 1200px) {
 
     /*navbar*/
@@ -595,9 +648,9 @@ form p {
         display: inline;
     }
 
-        .nav > li > a {
-            display: inline;
-        }
+    .nav > li > a {
+        display: inline;
+    }
 
     /*email setting column width*/
     .emailSetting td {
@@ -617,9 +670,7 @@ form p {
         font-size: 1.2em;
     }
 
-    p {
-        font-size: 0.7em;
-    }
+
 
     /*small table responsive attribute*/
     .table-responsive {
@@ -693,11 +744,18 @@ form p {
     .footer .dropup {
         display: none;
     }
+}
 
-    /*alert*/
-    .alert {
-        text-align: left;
-    }
+/*alert*/
+.alert {
+    text-align: left;
 }
 
 
+.right-align-cell {
+    text-align: right;
+}
+
+.dropdown-menu {
+    text-transform:capitalize;
+}
