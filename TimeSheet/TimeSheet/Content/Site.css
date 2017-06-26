@@ -160,6 +160,7 @@
     padding: 1em;
     margin-bottom: 4em;
     border-radius: 2px;
+    width:80%;
     border:1px solid lightgray;
 }
 
@@ -653,6 +654,10 @@ form p {
 
     .nav > li > a {
         display: inline;
+    }
+
+    .hrForm-content {
+        width:100%;
     }
 
     /*email setting column width*/
