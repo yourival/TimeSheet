@@ -88,7 +88,7 @@
         $("#casual-form").removeData("unobtrusiveValidation");
 
         $.ajax({
-            url: "/LeaveApplication/GetTimeRecords",
+            url: "/HRApplication/GetTimeRecords",
             type: "GET",
             data: { start: start, end: end, leaveType: 0 }
         })
@@ -120,7 +120,7 @@
         $("#year").on("change", function () {
             var val = $('#year').val();
             $.ajax({
-                url: "/LeaveApplication/SelectYear",
+                url: "/HRApplication/SelectYear",
                 type: "get",
                 data: { year: val }
             })
@@ -133,7 +133,7 @@
             var year = $('#year').val();
             var period = $('#period').val();
             var yp = year + "." + period;
-            $("#casual-form").load('@Url.Action("GetTimeRecords", "LeaveApplication",null,Request.Url.Scheme)?text=' + yp);
+            $("#casual-form").load('@Url.Action("GetTimeRecords", "HRApplication", null,Request.Url.Scheme)?text=' + yp);
         });
         
         //renderCasualForm();

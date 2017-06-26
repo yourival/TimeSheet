@@ -235,7 +235,7 @@
     <Compile Include="Controllers\ADManagementController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LeaveApplicationController.cs" />
+    <Compile Include="Controllers\HRApplicationController.cs" />
     <Compile Include="Controllers\TimesheetApprovalController.cs" />
     <Compile Include="Controllers\TimeSheetController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
@@ -382,7 +382,7 @@
     <Content Include="Views\UserProfile\Relogin.cshtml" />
     <Content Include="Views\TimeSheet\Index.cshtml" />
     <Content Include="Views\TimeSheet\_CreateTimeSheet.cshtml" />
-    <Content Include="Views\LeaveApplication\_LeaveList.cshtml" />
+    <Content Include="Views\HRApplication\_LeaveList.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
     <Content Include="Views\Admin\_UserLeaves.cshtml" />
@@ -401,10 +401,10 @@
     <Content Include="Views\Admin\EmailSetting.cshtml" />
     <Content Include="Views\Admin\Holidays.cshtml" />
     <Content Include="Views\Admin\ManagerSetting.cshtml" />
-    <Content Include="Views\LeaveApplication\Index.cshtml" />
-    <Content Include="Views\LeaveApplication\_Casual.cshtml" />
-    <Content Include="Views\LeaveApplication\_Leave.cshtml" />
-    <Content Include="Views\LeaveApplication\_CasualList.cshtml" />
+    <Content Include="Views\HRApplication\Index.cshtml" />
+    <Content Include="Views\HRApplication\_Casual.cshtml" />
+    <Content Include="Views\HRApplication\_Leave.cshtml" />
+    <Content Include="Views\HRApplication\_CasualList.cshtml" />
     <Content Include="Views\ADManagement\Index.cshtml" />
     <Content Include="Views\ADManagement\User.cshtml" />
     <Content Include="Views\ADManagement\UserDetails.cshtml" />
