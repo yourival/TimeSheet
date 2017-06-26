@@ -5,41 +5,46 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>EditManager</h2>
+<body>
+    <div class="container" align="center">
+        <h2>Edit Manager</h2>
 
-@using (Html.BeginForm("EditManagerConfirmed", "Admin",FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.id)
+        @using (Html.BeginForm("EditManagerConfirmed", "Admin",FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model=>model.id)
+            <table class="table-fill">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <tr>
+                    <th>@Html.LabelFor(model => model.ManagerID)</th>
+                    <td>
+                        @Html.EditorFor(model => model.ManagerID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ManagerID, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model => model.ManagerName)</th>
+                    <td>
+                        @Html.EditorFor(model => model.ManagerName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ManagerName, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ManagerID, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ManagerID, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ManagerID, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                <tr>
+                    <th>@Html.LabelFor(model => model.IsAdmin)</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsAdmin, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsAdmin, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <input type="submit" value="Save" class="btn btn-primary" />
+        }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ManagerName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ManagerName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ManagerName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+        <br />
+        <div>
+            @Html.ActionLink("Back to Manager Setting", "ManagerSetting")
         </div>
     </div>
-}
-
-<div>
-    @Html.ActionLink("Back to Manager Setting", "ManagerSetting")
-</div>
+</body>

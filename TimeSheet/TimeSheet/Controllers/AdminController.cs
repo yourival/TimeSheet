@@ -28,6 +28,7 @@ namespace TimeSheet.Controllers
             return View();
         }
 
+        [AuthorizeUser(Roles = "Manager")]
         // GET: Admin/UserLeaves
         public ActionResult UserLeaves()
         {
@@ -74,6 +75,7 @@ namespace TimeSheet.Controllers
             return View();
         }
 
+        [AuthorizeUser(Roles = "Admin")]
         //get holidays
         public ActionResult Holidays()
         {
@@ -112,6 +114,7 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Holidays");
         }
 
+        [AuthorizeUser(Roles = "Admin")]
         //Get Email setting from AdminDb
         public ActionResult EmailSetting()
         {
@@ -158,6 +161,7 @@ namespace TimeSheet.Controllers
             }
         }
 
+        [AuthorizeUser(Roles = "Admin")]
         public ActionResult ManagerSetting()
         {
             List<Manager> ManagerList = adminDb.ManagerSetting.ToList();
@@ -180,9 +184,6 @@ namespace TimeSheet.Controllers
                 {
                     if (model != null)
                     {
-                        string ID = model.ManagerID;
-                        int id = model.id;
-                        string name = model.ManagerName;
                         adminDb.ManagerSetting.Add(model);
                         adminDb.SaveChanges();
                     }
@@ -238,34 +239,7 @@ namespace TimeSheet.Controllers
             return RedirectToAction("ManagerSetting");
         }
 
-        public static List<SelectListItem> GetManagerItems()
-        {
-            AdminDb adminDb = new AdminDb();
-            List<SelectListItem> listItems = new List<SelectListItem>();
-            List<Manager> managerList = adminDb.ManagerSetting.ToList();
-            for (int i = 0; i < managerList.Count(); i++)
-            {
-                if (i == 0)
-                {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = managerList[i].ManagerName,
-                        Value = managerList[i].ManagerID,
-                        Selected = true
-                    });
-                }
-                else
-                {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = managerList[i].ManagerName,
-                        Value = managerList[i].ManagerID
-                    });
-                }
-            }
-            return listItems;
-        }
-
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult CSVExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();

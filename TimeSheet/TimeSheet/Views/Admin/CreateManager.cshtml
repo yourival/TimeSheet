@@ -29,6 +29,14 @@
                         @Html.ValidationMessageFor(model => model.ManagerName, "", new { @class = "text-danger" })
                     </td>
                 </tr>
+
+                <tr>
+                    <th>@Html.LabelFor(model => model.IsAdmin)</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsAdmin, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsAdmin, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
             </table>
             <br/>
             <input type="submit" value="Add" class="btn btn-primary" />  

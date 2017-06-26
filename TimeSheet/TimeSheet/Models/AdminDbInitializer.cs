@@ -19,7 +19,8 @@ namespace TimeSheet.Models
             context.ManagerSetting.Add(new Manager()
             {
                 ManagerID = "d.yang@m.nantien.edu.au",
-                ManagerName = "Dawen Yang"
+                ManagerName = "Dawen Yang",
+                IsAdmin = true
             });
             context.SaveChanges();
         }

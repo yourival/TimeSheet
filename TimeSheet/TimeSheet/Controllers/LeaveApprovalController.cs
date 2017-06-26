@@ -9,6 +9,7 @@ using System.Net;
 
 namespace TimeSheet.Controllers
 {
+    [AuthorizeUser(Roles = "Manager")]
     public class LeaveApprovalController : Controller
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
