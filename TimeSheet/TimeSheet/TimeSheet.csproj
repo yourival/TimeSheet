@@ -476,7 +476,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>62526</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300</IISUrl>
+          <IISUrl>https://hr.nantien.edu.au</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

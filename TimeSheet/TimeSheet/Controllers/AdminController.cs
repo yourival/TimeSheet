@@ -66,7 +66,7 @@ namespace TimeSheet.Controllers
                 }
                 else
                 {
-                    LeaveBalance.AvailableLeaveTime = LeaveBalances[i - 1].AvailableLeaveTime;
+                    LeaveBalance.AvailableLeaveHours = LeaveBalances[i - 1].AvailableLeaveHours;
                     timesheetDb.Entry(LeaveBalance).State = EntityState.Modified;
                 }
                 timesheetDb.SaveChanges();

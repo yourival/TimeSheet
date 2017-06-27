@@ -83,7 +83,23 @@ namespace TimeSheet.Controllers
                 if (decision == "Approve")
                     application.status = _status.approved;
                 else
+                {
                     application.status = _status.rejected;
+                    // Update leave balances
+                    List<TimeRecord> rejectedTimeRecords = application.GetTimeRecords();
+                    List<LeaveBalance> userLeaveBalances = (from l in contextDb.LeaveBalances
+                                                            where l.UserID == application.UserID
+                                                            select l).ToList();
+                    foreach(var record in rejectedTimeRecords)
+                    {
+                        LeaveBalance leaveBalance = userLeaveBalances.First(l => l.LeaveType == record.LeaveType);
+                        leaveBalance.AvailableLeaveHours += record.LeaveTime;
+                        TimeRecord updatedRecord = new TimeRecord(record.RecordDate);
+                        updatedRecord.UserID = application.UserID;
+                        contextDb.Entry(updatedRecord).State = EntityState.Modified;
+                        contextDb.Entry(leaveBalance).State = EntityState.Modified;
+                    }
+                }
 
                 contextDb.Entry(application).State = EntityState.Modified;
                 contextDb.SaveChanges();

@@ -17,12 +17,5 @@ namespace TimeSheet.Models
 
         [RegularExpression(@"^(\d*(\.[05])?)$", ErrorMessage = "Fill in a number that is a multiple of 0.5")]
         public Double AvailableLeaveHours { get; set; }
-
-        [NotMapped]
-        public TimeSpan AvailableLeaveTime
-        {
-            get { return TimeSpan.FromHours(AvailableLeaveHours); }
-            set { AvailableLeaveHours = value.TotalHours; }
-        }
     }
 }

@@ -12,6 +12,8 @@ using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
 using TimeSheet.Models;
+using Microsoft.Owin;
+using Microsoft.Azure.ActiveDirectory.GraphClient;
 
 namespace TimeSheet
 {
@@ -42,6 +44,8 @@ namespace TimeSheet
                     ClientId = clientId,
                     Authority = Authority,
                     PostLogoutRedirectUri = postLogoutRedirectUri,
+                    SignInAsAuthenticationType = "Cookies",
+                    UseTokenLifetime = false,
 
                     TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
                     {
