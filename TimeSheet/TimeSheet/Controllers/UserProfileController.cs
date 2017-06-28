@@ -20,10 +20,10 @@ namespace TimeSheet.Controllers
     public class UserProfileController : Controller
     {
         private ApplicationDb db = new ApplicationDb();
-        public static string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
-        public static string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
-        public static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        public static string graphResourceID = "https://graph.windows.net";
+        private static string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        private static string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
+        private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        private static string graphResourceID = "https://graph.windows.net";
 
         // GET: UserProfile
         public async Task<ActionResult> Index()
@@ -86,5 +86,23 @@ namespace TimeSheet.Controllers
             return client;
         }
 
+        //public async Task<IUser> GetUserName
+        //{
+        //    ActiveDirectoryClient activeDirectoryClient = UserProfileController.GetActiveDirectoryClient();
+        //    string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+        //    try
+        //    {
+        //        var result = activeDirectoryClient.Users
+        //            .Where(u => u.ObjectId.Equals(userObjectID))
+        //            .ExecuteAsync();
+        //    IUser user = result.CurrentPage.ToList().First();
+        //    Session["displayname"] = user.GivenName;
+        //    }
+        //    catch (AdalException ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    return
+        //}
     }
 }

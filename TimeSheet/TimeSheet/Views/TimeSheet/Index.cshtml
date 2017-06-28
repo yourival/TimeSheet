@@ -19,7 +19,7 @@
                 </tr>
                 <tr>
                     <td>@Html.DropDownList("year", Model.YearList, new { @class = "form-control" })</td>
-                    <td id="periodDiv">@{Html.RenderAction("SelectYear");}</td>
+                    <td id="periodDiv">@{Html.RenderAction("SelectDefaultYear");}</td>
                     <td>@Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })</td>
                 </tr>
             </table>

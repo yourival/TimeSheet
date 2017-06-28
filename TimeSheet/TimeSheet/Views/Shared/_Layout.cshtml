@@ -16,8 +16,9 @@
 
         <div class="container-fluid" style="background-color:#222">
             <div class="nav navbar-inverse">
-                <div class="logIn">
-                    @Html.Partial("_LoginPartial")
+                <div id="login" class="logIn">
+                    @Html.Partial("_LoginPartial", String.Empty);
+                    
                 </div>
             </div>
         </div>
@@ -73,7 +74,6 @@
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
                                         <ul class="dropdown-menu">
                                             <li>@Html.ActionLink("HR Application", "Index", "HRApplication")</li>
-                                            <li>@Html.ActionLink("Time Sheet", "Index", "TimeSheet")</li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -136,3 +136,9 @@
 
 
 </html>
+
+<script>
+    $(document).ready(function () {
+        $("#login").load('@Url.Action("LoginLayout", "Home")');
+    });
+</script>

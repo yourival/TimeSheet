@@ -1,9 +1,11 @@
-﻿@if (Request.IsAuthenticated)
+﻿@model string
+
+@if (Request.IsAuthenticated)
 {
 <text>
     <ul class="nav navbar-nav navbar-right">
         <li id="nameDisplay">
-            @Html.ActionLink("Hello " + Session["DisplayName"] + "!", "Index", "UserProfile", routeValues: null, htmlAttributes: null)
+            @Html.ActionLink("Hello " + Model + "!", "Index", "UserProfile", routeValues: null, htmlAttributes: null)
         </li>
         <li>
             @Html.ActionLink("Sign out", "SignOut", "Account")
