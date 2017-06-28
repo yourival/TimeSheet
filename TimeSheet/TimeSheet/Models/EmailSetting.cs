@@ -37,7 +37,7 @@ namespace TimeSheet.Models
             AdminDb adminDb = new AdminDb();
             TimeSheetDb timesheetDb = new TimeSheetDb();
             int ID = Convert.ToInt32(id);
-            string link = "http://localhost:44300/";
+            string link = "https://hr.nantien.edu.au/";
             string body = string.Empty;
             string subject = string.Empty;
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
