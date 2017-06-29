@@ -62,7 +62,7 @@ namespace TimeSheet.Controllers
                                                 where DbFunctions.TruncateTime(r.RecordDate) >= application.StartTime.Date &&
                                                       DbFunctions.TruncateTime(r.RecordDate) <= application.EndTime.Date &&
                                                          r.UserID == a.UserID &&
-                                                         r.LeaveType != _leaveType.none
+                                                         r.LeaveType != null
                                                 select r).ToList();
                     records.ForEach(r => approvalVM.TakenLeaves.Add(r));
                 }

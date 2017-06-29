@@ -32,8 +32,7 @@ namespace TimeSheet.Controllers
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             //get manager droplist
             ViewBag.Manager = Manager.GetManagerItems();
-            ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
-            for (int i = 1; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var availableLeave = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
                 LeaveBalances.Add(availableLeave == null ? new LeaveBalance() : availableLeave);
@@ -46,9 +45,9 @@ namespace TimeSheet.Controllers
         // GET: LeaveApplication/_Casual
         public ActionResult Casual()
         {
-            int year = DateTime.Now.Year;
-            int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
-            TimeSheetContainer model = CreateCasualList(year, period);
+            //int year = DateTime.Now.Year;
+            //int period = (int)(DateTime.Now - PayPeriod.FirstPayDayOfYear(year)).Days / 14 + 2;
+            TimeSheetContainer model = new TimeSheetContainer();
             model.YearList = PayPeriod.GetYearItems();
             //get manager droplist
             ViewBag.Manager = Manager.GetManagerItems();
@@ -65,16 +64,6 @@ namespace TimeSheet.Controllers
             return PartialView("_SelectYear", model);
         }
 
-        //Get year period user selected
-        public ActionResult GetTimeRecords(string text)
-        {
-            string[] words = text.Split('.');
-            var y = int.Parse(words[0]);
-            var p = int.Parse(words[1]);
-            var model = CreateCasualList(y, p);
-            return PartialView("_CasualList", model);
-        }
-
         // POST: LeaveApplication/_Leave
         [HttpPost]
         public async Task<ActionResult> Leave(LeaveApplicationViewModel applicationVM)
@@ -83,20 +72,70 @@ namespace TimeSheet.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    double[] takenLeaves = new double[3];
+                    double[] appliedLeaveTimes = new double[3];
                     foreach (var l in applicationVM.TimeRecords)
                     {
-                        int index = (int)l.LeaveType-1;
-                        takenLeaves[index] += l.LeaveTime;
+                        // Compassionate pay will take Sick leaves balance
+                        if(l.LeaveType == _leaveType.compassionatePay)
+                        {
+                            appliedLeaveTimes[(int)_leaveType.sick] += l.LeaveTime;
+                        }
+                        // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
+                        else if((int)l.LeaveType < 3)
+                        {
+                            appliedLeaveTimes[(int)l.LeaveType] += l.LeaveTime;
+                        }
+                    }
+
+                    // Update Time Records in Db
+                    foreach (var r in applicationVM.TimeRecords)
+                    {
+                        // Configure Time Record if it's not a full day off
+                        if(r.LeaveTime != 7.5)
+                            r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
+
+                        // Sum up total leave time
+                        applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
+
+                        // Try to fetch TimeRecord from Db if it exists
+                        var timeRecord = (from a in contextDb.TimeRecords
+                                             where DbFunctions.TruncateTime(a.RecordDate) == r.RecordDate.Date &&
+                                                     a.UserID == r.UserID
+                                             select a).FirstOrDefault();
+
+                        // Update TimeRecord if exists, add if not
+                        if (timeRecord == null)
+                        {
+                            contextDb.TimeRecords.Add(r);
+                        }
+                        else
+                        {
+                            // Record the difference of applied leave time and the balance in Db
+                            // Compassionate pay will take Sick leaves balance
+                            if (timeRecord.LeaveType == _leaveType.compassionatePay)
+                            {
+                                appliedLeaveTimes[(int)_leaveType.sick] -= timeRecord.LeaveTime;
+                            }
+                            // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
+                            else if ((int)timeRecord.LeaveType < 3)
+                            {
+                                appliedLeaveTimes[(int)timeRecord.LeaveType] -= timeRecord.LeaveTime;
+                            }
+
+                            timeRecord.LeaveTime = r.LeaveTime;
+                            timeRecord.LeaveType = r.LeaveType;
+                            contextDb.Entry(timeRecord).State = EntityState.Modified;
+                        }
+                        contextDb.SaveChanges();
                     }
 
                     // Transfer attachments to ViewModel
-                    if (applicationVM.Attachments.Any())
+                    if (applicationVM.Attachments.Count != 0)
                     {
                         List<LeaveAttachment> files = new List<LeaveAttachment>();
                         foreach (var file in applicationVM.Attachments)
                         {
-                            if (file.ContentLength > 0) 
+                            if (file != null && file.ContentLength > 0)
                             {
                                 var attachment = new LeaveAttachment
                                 {
@@ -116,41 +155,10 @@ namespace TimeSheet.Controllers
                     // Try to fetch Leaveapplication from DB if it exists
                     applicationVM.LeaveApplication.UserID = User.Identity.Name;
                     var application = (from a in contextDb.LeaveApplications
-                                                     where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
-                                                           DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
-                                                           a.UserID == applicationVM.LeaveApplication.UserID
-                                                     select a).FirstOrDefault();
-
-                    foreach(var r in applicationVM.TimeRecords)
-                    {
-                        // Configure time record if it's not a full day off
-                        if(r.LeaveTime != 7.5)
-                            r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
-
-                        // Sum up total leave time
-                        applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
-
-                        // Try to fetch TimeRecord from DB if it exists
-                        var timeRecord = (from a in contextDb.TimeRecords
-                                             where DbFunctions.TruncateTime(a.RecordDate) == r.RecordDate.Date &&
-                                                     a.UserID == r.UserID
-                                             select a).FirstOrDefault();
-
-                        // Update TimeRecord if exists, Add if not
-                        if (timeRecord == null)
-                        {
-                            contextDb.TimeRecords.Add(r);
-                        }
-                        else
-                        {
-                            int index = (int)timeRecord.LeaveType - 1;
-                            takenLeaves[index] -= timeRecord.LeaveTime;
-                            timeRecord.LeaveTime = r.LeaveTime;
-                            timeRecord.LeaveType = r.LeaveType;
-                            contextDb.Entry(timeRecord).State = EntityState.Modified;
-                        }
-                        contextDb.SaveChanges();
-                    }
+                                       where DbFunctions.TruncateTime(a.StartTime) == applicationVM.LeaveApplication.StartTime.Date &&
+                                             DbFunctions.TruncateTime(a.EndTime) == applicationVM.LeaveApplication.EndTime.Date &&
+                                             a.UserID == applicationVM.LeaveApplication.UserID
+                                       select a).FirstOrDefault();
 
                     // Update LeaveApplication if exists, add if not
                     if (application == null)
@@ -168,29 +176,27 @@ namespace TimeSheet.Controllers
                         contextDb.Entry(application).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
-                
-                    // Update user leaves data in Db after submitting if it's leave application
-                    if(applicationVM.LeaveApplication.leaveType != _leaveType.none)
+
+                    // Update user leaves balance in Db after submitting                    
+                    for (int i = 0; i < 3; i++)
                     {
-                        for (int i = 1; i < 4; i++)
+                        var LeaveBalance = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
+                        if (LeaveBalance == null)
                         {
-                            var LeaveBalance = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
-                            if (LeaveBalance == null)
-                            {
-                                LeaveBalance = new LeaveBalance();
-                                LeaveBalance.LeaveType = (_leaveType)i;
-                                LeaveBalance.UserID = User.Identity.Name;
-                                LeaveBalance.AvailableLeaveHours -= takenLeaves[i-1];
-                                contextDb.LeaveBalances.Add(LeaveBalance);
-                            }
-                            else
-                            {
-                                LeaveBalance.AvailableLeaveHours -= takenLeaves[i-1];
-                                contextDb.Entry(LeaveBalance).State = EntityState.Modified;
-                            }
-                            contextDb.SaveChanges();
+                            LeaveBalance = new LeaveBalance();
+                            LeaveBalance.LeaveType = (_leaveType)i;
+                            LeaveBalance.UserID = User.Identity.Name;
+                            LeaveBalance.AvailableLeaveHours = 0;
+                            contextDb.LeaveBalances.Add(LeaveBalance);
                         }
+                        else
+                        {
+                            LeaveBalance.AvailableLeaveHours -= appliedLeaveTimes[i];
+                            contextDb.Entry(LeaveBalance).State = EntityState.Modified;
+                        }
+                        contextDb.SaveChanges();
                     }
+                    
 
                     // Send an email to manager
                     var applicationModel = (from a in contextDb.LeaveApplications
@@ -299,26 +305,27 @@ namespace TimeSheet.Controllers
             }
         }
 
-        // GET: LeaveApplication/CreateLeaveForm
+        // GET: LeaveApplication/CreateLeaveList
         public ActionResult CreateLeaveList(DateTime start, DateTime end, _leaveType leaveType)
         {
-            // Try to fetch Leaveapplication from DB if it exists
+            // Create new Leaveapplication
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<TimeRecord> newTimeRecords = new List<TimeRecord>();
-            ViewBag.LeaveType = LeaveApplication.GetLeaveTypeItems();
 
             for (int i = 0; i <= (end - start).Days; i++)
             {
-                // Fetch each timerecord in DB if it exists
+                // Create new timerecords
                 DateTime currentDate = start.AddDays(i);
                 var newTimeRecord = new TimeRecord(currentDate.Date);
-                newTimeRecord.SetAttendence(null, null, 0);
-                newTimeRecord.UserID = User.Identity.Name;
-                newTimeRecord.LeaveType = leaveType;
-                newTimeRecord.LeaveTime = (leaveType == 0) ? 0 : 7.5;
                 PayPeriod.SetPublicHoliday(newTimeRecord);
                 if (!newTimeRecord.IsHoliday)
+                {
+                    newTimeRecord.SetAttendence(null, null, 0);
+                    newTimeRecord.UserID = User.Identity.Name;
+                    newTimeRecord.LeaveType = leaveType;
+                    newTimeRecord.LeaveTime = 7.5;
                     newTimeRecords.Add(newTimeRecord);
+                }
             }
             applicationVM.TimeRecords = newTimeRecords;
 
@@ -328,8 +335,8 @@ namespace TimeSheet.Controllers
             return PartialView("_LeaveList", applicationVM);
         }
 
-        //get time records based on year period 
-        private TimeSheetContainer CreateCasualList(int year, int period)
+        // Get time records based on year period
+        public ActionResult CreateCasualList(int year, int period)
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.TimeRecordForm = new TimeRecordForm();
@@ -377,7 +384,8 @@ namespace TimeSheet.Controllers
                     model.TimeRecords.Add(record);
                 }
             }
-            return model;
+
+            return PartialView("_CasualList", model);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace TimeSheet.Models
                     else
                     {
                         newTimeRecord.LeaveTime = 0;
-                        newTimeRecord.LeaveType = _leaveType.none;
+                        newTimeRecord.LeaveType = null;
                     }
 
                     timeRecords.Add(newTimeRecord);
@@ -76,7 +76,7 @@ namespace TimeSheet.Models
                     else
                     {
                         newTimeRecord.LeaveTime = 0;
-                        newTimeRecord.LeaveType = _leaveType.none;
+                        newTimeRecord.LeaveType = null;
                     }
                     timeRecords.Add(newTimeRecord);
                 }
@@ -109,7 +109,7 @@ namespace TimeSheet.Models
                     else
                     {
                         newTimeRecord.LeaveTime = 0;
-                        newTimeRecord.LeaveType = _leaveType.none;
+                        newTimeRecord.LeaveType = null;
                     }
                     timeRecords.Add(newTimeRecord);
                 }
@@ -128,7 +128,7 @@ namespace TimeSheet.Models
             {
                 UserID = "r.lin@m.nantien.edu.au",
                 LeaveType = _leaveType.flexi,
-                AvailableLeaveHours = 7.5
+                AvailableLeaveHours = 22.5
             });
             context.LeaveBalances.Add(new LeaveBalance()
             {

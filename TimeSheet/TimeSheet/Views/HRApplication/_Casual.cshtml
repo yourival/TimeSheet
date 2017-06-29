@@ -7,21 +7,17 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.TimeRecordForm.TimeRecordFormID)
             <form>
-                <div class="form-group">
+                <div class="form-group row">
                     <label class="col-sm-offset-1 col-sm-2">
                         Period
                     </label>
-                    <div class="form form-inline col-sm-8">
-                        <p>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
-                    </div>
-                                <div id="periodDiv" class="col-sm-4">
-                                    @{Html.RenderAction("SelectYear");}
-                </div>
-                            </div>
-                        </p>
+                    <div class="form form-inline col-sm-8" >
+                        <div class="form-group">
+                            @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
+                        </div>
+                        <div id="periodDiv" class="form-group">
+                            @{Html.RenderAction("SelectYear");}
+                        </div>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -78,8 +74,8 @@
 <script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
     function renderCasualForm() {
-        var start = $('#casual-start').val();
-        var end = $('#casual-end').val();
+        var year = $('#year').val();
+        var period = $('#period').val();
 
         $("#casual-form").text("Loading...");
 
@@ -88,9 +84,9 @@
         $("#casual-form").removeData("unobtrusiveValidation");
 
         $.ajax({
-            url: "/HRApplication/GetTimeRecords",
+            url: "/HRApplication/CreateCasualList",
             type: "GET",
-            data: { start: start, end: end, leaveType: 0 }
+            data: { year: year, period: period }
         })
             .done(function (partialViewResult) {
             //Render partial view
@@ -130,10 +126,11 @@
         });
 
         $("#periodDiv").on("change", function () {
-            var year = $('#year').val();
+            renderCasualForm();
+            @*var year = $('#year').val();
             var period = $('#period').val();
             var yp = year + "." + period;
-            $("#casual-form").load('@Url.Action("GetTimeRecords", "HRApplication", null,Request.Url.Scheme)?text=' + yp);
+            $("#casual-form").load('@Url.Action("GetTimeRecords", "HRApplication", null,Request.Url.Scheme)?text=' + yp);*@
         });
         
         //renderCasualForm();

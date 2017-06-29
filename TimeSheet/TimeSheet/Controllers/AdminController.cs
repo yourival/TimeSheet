@@ -39,7 +39,7 @@ namespace TimeSheet.Controllers
         public ActionResult CreateForm(string userId)
         {
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
-            for (int i = 1; i < 4; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(_leaveType)).Length; i++)
             {
                 var LeaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
                 if (LeaveBalance == null)
@@ -57,7 +57,7 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public ActionResult UserLeaves(List<LeaveBalance> LeaveBalances)
         {
-            for (int i = 1; i < 4; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(_leaveType)).Length; i++)
             {
                 var LeaveBalance = timesheetDb.LeaveBalances.Find(LeaveBalances.First().UserID, (_leaveType)i);
                 if (LeaveBalance == null)
@@ -151,7 +151,7 @@ namespace TimeSheet.Controllers
                         mailSettings.Smtp.Network.Port = model.SMTPPort;
                         config.Save();
                     }
-                    
+
                 }
                 return RedirectToAction("EmailSetting");
             }
@@ -240,7 +240,7 @@ namespace TimeSheet.Controllers
         }
 
         [AuthorizeUser(Roles = "Manager")]
-        public ActionResult CSVExport()
+        public ActionResult PayrollExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();
             return View();
@@ -250,7 +250,7 @@ namespace TimeSheet.Controllers
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(DateTime.Now.Year);
-            foreach(var item in model.PeriodList)
+            foreach (var item in model.PeriodList)
             {
                 if (item.Selected == true)
                 {
@@ -259,14 +259,14 @@ namespace TimeSheet.Controllers
                 }
             }
 
-            return PartialView("_SelectPeriod",model);
+            return PartialView("_SelectYear", model);
         }
 
         public ActionResult SelectPeriod(int year)
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(year);
-            return PartialView("_SelectYear",model);
+            return PartialView("_SelectYear", model);
         }
 
         public ActionResult DefaultPeriodDetails()
@@ -291,7 +291,7 @@ namespace TimeSheet.Controllers
             return PartialView("_PeriodDetails");
         }
 
-        public async Task<FileContentResult> CSVExportResult(string year, string period)
+        public async Task<FileContentResult> PayrollExportResult(string year, string period)
         {
             //update the ADUser from AD first before exporting the csv file
             await ADUser.GetADUser();
@@ -375,11 +375,11 @@ namespace TimeSheet.Controllers
                     }
                     dt.Rows.Add(dr);
 
-                    if (payrolls[i].LeaveTime != 0 && payrolls[i].LeaveType != _leaveType.none)
+                    if (payrolls[i].LeaveTime != 0 && payrolls[i].LeaveType != null)
                     {
                         DataRow drw = dt.NewRow();
-                        drw["Employee Last Name"] = words[0];
-                        drw["Employee First Name"] = words[1];
+                        drw["Employee Last Name"] = words[1];
+                        drw["Employee First Name"] = words[0];
 
                         drw["Job"] = payrolls[i].JobCode;
                         drw["Employee Card ID"] = payrolls[i].EmployeeID;
@@ -388,18 +388,20 @@ namespace TimeSheet.Controllers
                         drw["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
                         drw["Units"] = payrolls[i].LeaveTime;
 
-                        switch (payrolls[i].LeaveType)
-                        {
-                            case _leaveType.annual:
-                                drw["Payroll Category"] = "Holiday Pay";
-                                break;
-                            case _leaveType.flexi:
-                                drw["Payroll Category"] = "Flexi Pay";
-                                break;
-                            case _leaveType.sick:
-                                drw["Payroll Category"] = "Sick Pay";
-                                break;
-                        }
+                        //switch (payrolls[i].LeaveType)
+                        //{
+                        //    case _leaveType.annual:
+                        //        drw["Payroll Category"] = "Holiday Pay";
+                        //        break;
+                        //    case _leaveType.flexi:
+                        //        drw["Payroll Category"] = "Flexi Pay";
+                        //        break;
+                        //    case _leaveType.sick:
+                        //        drw["Payroll Category"] = "Sick Pay";
+                        //        break;
+                        //}
+                        drw["Payroll Category"] = payrolls[i].LeaveType.GetDisplayName();
+
                         dt.Rows.Add(drw);
                     }
                 }

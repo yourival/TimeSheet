@@ -13,16 +13,15 @@
             <div>
                 <label>Balance (hrs):&nbsp;</label>
                 <text class="textStyleBefore">
-                    @for (int i = 0; i < 3; i++)
+                    @for (int i = 0; i < LeaveNames.Length; i++)
                     {
                         @LeaveNames[i]
-                        @:   :&nbsp;
-
+                        @:&nbsp;
                         <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
 
-                        if (i != 2)
+                        if (i != LeaveNames.Length - 1)
                         {
-                            @: ,&nbsp;&nbsp;
+                            @:,&nbsp;&nbsp;
                         }
                     }
                 </text>
@@ -56,7 +55,7 @@
                     </label>
                     <div class="col-sm-8">
                         <p>
-                            @Html.DropDownListFor(model => model.LeaveApplication.leaveType, (IEnumerable<SelectListItem>)ViewBag.LeaveType, htmlAttributes: new { @class = "form-control", @id = "leavetypeMain" })
+                            @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, new { @class = "form-control", @id = "leavetypeMain" } )
                         </p>
                     </div>
                 </div>
@@ -116,14 +115,14 @@
                     <div class="col-sm-offset-1 col-sm-10">
                         <label>Balance After (hrs):&nbsp;</label>
                         <text class="textStyleAfter">
-                            @for (int i = 0; i < 3; i++)
+                            @for (int i = 0; i < LeaveNames.Length; i++)
                             {
                                 @LeaveNames[i]
                                 @:   :&nbsp;
 
                                 <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
 
-                                if (i != 2)
+                                if (i != LeaveNames.Length - 1)
                                 {
                                     @: ,&nbsp;&nbsp;
                                 }
@@ -151,7 +150,6 @@
         var start = $('#start').val();
         var end = $('#end').val();
         var leavetypeMain = $('#leavetypeMain').val();
-
 
         //Clear previous validation message
         $("#leave-form").removeData("validator");
@@ -190,27 +188,32 @@
     }
 
     function sumLeavesByType() {
-        var leavetypes = $(".leavetype");
+        var leavetypes = $(".leavetype :selected");
         var leavetimes = $(".leavetime");
         var length = leavetimes.length;
         var lefthoursBefore = [];
-        var lefthours = [];
+        var lefthoursAfter = [];
         $(".textStyleBefore").children(".lefthours").each(function (i) {
-            lefthours.push($(this).text());
+            lefthoursAfter.push($(this).text());
             lefthoursBefore.push($(this).text());
         });
 
         // Subtract each time in detail
         for (var i = 0; i < length; i++) {
-            lefthours[$(leavetypes[i]).val() - 1] -= $(leavetimes[i]).val();
+            // Compassionate pay will take Sick leaves balance
+            if ($(leavetypes[i]).val() == 4)
+                lefthoursAfter[0] -= $(leavetimes[i]).val();
+            // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
+            else if ($(leavetypes[i]).val() >= 0 && $(leavetypes[i]).val() < 3)
+                lefthoursAfter[$(leavetypes[i]).val()] -= $(leavetimes[i]).val();
         }
 
         // Display summary and change style according to content
         $(".textStyleAfter").children(".lefthours").each(function (i) {
-            $(this).text(lefthours[i]);
-            if (lefthours[i] == lefthoursBefore[i]) {
+            $(this).text(lefthoursAfter[i]);
+            if (lefthoursAfter[i] == lefthoursBefore[i]) {
                 $(this).attr("class", "lefthours");
-            } else if (lefthours[i] < 0) {
+            } else if (lefthoursAfter[i] < 0) {
                 $(this).attr("class", "lefthours excess");
             } else {
                 $(this).attr("class", "lefthours modified");
@@ -223,7 +226,7 @@
         $(".leavetime").each(function (i) {
             total += parseFloat($(this).val());
         });
-        $("#leave-total").text(total + " (" + total / 7.5 + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
+        $("#leave-total").text(total + " (" + (total / 7.5).toFixed(2) + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
     }
 
     $(document).ready(function () {
@@ -270,10 +273,11 @@
                        
         });
 
+        // If there is any file attached
         $(':file').on('fileselect', function (event, numFiles, label) {
             var files = $('#files').prop("files");
             var names = $.map(files, function (val) {
-                return '<span class="glyphicon glyphicon glyphicon-file"></span>' + val.name;
+                return '<span class="glyphicon glyphicon-file"></span>' + val.name;
             });
             names = (names + "").replace(/,/g, '&nbsp;&nbsp;');
             var input = $(this).parents('.input-group').find(':text');

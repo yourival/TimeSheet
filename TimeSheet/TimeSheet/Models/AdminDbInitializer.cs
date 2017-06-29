@@ -22,6 +22,12 @@ namespace TimeSheet.Models
                 ManagerName = "Dawen Yang",
                 IsAdmin = true
             });
+            context.ManagerSetting.Add(new Manager()
+            {
+                ManagerID = "r.lin@m.nantien.edu.au",
+                ManagerName = "Robin Lin",
+                IsAdmin = true
+            });
             context.SaveChanges();
         }
     }

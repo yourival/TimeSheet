@@ -20,7 +20,7 @@ namespace TimeSheet.Models
             IsHoliday = false;
             Flexi = false;
             LeaveTime = 0;
-            LeaveType = _leaveType.none;
+            LeaveType = null;
         }
 
         public int id { get; set; }
@@ -41,7 +41,7 @@ namespace TimeSheet.Models
         public double LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
-        public _leaveType LeaveType { get; set; }
+        public _leaveType? LeaveType { get; set; }
 
         [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "Fill in a number that is a multiple of 0.5 and not larger than 7.5")]
         public double LeaveTime { get; set; }

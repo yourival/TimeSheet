@@ -28,7 +28,7 @@
                                 @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
                             </td>
                             <td>
-                                @Html.DropDownListFor(m => m.TimeRecords[i].LeaveType, (IEnumerable<SelectListItem>)ViewBag.LeaveType, htmlAttributes: new { @class = "leavetype form-control" })
+                                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, new { @class = "form-control leavetype"})
                             </td>
                             <td class="leaveTimeColumn">
                                 @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime form-control", @type = "number", @step = "0.5", @min = 0, @max = 7.5 } })

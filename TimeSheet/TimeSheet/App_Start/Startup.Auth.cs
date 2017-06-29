@@ -75,13 +75,7 @@ namespace TimeSheet
 
 
                                return Task.FromResult(0);
-                       },
-                        AuthenticationFailed = context =>
-                        {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Error?message=" + context.Exception.Message);
-                            return Task.FromResult(0);
-                        }
+                       }
                     }
                 });
         }

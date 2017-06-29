@@ -244,8 +244,10 @@
     <Compile Include="Models\ApplicationDb.cs" />
     <Compile Include="Models\ApprovalViewModel.cs" />
     <Compile Include="Controllers\LeaveApprovalController.cs" />
+    <Compile Include="Models\EnumExtensions.cs" />
     <Compile Include="Models\LeaveAttachment.cs" />
     <Compile Include="Models\EmailSetting.cs" />
+    <Compile Include="Models\LeaveType.cs" />
     <Compile Include="Models\Payroll.cs" />
     <Compile Include="Models\TimeSheetInitializer.cs" />
     <Compile Include="Models\Holiday.cs" />
@@ -391,7 +393,7 @@
     <Content Include="Views\TimeSheetApproval\Approval.cshtml" />
     <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
     <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
-    <Content Include="Views\Admin\CSVExport.cshtml" />
+    <Content Include="Views\Admin\LeavesExport.cshtml" />
     <Content Include="Views\Admin\CreateManager.cshtml" />
     <Content Include="Views\Admin\EditManager.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />
@@ -420,6 +422,7 @@
     <Content Include="Views\ADManagement\RoleDetails.cshtml" />
     <Content Include="Views\Admin\_PeriodDetails.cshtml" />
     <Content Include="Views\Shared\_SelectYear.cshtml" />
+    <Content Include="Views\Admin\PayrollExport.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
