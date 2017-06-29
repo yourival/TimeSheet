@@ -147,7 +147,6 @@
         $("#approveBtn").on("click", function () {
             var approveID = $(this).val();
             var approveDec = $(this).text();
-            alert(approveDec);
             location.href = '@Url.Action("ApprovalDetailPost", "TimesheetApproval")' + '/' + approveID + '/' + approveDec;
         });
 
