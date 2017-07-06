@@ -16,7 +16,8 @@ namespace TimeSheet.Models
             List<LeaveApplication> applications = new List<LeaveApplication>();
             List<TimeRecord> timeRecords = new List<TimeRecord>();
             DateTime startDate = new DateTime(2017, 1, 1);
-            for(int i = 0; i < 10; i++)
+            Task.Run(() => ADUser.GetADUser());
+            for (int i = 0; i < 10; i++)
             {
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "r.lin@m.nantien.edu.au";
@@ -49,6 +50,7 @@ namespace TimeSheet.Models
                     timeRecords.Add(newTimeRecord);
                 }
             }
+
             for (int i = 0; i < 10; i++)
             {
                 LeaveApplication newApplication = new LeaveApplication();
@@ -116,6 +118,7 @@ namespace TimeSheet.Models
             }
             applications.ForEach(a => context.LeaveApplications.Add(a));
             timeRecords.ForEach(t => context.TimeRecords.Add(t));
+            context.SaveChanges();
 
             // Initialise Leaves
             context.LeaveBalances.Add(new LeaveBalance()
@@ -138,7 +141,6 @@ namespace TimeSheet.Models
             });
             context.SaveChanges();
 
-            Task.Run(() => ADUser.GetADUser());
 
         }
     }

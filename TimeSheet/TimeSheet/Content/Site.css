@@ -17,7 +17,15 @@
     max-width: 1000px;
 }
 
+.nav-header {
+    padding-left: 20px;
+    padding-bottom: 5px;
+    color: grey;
+}
 
+.nav-header-child {
+    padding-left: 10px;
+}
 
 /*footer style*/
 .footer {
@@ -758,4 +766,8 @@ form p {
 
 .dropdown-menu {
     text-transform:capitalize;
+}
+
+.dropdown-menu li {
+    display: list-item;
 }

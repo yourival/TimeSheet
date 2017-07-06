@@ -24,7 +24,10 @@ namespace TimeSheet.Models
         }
 
         public int id { get; set; }
+
+        // The email of the user
         public string UserID { get; set; }
+
         public bool IsHoliday { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -74,6 +77,7 @@ namespace TimeSheet.Models
 
             LunchBreak = lunchHour;
         }
+
 
         public virtual ICollection<ADUser> ADUsers { get; set; }
     }

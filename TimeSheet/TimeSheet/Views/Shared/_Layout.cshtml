@@ -53,7 +53,11 @@
                                                 <li>@Html.ActionLink("Leave Approval", "Approval", "LeaveApproval")</li>
                                                 <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
                                                 <li>@Html.ActionLink("Payroll Export", "PayrollExport", "Admin")</li>
-                                                <li>@Html.ActionLink("AD Management", "Index", "ADManagement")</li>
+                                                <li class="divider">
+                                                <li class="nav-header">AD Management</li>
+                                                <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>
+                                                <li class="nav-header-child">@Html.ActionLink("Group", "Group", "ADManagement")</li>
+                                                <li class="nav-header-child">@Html.ActionLink("Role", "Role", "ADManagement")</li>
                                             </ul>
                                         </li>
                                     }
@@ -103,7 +107,11 @@
                                             <li>@Html.ActionLink("Leave Approval", "Approval", "LeaveApproval")</li>
                                             <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
                                             <li>@Html.ActionLink("CSV Export", "CSVExport", "Admin")</li>
-                                            <li>@Html.ActionLink("AD Management", "Index", "ADManagement")</li>
+                                            <li class="divider">
+                                            <li class="nav-header">AD Management</li>
+                                            <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>
+                                            <li class="nav-header-child">@Html.ActionLink("Group", "Group", "ADManagement")</li>
+                                            <li class="nav-header-child">@Html.ActionLink("Role", "Role", "ADManagement")</li>
                                         </ul>
                                     </li>
                                 }
@@ -149,5 +157,8 @@
 <script>
     $(document).ready(function () {
         $("#login").load('@Url.Action("LoginLayout", "Home")');
+        $(".nav-header").on('click', function (e) {
+            e.preventDefault();
+        });
     });
 </script>

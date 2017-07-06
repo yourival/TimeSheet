@@ -88,7 +88,6 @@ namespace TimeSheet.Models
             DateTime start = StartTime;
             DateTime end = EndTime;
             TimeSheetDb contextDb = new TimeSheetDb();
-            Debug.WriteLine(contextDb.TimeRecords.FirstOrDefault());
             for (int i = 0; i <= (end - start).Days; i++)
             {
                 DateTime currentDate = start.AddDays(i);

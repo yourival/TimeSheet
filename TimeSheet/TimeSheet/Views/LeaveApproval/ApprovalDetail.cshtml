@@ -8,124 +8,139 @@
 <br />
 <div class="container" align="center">
     <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-6 col-xs-12 approval-detail">
-        <h3>General Information</h3>
-            <hr />
-            <table class="table-responsive">
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
-                </tr>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
-                </tr>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)</td>
-                </tr>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.EndTime)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
-                </tr>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalLeaveTime)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalLeaveTime)</td>
-                </tr>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.Attachments)</th>
-                    <td>
-                        @foreach (var file in Model.LeaveApplication.Attachments)
-                        {
-                            <a href="@Url.Action("Download","LeaveApproval", new { id=file.Id })">
-                                <span class="glyphicon glyphicon glyphicon-file"></span>@file.FileName 
-                            </a>@:&nbsp;
-                        }
-                    </td>
-                </tr>
-            </table>
-            <hr>
-            <div class="row" align="right">
-                <div class="col-sm-offset-1 col-sm-10">
-                    <a href="#approve-detail" data-toggle="collapse">
-                        <p>
-                            Click here if you want to see details
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </p>
-                    </a>
-                </div>
-            </div>
-            <div align="center" class="approve-detail">
-                <div id="approve-detail" class="collapse row">
-                    <table class="table table-responsive">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6 col-xs-12 approval-detail">
+    <h3>General Information</h3>
+    <hr />
+        <table class="table-responsive">
             <tr>
-                <th>Date</th>
-                            <th>Type</th>
-                            <th>Detail Hours</th>
-                            <th>Availability</th>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
             </tr>
-            @foreach (var item in Model.TimeRecords)
-            {
-                <tr>
-                                <td>
-                        @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
-                    </td>
-                                <td>
-                        @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
-                    </td>
-                                <td>
-                        @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
-                    </td>
-                                <td></td>
-                </tr>
-            }
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
+            </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)</td>
+            </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.EndTime)</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
+            </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalLeaveTime)</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.TotalLeaveTime)</td>
+            </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.Attachments)</th>
+                <td>
+                    @foreach (var file in Model.LeaveApplication.Attachments)
+                    {
+                        <a href="@Url.Action("Download", "LeaveApproval", new { id = file.Id })">
+                            <span class="glyphicon glyphicon glyphicon-file"></span>@file.FileName 
+                        </a>@:&nbsp;
+                    }
+                </td>
+            </tr>
         </table>
-                </div>
+
+        <hr>
+        <div class="row" align="right">
+            <div class="col-sm-offset-1 col-sm-10">
+                <a href="#approve-detail" data-toggle="collapse">
+                    <p>
+                        Click here if you want to see details
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </p>
+                </a>
             </div>
-            <hr>
+        </div>
+        <div align="center" class="approve-detail">
+            <div id="approve-detail" class="collapse row">
+                <table class="table table-responsive">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <tr>
+                        <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Detail Hours</th>
+                                    <th>Other Taken Leaves</th>
+                    </tr>
+                    @foreach (var item in Model.TimeRecords)
+                    {
+                        <tr>
+                                        <td>
+                                @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
+                            </td>
+                                        <td>
+                                @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
+                            </td>
+                                        <td>
+                                @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
+                            </td>
+                            @foreach (var takenLeave in Model.TakenLeaves)
+                            {
+                                if (takenLeave.RecordDate == item.RecordDate)
+                                {
+                                    <td>
+                                        <a href="#" data-toggle="tooltip" title="@takenLeave.UserID, @takenLeave.LeaveTime hrs">
+                                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                        </a>
+                                    </td>
+                                }
+                            }
+                            
+                        </tr>
+                    }
+                </table>        
+            </div>
+        </div>
+        <hr>
+        @using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
+        {
             <row class="approve-button">
                 <input type="hidden" name="id" value=@Model.LeaveApplication.id />
                 <input type="submit" class="btn btn-success" name="decision" value="Approve">
-                    <input type="submit" class="btn btn-danger" name="decision" value="Reject">
-                </row>
-        <div class="col-sm-3"></div>
+                <input type="submit" class="btn btn-danger" name="decision" value="Reject">
+            </row>
+            <div class="col-sm-3"></div>
+        }
+        </div>
+    </div>
+
+    <div class="container">
+        <h3>Leaves taken by other employees</h3>
+        @if(Model.TakenLeaves.Count == 0)
+        {
+            <p>No leave is taken in the period.</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User Id</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var leave in Model.TakenLeaves)
+                    {
+                        <tr>
+                            <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
+                            <td>@Html.DisplayFor(m => leave.UserID)</td>
+                            <td>@Html.DisplayFor(m => leave.StartTime)</td>
+                            <td>@Html.DisplayFor(m => leave.EndTime)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 </div>
-
-<div class="container">
-    <h3>Leaves taken by other employees</h3>
-    @if(Model.TakenLeaves.Count == 0)
-    {
-        <p>No leave is taken in the period.</p>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>User Id</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var leave in Model.TakenLeaves)
-                {
-                    <tr>
-                        <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
-                        <td>@Html.DisplayFor(m => leave.UserID)</td>
-                        <td>@Html.DisplayFor(m => leave.StartTime)</td>
-                        <td>@Html.DisplayFor(m => leave.EndTime)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>
-
 @functions {
     string getStatusClass(_status status)
     {
@@ -152,3 +167,9 @@
     }
 }
 
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

@@ -37,8 +37,9 @@ namespace TimeSheet.Controllers
             ApprovalViewModel approvalVM = new ApprovalViewModel();
 
             // Get the appliction from DB
-            var application = contextDb.LeaveApplications.Include(a => a.Attachments)
-                                      .SingleOrDefault(a => a.id == id);
+            var application = contextDb.LeaveApplications
+                                       .Include(a => a.Attachments)
+                                       .SingleOrDefault(a => a.id == id);
             if (application == null)
             {
                 return HttpNotFound();
