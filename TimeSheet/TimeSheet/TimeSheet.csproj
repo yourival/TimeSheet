@@ -393,7 +393,7 @@
     <Content Include="Views\TimeSheetApproval\Approval.cshtml" />
     <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
     <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
-    <Content Include="Views\Admin\LeavesExport.cshtml" />
+    <Content Include="Views\Admin\PayrollExport_backup.cshtml" />
     <Content Include="Views\Admin\CreateManager.cshtml" />
     <Content Include="Views\Admin\EditManager.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />

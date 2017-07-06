@@ -95,7 +95,7 @@ namespace TimeSheet.Controllers
                             r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
 
                         // Sum up total leave time
-                        applicationVM.LeaveApplication.TotalTime += r.LeaveTime;
+                        applicationVM.LeaveApplication.TotalLeaveTime += r.LeaveTime;
 
                         // Try to fetch TimeRecord from Db if it exists
                         var timeRecord = (from a in contextDb.TimeRecords
@@ -172,7 +172,7 @@ namespace TimeSheet.Controllers
                         application.leaveType = applicationVM.LeaveApplication.leaveType;
                         application.ManagerID = applicationVM.LeaveApplication.ManagerID;
                         application.Comment = applicationVM.LeaveApplication.Comment;
-                        application.TotalTime = applicationVM.LeaveApplication.TotalTime;
+                        application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
                         contextDb.Entry(application).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();

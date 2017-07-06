@@ -30,8 +30,8 @@
                     <td>@Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
                 </tr>
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalTime)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalTime)</td>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalLeaveTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalLeaveTime)</td>
                 </tr>
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.LeaveApplication.Attachments)</th>
@@ -95,7 +95,7 @@
 </div>
 
 <div class="container">
-    <h3>Taken Leaves</h3>
+    <h3>Leaves taken by other employees</h3>
     @if(Model.TakenLeaves.Count == 0)
     {
         <p>No leave is taken in the period.</p>

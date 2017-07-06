@@ -77,11 +77,13 @@ namespace TimeSheet.Models
                     user.Email = item.Mail;
                     user.JobCode = item.JobTitle;
                     timesheetDb.ADUsers.Add(user);
-                    timesheetDb.SaveChanges();
                 }
+                timesheetDb.SaveChanges();
+                // This sample data should be removed for production.
                 ADUser u = new ADUser();
                 u.UserName = "Dawen Yang";
                 u.Email = "d.yang@m.nantien.edu.au";
+                u.JobCode = "Lecture";
                 timesheetDb.ADUsers.Add(u);
                 timesheetDb.SaveChanges();
             }

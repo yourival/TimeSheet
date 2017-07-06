@@ -66,7 +66,7 @@ namespace TimeSheet.Models
         public DateTime EndTime { get; set; }
 
         [Display(Name = "Total Hours")]
-        public double TotalTime { get; set; }
+        public double TotalLeaveTime { get; set; }
 
         [Required]
         [Display(Name = "Type")]

@@ -25,7 +25,7 @@
                 <td>@Html.DisplayFor(m => m[i].leaveType)</td>
                 <td>@Html.DisplayFor(m => m[i].StartTime)</td>
                 <td>@Html.DisplayFor(m => m[i].EndTime)</td>
-                <td>@Html.DisplayFor(m => m[i].TotalTime)</td>
+                <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
                 <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Html.DisplayFor(m => m[i].status)</td>
                 @if (ViewBag.Type == "Waiting")
                 {
