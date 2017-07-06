@@ -226,7 +226,7 @@ namespace TimeSheet.Controllers
         
         // POST: LeaveApplication/_Casual
         [HttpPost]
-        public ActionResult Casual(TimeSheetContainer model)
+        public ActionResult Casual(TimeSheetContainer model, FormCollection formCol)
         {
             if (Startup.NoRecords == true)
             {
@@ -239,8 +239,12 @@ namespace TimeSheet.Controllers
                             contextDb.TimeRecords.Add(model.TimeRecords[i]);
                         }
                         model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
-                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.submitted;
                         model.TimeRecordForm.SubmitTime = DateTime.Now;
+                        model.TimeRecordForm.UserID = User.Identity.Name;
+                        model.TimeRecordForm.Period = Convert.ToInt32(formCol["period"].ToString());
+                        model.TimeRecordForm.Year = Convert.ToInt32(formCol["year"].ToString());
+                        model.TimeRecordForm.ManagerID = formCol["manager"].ToString();
 
                         //Calculate the total working hours to current date
                         double workingHours = 0;
@@ -255,7 +259,6 @@ namespace TimeSheet.Controllers
                         contextDb.TimeRecordForms.Add(model.TimeRecordForm);
                         contextDb.SaveChanges();
                     }
-                    return RedirectToAction("Index", new { message = 3 });
                 }
                 catch (Exception ex)
                 {
@@ -279,7 +282,11 @@ namespace TimeSheet.Controllers
                             contextDb.SaveChanges();
                         }
                         model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
-                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.submitted;
+                        model.TimeRecordForm.UserID = User.Identity.Name;
+                        model.TimeRecordForm.Period = Convert.ToInt32(formCol["period"].ToString());
+                        model.TimeRecordForm.Year = Convert.ToInt32(formCol["year"].ToString());
+                        model.TimeRecordForm.ManagerID = formCol["manager"].ToString();
 
                         //Calculate the total working hours to current date
                         double workingHours = 0;
@@ -296,13 +303,24 @@ namespace TimeSheet.Controllers
                         contextDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
                         contextDb.SaveChanges();
                     }
-                    return RedirectToAction("Index", new { message = 3 });
                 }
                 catch (Exception ex)
                 {
                     throw ex;
                 }
             }
+
+            //send email to manager
+            TimeRecordForm form = (from f in contextDb.TimeRecordForms
+                                   where f.Period == model.TimeRecordForm.Period
+                                   where f.Year == model.TimeRecordForm.Year
+                                   where f.UserID == model.TimeRecordForm.UserID
+                                   select f).FirstOrDefault();
+            if (form != null)
+            {
+                Task.Run(() => EmailSetting.SendEmail(form.ManagerID, string.Empty, "TimesheetApplication", form.TimeRecordFormID.ToString()));
+            }
+            return RedirectToAction("Index");
         }
 
         // GET: LeaveApplication/CreateLeaveList
