@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.IdentityModel.Claims;
+using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,6 +12,7 @@ using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
 using TimeSheet.Models;
+using Microsoft.Azure.ActiveDirectory.GraphClient;
 
 namespace TimeSheet
 {
@@ -30,7 +31,7 @@ namespace TimeSheet
 
         public void ConfigureAuth(IAppBuilder app)
         {
-            ApplicationDbContext db = new ApplicationDbContext();
+            ApplicationDb db = new ApplicationDb();
 
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
@@ -42,6 +43,12 @@ namespace TimeSheet
                     ClientId = clientId,
                     Authority = Authority,
                     PostLogoutRedirectUri = postLogoutRedirectUri,
+
+                    TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        // map the claimsPrincipal's roles to the roles claim
+                        RoleClaimType = "roles",
+                    },
 
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
@@ -55,7 +62,19 @@ namespace TimeSheet
                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
                            code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
 
-                           return Task.FromResult(0);
+                           if (AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name) == "IsAdmin")
+                           {
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Admin"));
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                           }
+
+                           if (AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name) == "IsManager")
+                           {
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                           }
+
+
+                               return Task.FromResult(0);
                        }
                     }
                 });

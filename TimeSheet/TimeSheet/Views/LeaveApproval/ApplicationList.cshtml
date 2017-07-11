@@ -1,0 +1,61 @@
+﻿@model List<LeaveApplication>
+
+@{
+    ViewBag.Title = "Leave Application List";
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>User ID</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Total Leave Hours</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr onclick="location.href = '@(Url.Action("ApprovalDetail", "LeaveApproval", new { id = item.id }))'">
+                <td>@Html.DisplayFor(m => item.id)</td>
+                <td>@Html.DisplayFor(m => item.UserID)</td>
+                <td>@Html.DisplayFor(m => item.leaveType)</td>
+                <td>@Html.DisplayFor(m => item.StartTime)</td>
+                <td>@Html.DisplayFor(m => item.EndTime)</td>
+                <td>@Html.DisplayFor(m => item.TotalLeaveTime)</td>
+                <td class=@getStatusClass(item.status)>@Html.DisplayFor(m => item.status)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@functions {
+    string getStatusClass(_status status)
+    {
+        string className;
+        switch (status)
+        {
+            case _status.submited:
+                className = "text-primary";
+                break;
+            case _status.approved:
+                className = "text-success";
+                break;
+            case _status.rejected:
+                className = "text-danger";
+                break;
+            case _status.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}

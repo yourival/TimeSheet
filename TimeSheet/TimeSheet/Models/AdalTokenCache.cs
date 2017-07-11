@@ -11,7 +11,7 @@ namespace TimeSheet.Models
 {
     public class ADALTokenCache : TokenCache
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDb db = new ApplicationDb();
         private string userId;
         private UserTokenCache Cache;
 
@@ -19,8 +19,8 @@ namespace TimeSheet.Models
         {
             // associate the cache to the current user of the web app
             userId = signedInUserId;
-            this.AfterAccess = AfterAccessNotification;
             this.BeforeAccess = BeforeAccessNotification;
+            this.AfterAccess = AfterAccessNotification;
             this.BeforeWrite = BeforeWriteNotification;
             // look up the entry in the database
             Cache = db.UserTokenCacheList.FirstOrDefault(c => c.webUserUniqueId == userId);
@@ -51,10 +51,10 @@ namespace TimeSheet.Models
                 // retrieve last write from the DB
                 var status = from e in db.UserTokenCacheList
                              where (e.webUserUniqueId == userId)
-                select new
-                {
-                    LastWrite = e.LastWrite
-                };
+                             select new
+                             {
+                                 LastWrite = e.LastWrite
+                             };
 
                 // if the in-memory copy is older than the persistent copy
                 if (status.First().LastWrite > Cache.LastWrite)
@@ -73,12 +73,16 @@ namespace TimeSheet.Models
             // if state changed
             if (this.HasStateChanged)
             {
-                Cache = new UserTokenCache
+                if(Cache == null)
                 {
-                    webUserUniqueId = userId,
-                    cacheBits = MachineKey.Protect(this.Serialize(), "ADALCache"),
-                    LastWrite = DateTime.Now
-                };
+                    Cache = new UserTokenCache
+                    {
+                        webUserUniqueId = userId
+                    };
+                }
+                Cache.cacheBits = MachineKey.Protect(this.Serialize(), "ADALCache");
+                Cache.LastWrite = DateTime.Now;
+                
                 // update the DB and the lastwrite 
                 db.Entry(Cache).State = Cache.UserTokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
                 db.SaveChanges();

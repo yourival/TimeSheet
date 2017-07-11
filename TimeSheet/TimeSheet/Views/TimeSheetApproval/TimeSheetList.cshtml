@@ -1,0 +1,59 @@
+﻿@model List<TimeRecordForm>
+
+@{
+    ViewBag.Title = "Timesheet Application List";
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>UserName</th>
+            <th>Year</th>
+            <th>Period</th>
+            <th>Totoal Working Hours</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr onclick="location.href = '@(Url.Action("ApprovalDetails", "TimeSheetApproval", new { id = item.TimeRecordFormID }))'">
+                <td>@Html.DisplayFor(m => item.TimeRecordFormID)</td>
+                <td>@Html.DisplayFor(m => item.UserID)</td>
+                <td>@Html.DisplayFor(m => item.Year)</td>
+                <td>@Html.DisplayFor(m => item.Period)</td>
+                <td>@Html.DisplayFor(m => item.TotalWorkingHours)</td>
+                <td class=@getStatusClass(item.FormStatus)>@Html.DisplayFor(m => item.FormStatus)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@functions {
+    string getStatusClass(TimeRecordForm._formstatus status)
+    {
+        string className;
+        switch (status)
+        {
+            case TimeRecordForm._formstatus.submitted:
+                className = "text-primary";
+                break;
+            case TimeRecordForm._formstatus.approved:
+                className = "text-success";
+                break;
+            case TimeRecordForm._formstatus.rejected:
+                className = "text-danger";
+                break;
+            case TimeRecordForm._formstatus.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}

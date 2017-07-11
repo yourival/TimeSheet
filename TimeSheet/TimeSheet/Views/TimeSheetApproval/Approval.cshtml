@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Timesheet Approval";
+}
+
+<h3>Timesheet Approval</h3>
+
+<div class="container">
+    <h4>Waiting Applications</h4>
+    <div id="waiting-apps">
+        @Html.Action("ApprovalPartial", "TimeSheetApproval", new { type = "Waiting" })
+    </div>
+</div>
+
+<div class="container">
+    <h4>Confirmed Applications</h4>
+    <div id="confirmed-apps">
+        @Html.Action("ApprovalPartial", "TimeSheetApproval", new { type = "Confirmed" })
+    </div>
+</div>

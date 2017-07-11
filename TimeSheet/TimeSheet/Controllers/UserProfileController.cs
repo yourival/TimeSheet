@@ -12,29 +12,26 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using TimeSheet.Models;
+using System.Collections;
 
 namespace TimeSheet.Controllers
 {
     [Authorize]
     public class UserProfileController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-        private string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
-        private string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
-        private string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        private string graphResourceID = "https://graph.windows.net";
+        private ApplicationDb db = new ApplicationDb();
+        private static string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        private static string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
+        private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        private static string graphResourceID = "https://graph.windows.net";
 
         // GET: UserProfile
         public async Task<ActionResult> Index()
         {
-            string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             try
             {
-                Uri servicePointUri = new Uri(graphResourceID);
-                Uri serviceRoot = new Uri(servicePointUri, tenantID);
-                ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(serviceRoot,
-                      async () => await GetTokenForApplication());
+                ActiveDirectoryClient activeDirectoryClient = GetActiveDirectoryClient();
 
                 // use the token for querying the graph to get the user details
 
@@ -64,7 +61,7 @@ namespace TimeSheet.Controllers
                 OpenIdConnectAuthenticationDefaults.AuthenticationType);
         }
 
-        public async Task<string> GetTokenForApplication()
+        public static async Task<string> GetTokenForApplication()
         {
             string signedInUserID = ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value;
             string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
@@ -77,5 +74,35 @@ namespace TimeSheet.Controllers
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return authenticationResult.AccessToken;
         }
+
+        public static ActiveDirectoryClient GetActiveDirectoryClient()
+        {
+            string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+            string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            Uri servicePointUri = new Uri(graphResourceID);
+            Uri serviceRoot = new Uri(servicePointUri, tenantID);
+            ActiveDirectoryClient client = new ActiveDirectoryClient(serviceRoot,
+                async () => await GetTokenForApplication());
+            return client;
+        }
+
+        //public async Task<IUser> GetUserName
+        //{
+        //    ActiveDirectoryClient activeDirectoryClient = UserProfileController.GetActiveDirectoryClient();
+        //    string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+        //    try
+        //    {
+        //        var result = activeDirectoryClient.Users
+        //            .Where(u => u.ObjectId.Equals(userObjectID))
+        //            .ExecuteAsync();
+        //    IUser user = result.CurrentPage.ToList().First();
+        //    Session["displayname"] = user.GivenName;
+        //    }
+        //    catch (AdalException ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    return
+        //}
     }
 }

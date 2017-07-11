@@ -1,0 +1,138 @@
+﻿@model TimeSheetContainer
+
+<div class="hrForm-content">
+    <div>
+        @using (Html.BeginForm("Casual", "HRApplication", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.TimeRecordForm.TimeRecordFormID)
+            <form>
+                <div class="form-group row">
+                    <label class="col-sm-offset-1 col-sm-2">
+                        Period
+                    </label>
+                    <div class="form form-inline col-sm-8" >
+                        <div class="form-group">
+                            @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
+                        </div>
+                        <div id="periodDiv" class="form-group">
+                            @{Html.RenderAction("SelectYear");}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-offset-1 col-sm-2" for="casual-manager">
+                        @Html.Label("Manager")
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control", @id = "casual-manager" })
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-offset-1 col-sm-2" for="casual-comment">
+                        @Html.LabelFor(model => model.TimeRecordForm.Comments)
+                    </label>
+                    <div class="col-sm-8">
+                        <p>
+                            @Html.EditorFor(model => model.TimeRecordForm.Comments, new { htmlAttributes = new { @class = "form-control", @id = "casual-comment", @style = "resize: vertical" } })
+                        </p>
+                    </div>
+                </div>
+                @*<div class="row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <a href="#CasualDetail" id="toggle-details" data-toggle="collapse">
+                            <p>
+                                Click here if you want to hide details
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </p>
+                        </a>
+                    </div>
+                </div>*@
+
+                <div class="appDetails">
+                    <div class="col-sm-offset-1 col-sm-2"></div>
+                    <div id="casual-form" class="col-sm-8"></div>
+
+                </div>
+                <hr />
+                <div class="row" align="right">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <label>Total:</label>
+                        <span class="total" id="worktime-total"></span>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script>
+    function renderCasualForm() {
+        var year = $('#year').val();
+        var period = $('#period').val();
+
+        $("#casual-form").text("Loading...");
+
+        //Clear previous validation message
+        $("#casual-form").removeData("validator");
+        $("#casual-form").removeData("unobtrusiveValidation");
+
+        $.ajax({
+            url: "/HRApplication/CreateCasualList",
+            type: "GET",
+            data: { year: year, period: period }
+        })
+            .done(function (partialViewResult) {
+            //Render partial view
+            $("#casual-form").html(partialViewResult);
+
+            //Enable jquery validation
+            $.validator.unobtrusive.parse("#casual-form");
+
+            // When there is any change on detail of leave time
+            $(".worktime").on("change", function () {
+                sumTotalWorkHours();
+            });
+            sumTotalWorkHours();
+
+        });
+    }
+
+    function sumTotalWorkHours() {
+        var total = 0;
+        $(".worktime").each(function (i) {
+            total += parseFloat($(this).val());
+        });
+        $("#worktime-total").text(total + " (" + (total / 7.5).toFixed(2) + " days)");
+    }
+
+    $(document).ready(function () {
+        $("#year").on("change", function () {
+            var val = $('#year').val();
+            $.ajax({
+                url: "/HRApplication/SelectYear",
+                type: "get",
+                data: { year: val }
+            })
+                .done(function (partialviewresult) {
+                    $("#periodDiv").html(partialviewresult);
+                });
+        });
+
+        $("#periodDiv").on("change", function () {
+            renderCasualForm();
+            @*var year = $('#year').val();
+            var period = $('#period').val();
+            var yp = year + "." + period;
+            $("#casual-form").load('@Url.Action("GetTimeRecords", "HRApplication", null,Request.Url.Scheme)?text=' + yp);*@
+        });
+        
+        //renderCasualForm();
+    });
+</script>

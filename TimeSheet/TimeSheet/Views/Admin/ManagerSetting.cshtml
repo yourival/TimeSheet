@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Manager>
+
+@{
+    ViewBag.Title = "ManagerSetting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div class="container" align="center">
+        <h2>ManagerSetting</h2>
+
+        <h4>@Html.ActionLink("Create New", "CreateManager")</h4>
+        <table class="table-fill">
+                <tr>
+                    <th>Manager ID</th>
+                    <th>Name</th>
+                    <th>IsAdmin</th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @Html.HiddenFor(modelItem => item.id)
+                        <td>@Html.DisplayFor(modelItem => item.ManagerID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ManagerName)</td>
+                        <td>@(item.IsAdmin? "Yes" : "No")</td>
+                        <td>
+                            @Html.ActionLink("Edit", "EditManager", "Admin", new { id = item.id }, null) |
+                            @Html.ActionLink("Delete", "DeleteManager", "Admin", new { id = item.id }, null)
+                        </td>
+                    </tr>
+                }
+        </table>
+    </div>
+</body>

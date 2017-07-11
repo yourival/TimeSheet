@@ -1,0 +1,49 @@
+﻿@model List<LeaveBalance>
+
+@{
+    ViewBag.Title = "User Leaves";
+}
+
+<head>
+    @Styles.Render("~/Content/css")
+</head>
+
+<body>
+    <div class="container" align="center">
+    @using (Html.BeginForm())
+    {
+        <br />
+        <h3>User Leaves Management</h3>
+        <div class="searchform">
+                <input class="userID" type="text" id="user-id" placeholder="User ID"/>
+                <input type="button" value="Search" id="search-btn" class="btn searchbutton" />
+        </div>
+        <br />
+        <div id="leave-form"></div>
+        <br/>
+        
+    }
+    </div>
+</body>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#search-btn").click(function () {
+            var userId = $("#user-id").val();
+            $.ajax({
+                url: "/Admin/CreateForm",
+                type: "GET",
+                data: { userId: userId }
+            })
+            .done(function (partialViewResult) {
+                $("#leave-form").html(partialViewResult);
+                $("#submit-btn").prop("disabled", false);
+            });
+        });
+    });
+</script>
