@@ -31,7 +31,7 @@ namespace TimeSheet.Controllers
             LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             //get manager droplist
-            ViewBag.Manager = Manager.GetManagerItems();
+            ViewBag.Manager = UserRoleSetting.GetManagerItems();
             for (int i = 0; i < 3; i++)
             {
                 var availableLeave = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
@@ -50,7 +50,7 @@ namespace TimeSheet.Controllers
             TimeSheetContainer model = new TimeSheetContainer();
             model.YearList = PayPeriod.GetYearItems();
             //get manager droplist
-            ViewBag.Manager = Manager.GetManagerItems();
+            ViewBag.Manager = UserRoleSetting.GetManagerItems();
 
             return PartialView("_Casual", model);
         }
@@ -73,6 +73,7 @@ namespace TimeSheet.Controllers
                 if (ModelState.IsValid)
                 {
                     double[] appliedLeaveTimes = new double[3];
+                    string originalBalances = String.Empty;
                     foreach (var l in applicationVM.TimeRecords)
                     {
                         // Compassionate pay will take Sick leaves balance
@@ -152,6 +153,30 @@ namespace TimeSheet.Controllers
                         applicationVM.LeaveApplication.Attachments = files;
                     }
 
+                    // Update user leaves balance in Db after submitting                    
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var LeaveBalance = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
+                        if (LeaveBalance == null)
+                        {
+                            originalBalances += "0.00";
+                            LeaveBalance = new LeaveBalance();
+                            LeaveBalance.LeaveType = (_leaveType)i;
+                            LeaveBalance.UserID = User.Identity.Name;
+                            LeaveBalance.AvailableLeaveHours = 0;
+                            contextDb.LeaveBalances.Add(LeaveBalance);
+                        }
+                        else
+                        {
+                            originalBalances += string.Format("{0:0.00}", LeaveBalance.AvailableLeaveHours);
+                            LeaveBalance.AvailableLeaveHours -= appliedLeaveTimes[i];
+                            contextDb.Entry(LeaveBalance).State = EntityState.Modified;
+                        }
+                        if(i != 2)
+                            originalBalances += "/";
+                        contextDb.SaveChanges();
+                    }                    
+
                     // Try to fetch Leaveapplication from DB if it exists
                     applicationVM.LeaveApplication.UserID = User.Identity.Name;
                     var application = (from a in contextDb.LeaveApplications
@@ -164,11 +189,14 @@ namespace TimeSheet.Controllers
                     if (application == null)
                     {
                         applicationVM.LeaveApplication.status = _status.submited;
+                        applicationVM.LeaveApplication.UserName = contextDb.ADUsers.Find(User.Identity.Name).UserName;
+                        applicationVM.LeaveApplication.OriginalBalances = originalBalances;
                         contextDb.LeaveApplications.Add(applicationVM.LeaveApplication);
                     }
                     else
                     {
                         application.status = _status.modified;
+                        application.OriginalBalances = originalBalances;
                         application.leaveType = applicationVM.LeaveApplication.leaveType;
                         application.ManagerID = applicationVM.LeaveApplication.ManagerID;
                         application.Comment = applicationVM.LeaveApplication.Comment;
@@ -176,27 +204,6 @@ namespace TimeSheet.Controllers
                         contextDb.Entry(application).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
-
-                    // Update user leaves balance in Db after submitting                    
-                    for (int i = 0; i < 3; i++)
-                    {
-                        var LeaveBalance = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
-                        if (LeaveBalance == null)
-                        {
-                            LeaveBalance = new LeaveBalance();
-                            LeaveBalance.LeaveType = (_leaveType)i;
-                            LeaveBalance.UserID = User.Identity.Name;
-                            LeaveBalance.AvailableLeaveHours = 0;
-                            contextDb.LeaveBalances.Add(LeaveBalance);
-                        }
-                        else
-                        {
-                            LeaveBalance.AvailableLeaveHours -= appliedLeaveTimes[i];
-                            contextDb.Entry(LeaveBalance).State = EntityState.Modified;
-                        }
-                        contextDb.SaveChanges();
-                    }
-                    
 
                     // Send an email to manager
                     var applicationModel = (from a in contextDb.LeaveApplications
@@ -210,16 +217,12 @@ namespace TimeSheet.Controllers
                         Task.Run(() => EmailSetting.SendEmail(applicationModel.ManagerID, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
                     }
                 }
+                return RedirectToAction("PostRequest");
             }
             catch (RetryLimitExceededException /* dex */)
             {
                 //Log the error (uncomment dex variable name and add a line here to write a log.
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                Debug.WriteLine(e.StackTrace);
             }
             return RedirectToAction("Index");
         }
@@ -404,6 +407,11 @@ namespace TimeSheet.Controllers
             }
 
             return PartialView("_CasualList", model);
+        }
+
+        public ActionResult PostRequest()
+        {
+            return View();
         }
     }
 }

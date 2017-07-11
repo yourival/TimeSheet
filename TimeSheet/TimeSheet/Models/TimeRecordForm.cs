@@ -9,10 +9,9 @@ namespace TimeSheet.Models
 {
     public class TimeRecordForm
     {
-
         public enum _formstatus { approved, rejected, modified, submitted }
 
-        public enum _sumbitstatus { submitted, saved}
+        public enum _sumbitstatus { submitted, saved }
 
         [Key]
         public int TimeRecordFormID { get; set; }
@@ -35,6 +34,5 @@ namespace TimeSheet.Models
 
         [DataType(DataType.MultilineText)]
         public string Comments { get; set; }
-        
     }
 }

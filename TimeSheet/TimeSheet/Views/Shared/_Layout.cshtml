@@ -26,10 +26,8 @@
         <div class="container-fluid">
             <div class="row box1 center-block">
                 <div class="col-lg-4 col-md-4 col-sm-4 logo">
-                    <a href="@Url.Action("Index", "Home")">
-                        <img class="img-responsive" src="https://cdn2.hubspot.net/hub/2583754/hubfs/website/nan-tien-institute-logo.png" alt="Nan Tien Institute"/>
-                    </a>
-                        </div>
+                    <img class="img-responsive" src="https://cdn2.hubspot.net/hub/2583754/hubfs/website/nan-tien-institute-logo.png" alt="Nan Tien Institute"/>
+                </div>
                 <div class="menuContainer col-lg-8 col-md-8 col-sm-8">
                     <nav class="navbar navbar-default">
                         <div class="container-fluid">
@@ -44,20 +42,26 @@
                             <div class="collapse navbar-collapse" id="myNavbar">
                                 <ul class="nav navbar-nav">
                                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                                    @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+                                    @if (User.IsInRole("Manager") || User.IsInRole("Admin") || User.IsInRole("Accountant"))
                                     {
                                         <li class="dropdown">
                                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">HR Management<span class="caret"></span></a>
                                             <ul class="dropdown-menu">
-                                                <li>@Html.ActionLink("User Leaves", "UserLeaves", "Admin")</li>
                                                 <li>@Html.ActionLink("Leave Approval", "Approval", "LeaveApproval")</li>
-                                                <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
                                                 <li>@Html.ActionLink("Payroll Export", "PayrollExport", "Admin")</li>
-                                                <li class="divider">
-                                                <li class="nav-header">AD Management</li>
-                                                <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>
-                                                <li class="nav-header-child">@Html.ActionLink("Group", "Group", "ADManagement")</li>
-                                                <li class="nav-header-child">@Html.ActionLink("Role", "Role", "ADManagement")</li>
+                                                @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+                                                {
+                                                    <li>@Html.ActionLink("User Leaves", "UserLeaves", "Admin")</li>
+                                                    <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
+                                                    if (User.IsInRole("Admin"))
+                                                    {
+                                                        <li class="divider"></li>
+                                                        <li class="nav-header">AD Management</li>
+                                                        <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>
+                                                        <li class="nav-header-child">@Html.ActionLink("Group", "Group", "ADManagement")</li>
+                                                        <li class="nav-header-child">@Html.ActionLink("Role", "Role", "ADManagement")</li>
+                                                    }
+                                                }
                                             </ul>
                                         </li>
                                     }
@@ -69,11 +73,10 @@
                                             <ul class="dropdown-menu">
                                                 <li>@Html.ActionLink("Public Holiday", "Holidays", "Admin")</li>
                                                 <li>@Html.ActionLink("Email Setting", "EmailSetting", "Admin")</li>
-                                                <li>@Html.ActionLink("Manager Setting", "ManagerSetting", "Admin")</li>
+                                                <li>@Html.ActionLink("User Role Setting", "UserRoleSetting", "Admin")</li>
                                             </ul>
                                         </li>
                                     }
-                                    
                                     <li>@Html.ActionLink("HR Application", "Index", "HRApplication")</li>
                                 </ul>
                             </div>
@@ -128,11 +131,7 @@
                                     </li>
                                 }
                                 
-                                <li class="dropup">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance<span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li>@Html.ActionLink("HR Application", "Index", "HRApplication")</li>
-                                    </ul>
+                                <li>@Html.ActionLink("HR Application", "Index", "HRApplication")</li>
                             </ul>
                         </div>
                     </nav>

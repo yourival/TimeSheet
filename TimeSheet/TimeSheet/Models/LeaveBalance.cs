@@ -14,8 +14,7 @@ namespace TimeSheet.Models
         public string UserID { get; set; }
         [Key, Column(Order = 1)]
         public _leaveType LeaveType { get; set; }
-
-        [RegularExpression(@"^(\d*(\.[05])?)$", ErrorMessage = "Fill in a number that is a multiple of 0.5")]
+        
         public Double AvailableLeaveHours { get; set; }
     }
 }

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<UserRoleSetting>
+
+@{
+    ViewBag.Title = "UserRole Setting";
+}
+
+<body>
+    <div class="container" align="center">
+        <h2>User Role Setting</h2>
+
+        <h4>@Html.ActionLink("Create New", "CreateUserRole")</h4>
+        <table class="table-fill">
+                <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>IsAdmin</th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @Html.HiddenFor(modelItem => item.id)
+                        <td>@Html.DisplayFor(modelItem => item.UserID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                        <td>@(item.IsAdmin? "Yes" : "No")</td>
+                        <td>
+                            @Html.ActionLink("Edit", "EditUserRole", "Admin", new { id = item.id }, null) |
+                            @Html.ActionLink("Delete", "DeleteUserRole", "Admin", new { id = item.id }, null)
+                        </td>
+                    </tr>
+                }
+        </table>
+    </div>
+</body>

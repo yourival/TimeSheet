@@ -62,22 +62,31 @@ namespace TimeSheet
                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
                            code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
 
-                           if (AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name) == "IsAdmin")
+                           UserRoleSetting userRole = AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name);
+                           if(userRole != null)
                            {
-                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Admin"));
-                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                               if (userRole.IsAdmin)
+                               {
+                                   context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Admin"));
+                                   context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                               }
+                               else
+                               {
+                                   if (userRole.IsManager)
+                                   {
+                                       context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
+                                   }
+                                   if (userRole.IsAccountant)
+                                   {
+                                       context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Accountant"));
+                                   }
+                               }
                            }
 
-                           if (AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name) == "IsManager")
-                           {
-                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Manager"));
-                           }
-
-
-                               return Task.FromResult(0);
+                           return Task.FromResult(0);
                        }
                     }
-                });
+            });
         }
     }
 }

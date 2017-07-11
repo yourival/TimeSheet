@@ -19,7 +19,7 @@ namespace TimeSheet.Models
         {
             DateTime newYear = new DateTime(year, 1, 1);
             //example: get the first day of Tuesday: 2 + 7 - DayOfWeek of new year
-            DateTime firstTuesday = newYear.AddDays((9 - (int)newYear.DayOfWeek) % 7);
+             DateTime firstTuesday = newYear.AddDays((9 - (int)newYear.DayOfWeek) % 7);
 
             //retrun first pay day of the year
             if ((firstTuesday - FirstPayPeriod).Days % 14 == 0)
@@ -28,10 +28,17 @@ namespace TimeSheet.Models
                 return firstTuesday.AddDays(7);
         }
 
+        // number of periods in the year
         public static int GetPeriodAmount(int year)
         {
-            //number of periods in the year
             return (FirstPayDayOfYear(year + 1) - FirstPayDayOfYear(year)).Days / 14;
+        }
+
+        // the peroid number of a specific date
+        public static int GetPeriodNum(DateTime date)
+        {
+            int days = (date - (FirstPayDayOfYear(date.Year)).AddDays(-13)).Days;
+            return days / 14 + 1;
         }
 
         public static DateTime GetEndDay(int year, int period)

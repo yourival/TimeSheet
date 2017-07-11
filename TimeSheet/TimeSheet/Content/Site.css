@@ -771,3 +771,21 @@ form p {
 .dropdown-menu li {
     display: list-item;
 }
+
+/*Printing*/
+@media print {
+    .do-not-print {
+        display: none;
+    }
+    div.print-form {
+        border: none;
+        box-shadow: none;
+    }
+    div.print-form table {
+        width: 90%;
+        font-size: 24px;
+    }
+    div.print-form h3 {
+        font-size: 44px;
+    }
+}

@@ -12,6 +12,6 @@ namespace TimeSheet.Models
         {
         }
         public DbSet<Holiday> Holidays { get; set; }
-        public DbSet<Manager> ManagerSetting { get; set; }
+        public DbSet<UserRoleSetting> UserRoleSettings { get; set; }
     }
 }

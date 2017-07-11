@@ -14,8 +14,8 @@
     <hr />
         <table class="table-responsive">
             <tr>
-                <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
-                <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
+                <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserName)</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.UserName)</td>
             </tr>
             <tr>
                 <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
@@ -34,11 +34,15 @@
                 <td>@Html.DisplayFor(m => m.LeaveApplication.TotalLeaveTime)</td>
             </tr>
             <tr>
+                <th>Reason</th>
+                <td>@Html.DisplayFor(m => m.LeaveApplication.Comment)</td>
+            </tr>
+            <tr>
                 <th>@Html.DisplayNameFor(m => m.LeaveApplication.Attachments)</th>
                 <td>
                     @foreach (var file in Model.LeaveApplication.Attachments)
                     {
-                        <a href="@Url.Action("Download", "LeaveApproval", new { id = file.Id })">
+                        <a href="@Url.Action("DownloadAttachment", "LeaveApproval", new { id = file.Id })">
                             <span class="glyphicon glyphicon glyphicon-file"></span>@file.FileName 
                         </a>@:&nbsp;
                     }
@@ -65,7 +69,7 @@
                         <th>Date</th>
                                     <th>Type</th>
                                     <th>Detail Hours</th>
-                                    <th>Other Taken Leaves</th>
+                                    <th>Who has taken leaves</th>
                     </tr>
                     @foreach (var item in Model.TimeRecords)
                     {
@@ -97,48 +101,24 @@
             </div>
         </div>
         <hr>
-        @using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
+        @if (User.IsInRole("Admin") || Model.LeaveApplication.ManagerID == User.Identity.Name)
         {
-            <row class="approve-button">
-                <input type="hidden" name="id" value=@Model.LeaveApplication.id />
-                <input type="submit" class="btn btn-success" name="decision" value="Approve">
-                <input type="submit" class="btn btn-danger" name="decision" value="Reject">
-            </row>
-            <div class="col-sm-3"></div>
-        }
-        </div>
-    </div>
-
-    <div class="container">
-        <h3>Leaves taken by other employees</h3>
-        @if(Model.TakenLeaves.Count == 0)
-        {
-            <p>No leave is taken in the period.</p>
+            using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
+            {
+                <row class="approve-button">
+                    <input type="hidden" name="id" value=@Model.LeaveApplication.id />
+                    <input type="submit" class="btn btn-success" name="decision" value="Approve">
+                    <input type="submit" class="btn btn-danger" name="decision" value="Reject">
+                </row>
+                <div class="col-sm-3"></div>
+            }
         }
         else
         {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>User Id</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var leave in Model.TakenLeaves)
-                    {
-                        <tr>
-                            <td>@String.Format("{0:ddd, dd/MM/yyyy}", leave.RecordDate)</td>
-                            <td>@Html.DisplayFor(m => leave.UserID)</td>
-                            <td>@Html.DisplayFor(m => leave.StartTime)</td>
-                            <td>@Html.DisplayFor(m => leave.EndTime)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <p>You are not authorized to approve this application.</p>
         }
+
+        </div>
     </div>
 </div>
 @functions {

@@ -1,5 +1,5 @@
 ﻿
-<p>This is the leave application for {0} from {1} to {2}</p>
+<p>This is the leave application for {0} from {1:dd MMM yyyy} to {2:dd MMM yyyy}</p>
 <p>Leaving reason:</p>
 <p>{3}</p>
 <p>Please click the link below to login to the system</p>

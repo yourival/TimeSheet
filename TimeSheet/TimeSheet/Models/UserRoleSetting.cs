@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
-    public class Manager
+    public class UserRoleSetting
     {
         [Key]
         public int id { get; set; }
@@ -15,27 +15,31 @@ namespace TimeSheet.Models
         [Required]
         [EmailAddress]
         [Display(Name = "Manager ID")]
-        public String ManagerID { get; set; }
+        public String UserID { get; set; }
 
         [Required]
         [Display(Name = "Manager Name")]
-        public String ManagerName { get; set; }
+        public String UserName { get; set; }
 
         public bool IsAdmin { get; set; }
+
+        public bool IsAccountant { get; set; }
+
+        public bool IsManager { get; set; }
 
         public static List<SelectListItem> GetManagerItems()
         {
             AdminDb adminDb = new AdminDb();
             List<SelectListItem> listItems = new List<SelectListItem>();
-            List<Manager> managerList = adminDb.ManagerSetting.ToList();
+            List<UserRoleSetting> managerList = adminDb.UserRoleSettings.Where(u => u.IsManager).ToList();
             for (int i = 0; i < managerList.Count(); i++)
             {
                 if (i == 0)
                 {
                     listItems.Add(new SelectListItem
                     {
-                        Text = managerList[i].ManagerName,
-                        Value = managerList[i].ManagerID,
+                        Text = managerList[i].UserName,
+                        Value = managerList[i].UserID,
                         Selected = true
                     });
                 }
@@ -43,8 +47,8 @@ namespace TimeSheet.Models
                 {
                     listItems.Add(new SelectListItem
                     {
-                        Text = managerList[i].ManagerName,
-                        Value = managerList[i].ManagerID
+                        Text = managerList[i].UserName,
+                        Value = managerList[i].UserID
                     });
                 }
             }

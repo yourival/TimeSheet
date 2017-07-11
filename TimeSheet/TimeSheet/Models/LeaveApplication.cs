@@ -49,7 +49,7 @@ namespace TimeSheet.Models
         [Key]
         [Display(Name = "#")]
         public int id { get; set; }
-        [Display(Name = "User ID")]
+        [Display(Name = "User Email")]
         public string UserID { get; set; }
 
         [Display(Name = "User Name")]
@@ -77,32 +77,28 @@ namespace TimeSheet.Models
         [Display(Name = "Status")]
         public _status status { get; set; }
 
+        public DateTime? ApprovedTime { get; set; }
+
         [DataType(DataType.MultilineText)]
         public string Comment { get; set; }
+
+        public string OriginalBalances { get; set; }
+
+        public string CloseBalances { get; set; }
 
         public virtual ICollection<LeaveAttachment> Attachments { get; set; }
 
         public List<TimeRecord> GetTimeRecords()
         {
-            List<TimeRecord> records = new List<TimeRecord>();
-            DateTime start = StartTime;
-            DateTime end = EndTime;
             TimeSheetDb contextDb = new TimeSheetDb();
-            for (int i = 0; i <= (end - start).Days; i++)
-            {
-                DateTime currentDate = start.AddDays(i);
-                var newTimeRecord = (from r in contextDb.TimeRecords
-                                     where DbFunctions.TruncateTime(r.RecordDate) == currentDate.Date /*&&
-                                           r.UserID == UserID*/
-                                     select r).FirstOrDefault();
-                if (newTimeRecord != null)
-                {
-                    if (!newTimeRecord.IsHoliday)
-                        records.Add(newTimeRecord);
-                }
-            }
+            List<TimeRecord> records = (from r in contextDb.TimeRecords
+                                    where r.RecordDate >= StartTime &&
+                                          r.RecordDate <= EndTime &&
+                                         !r.IsHoliday &&
+                                          r.UserID == UserID
+                                    select r).ToList();
 
-            return records;
+            return records ?? new List<TimeRecord>();
         }
 
         //public static IEnumerable<SelectListItem> GetLeaveTypeItems()

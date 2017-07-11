@@ -94,10 +94,10 @@ namespace TimeSheet.Controllers
                 ViewBag.PeriodEnd = PayPeriod.GetEndDay(form.Year, form.Period);
                 ViewBag.RequestedHours = 7.5 * 14;
                 ViewBag.UserName = "Waiting for creating user table";
-                Manager m = (from a in adminDb.ManagerSetting
-                             where a.ManagerID == form.ManagerID
+                UserRoleSetting m = (from a in adminDb.UserRoleSettings
+                             where a.UserID == form.ManagerID
                              select a).FirstOrDefault();
-                ViewBag.ManagerName = m.ManagerName;
+                ViewBag.ManagerName = m.UserName;
                 return View(form);
             }
             else

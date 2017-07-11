@@ -57,7 +57,7 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public ActionResult UserLeaves(List<LeaveBalance> LeaveBalances)
         {
-            for (int i = 0; i < Enum.GetNames(typeof(_leaveType)).Length; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var LeaveBalance = timesheetDb.LeaveBalances.Find(LeaveBalances.First().UserID, (_leaveType)i);
                 if (LeaveBalance == null)
@@ -162,21 +162,21 @@ namespace TimeSheet.Controllers
         }
 
         [AuthorizeUser(Roles = "Admin")]
-        public ActionResult ManagerSetting()
+        public ActionResult UserRoleSetting()
         {
-            List<Manager> ManagerList = adminDb.ManagerSetting.ToList();
-            return View(ManagerList);
+            List<UserRoleSetting> UserRoleList = adminDb.UserRoleSettings.ToList();
+            return View(UserRoleList);
         }
 
-        //Get CreateManager view
-        public ActionResult CreateManager()
+        //Get CreateUserRole view
+        public ActionResult CreateUserRole()
         {
             return View();
         }
 
-        //Save Manager Info to Db
+        //Save UserRole Info to Db
         [HttpPost]
-        public ActionResult CreateManager(Manager model)
+        public ActionResult CreateUserRole(UserRoleSetting model)
         {
             try
             {
@@ -184,7 +184,7 @@ namespace TimeSheet.Controllers
                 {
                     if (model != null)
                     {
-                        adminDb.ManagerSetting.Add(model);
+                        adminDb.UserRoleSettings.Add(model);
                         adminDb.SaveChanges();
                     }
                 }
@@ -193,13 +193,13 @@ namespace TimeSheet.Controllers
             {
                 throw ex;
             }
-            return RedirectToAction("ManagerSetting");
+            return RedirectToAction("UserRoleSetting");
         }
 
-        //Get Edit Manager  view
-        public ActionResult EditManager(int id)
+        //Get Edit UserRole  view
+        public ActionResult EditUserRole(int id)
         {
-            Manager model = adminDb.ManagerSetting.Find(id);
+            UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
             if (model == null)
             {
                 return HttpNotFound();
@@ -207,18 +207,18 @@ namespace TimeSheet.Controllers
             return View(model);
         }
 
-        //Save Manager info to Db
-        public ActionResult EditManagerConfirmed(Manager model)
+        //Save UserRole info to Db
+        public ActionResult EditUserRoleConfirmed(UserRoleSetting model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    adminDb.ManagerSetting.Attach(model);
+                    adminDb.UserRoleSettings.Attach(model);
                     adminDb.Entry(model).State = EntityState.Modified;
                     adminDb.SaveChanges();
                 }
-                return RedirectToAction("ManagerSetting");
+                return RedirectToAction("UserRoleSetting");
             }
             catch (Exception ex)
             {
@@ -226,20 +226,20 @@ namespace TimeSheet.Controllers
             }
         }
 
-        //Delete a Manager by ID
-        public ActionResult DeleteManager(int id)
+        //Delete a UserRole by ID
+        public ActionResult DeleteUserRole(int id)
         {
-            Manager model = adminDb.ManagerSetting.Find(id);
+            UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
             if (model == null)
             {
                 return HttpNotFound();
             }
-            adminDb.ManagerSetting.Remove(model);
+            adminDb.UserRoleSettings.Remove(model);
             adminDb.SaveChanges();
-            return RedirectToAction("ManagerSetting");
+            return RedirectToAction("UserRoleSetting");
         }
 
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult PayrollExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();

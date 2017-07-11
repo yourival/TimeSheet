@@ -1,0 +1,65 @@
+﻿@model List<LeaveApplication>
+
+@{
+    Layout = null;
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Total Hours</th>
+            <th>Status</th>
+            <th>Output</th>
+        </tr>
+    </thead>
+    <tbody style="cursor:pointer">
+        @for (int i = 0; i < 5 && i < Model.Count; i++)
+        {
+            <tr class="table-row" onclick="location.href='@Url.Action("ApplicationOutput", "LeaveApproval", new { id = Model[i].id })'">
+                <td>@Html.DisplayFor(m => m[i].id)</td>
+                <td>@Html.DisplayFor(m => m[i].UserName)</td>
+                <td>@Html.DisplayFor(m => m[i].leaveType)</td>
+                <td>@Html.DisplayFor(m => m[i].StartTime)</td>
+                <td>@Html.DisplayFor(m => m[i].EndTime)</td>
+                <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
+                <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Html.DisplayFor(m => m[i].status)</td>
+                <td style="cursor:default"><span class="glyphicon glyphicon-print"></span></td>
+            </tr>
+        }
+        <tr>
+            <td colspan="7">
+            <td>
+                @if (Model.Count > 5)
+                {
+                    @Html.ActionLink("More...", "ApplicationList", new { type = "Confirmed" })
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="alert-danger" id="error"></div>
+
+@functions {
+    string getStatusClass(_status status)
+    {
+        string className;
+        switch (status)
+        {
+            case _status.approved:
+                className = "text-success";
+                break;
+            case _status.rejected:
+                className = "text-danger";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}

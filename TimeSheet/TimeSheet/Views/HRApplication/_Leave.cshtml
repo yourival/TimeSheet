@@ -1,12 +1,12 @@
 ﻿@model LeaveApplicationViewModel
 
 @{
-    string[] LeaveNames = {"Sick Leave", "Flexi Leave", "Annual Leave" };
+    string[] LeaveNames = { "Sick Leave", "Flexi Leave", "Annual Leave" };
 }
 
 <div class="hrForm-content">
     <div>
-        @using (Html.BeginForm("Leave", "HRApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Leave", "HRApplication", FormMethod.Post, new { enctype = "multipart/form-data", id = "lform" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
@@ -27,119 +27,118 @@
                 </text>
             </div>
             <hr>
-            <form id="#lform">
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="startTime">
-                        @Html.LabelFor(model => model.LeaveApplication.StartTime)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
-                            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
-                        </p>
-                    </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="startTime">
+                    @Html.LabelFor(model => model.LeaveApplication.StartTime)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
+                        @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                    </p>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="endTime">
-                        @Html.LabelFor(model => model.LeaveApplication.EndTime)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
-                        </p>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="endTime">
+                    @Html.LabelFor(model => model.LeaveApplication.EndTime)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
+                    </p>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="type">
-                        @Html.LabelFor(model => model.LeaveApplication.leaveType)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, new { @class = "form-control", @id = "leavetypeMain" } )
-                        </p>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="type">
+                    @Html.LabelFor(model => model.LeaveApplication.leaveType)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, new { @class = "form-control", @id = "leavetypeMain" })
+                    </p>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="manager">
-                        @Html.Label("Manager")
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.DropDownListFor(model => model.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-                        </p>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="manager">
+                    @Html.Label("Manager")
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.DropDownListFor(model => model.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                    </p>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="comment">
-                        @Html.LabelFor(model => model.LeaveApplication.Comment)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "comment", @style = "resize: vertical" } })
-                        </p>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="comment">
+                    @Html.LabelFor(model => model.LeaveApplication.Comment)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "comment", @style = "resize: vertical" } })
+                    </p>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="files">
-                        Attachments
-                    </label>
-                    <div class="col-sm-8 ">
-                        <p class="right-align-cell">
-                                <text id="upload-file-info"></text>
-                                <label class="btn btn-default">
-                                    Browse...
-                                    @Html.TextBoxFor(model => model.Attachments, new { id = "files", type = "file", style = "display: none", multiple = "multiple" })
-                                </label>    
-                        </p>
-                        
-                    </div>
-                </div>
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <a href="#leaveDetail" data-toggle="collapse">
-                            <p>
-                                Click here if you want to edit details
-                                <span class="glyphicon glyphicon-pencil"></span>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="files">
+                    Attachments
+                </label>
+                <div class="col-sm-8 ">
+                    <p class="right-align-cell">
+                        <text id="upload-file-info"></text>
+                        <label class="btn btn-default">
+                            Browse...
+                            @Html.TextBoxFor(model => model.Attachments, new { id = "files", type = "file", style = "display: none", multiple = "multiple" })
+                        </label>
+                    </p>
 
-                            </p>
-                        </a>
-                    </div>
                 </div>
+            </div>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <a href="#leaveDetail" data-toggle="collapse">
+                        <p>
+                            Click here if you want to edit details
+                            <span class="glyphicon glyphicon-pencil"></span>
 
-                <div class="appDetails">
-                    <div class="col-sm-offset-1 col-sm-2"></div>
-                    <div id="leave-form" class="col-sm-8"></div>
+                        </p>
+                    </a>
                 </div>
-                <hr />
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <label>Balance After (hrs):&nbsp;</label>
-                        <text class="textStyleAfter">
-                            @for (int i = 0; i < LeaveNames.Length; i++)
+            </div>
+
+            <div class="appDetails">
+                <div class="col-sm-offset-1 col-sm-2"></div>
+                <div id="leave-form" class="col-sm-8"></div>
+            </div>
+            <hr />
+            <div id="alert"></div>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <label>Balance After (hrs):&nbsp;</label>
+                    <text class="textStyleAfter">
+                        @for (int i = 0; i < LeaveNames.Length; i++)
+                        {
+                            @LeaveNames[i]
+                            @:   :&nbsp;
+
+                            <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
+
+                            if (i != LeaveNames.Length - 1)
                             {
-                                @LeaveNames[i]
-                                @:   :&nbsp;
-
-                                <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
-
-                                if (i != LeaveNames.Length - 1)
-                                {
-                                    @: ,&nbsp;&nbsp;
-                                }
-                            }
-                        </text>
-                    </div>
+                                @: ,&nbsp;&nbsp;
+                    }
+                        }
+                    </text>
                 </div>
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                            <label>Total:</label>
-                            <span class="total" id="leave-total"></span>
-                    </div>
+            </div>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <label>Total:</label>
+                    <span class="total" id="leave-total"></span>
                 </div>
-                <div class="button-group">
-                    <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
-                </div>
-            </form>
+            </div>
+            <div class="button-group">
+                <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
+            </div>
         }
     </div>
 </div>
@@ -262,15 +261,15 @@
 
             if (isValid) {
                 $("#alert").attr('class', "alert alert-success");
-                $("#alert").text("Successfully submitted"); 
+                $("#alert").text("Successfully submitted");
             } else {
                 $("#alert").attr('class', "alert alert-danger");
                 $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
-                    "Your leaves application excesses your leave balance.");
+                    " The leaves you applied excess your leave balances.");
                 e.preventDefault(e);
                 return false;
             }
-                       
+
         });
 
         // If there is any file attached

@@ -40,20 +40,9 @@
                         </p>
                     </div>
                 </div>
-                @*<div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <a href="#CasualDetail" id="toggle-details" data-toggle="collapse">
-                            <p>
-                                Click here if you want to hide details
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </p>
-                        </a>
-                    </div>
-                </div>*@
 
                 <div class="appDetails">
-                    <div class="col-sm-offset-1 col-sm-2"></div>
-                    <div id="casual-form" class="col-sm-8"></div>
+                    <div id="casual-form"></div>
 
                 </div>
                 <hr />
@@ -113,6 +102,7 @@
     }
 
     $(document).ready(function () {
+        renderCasualForm();
         $("#year").on("change", function () {
             var val = $('#year').val();
             $.ajax({
@@ -127,12 +117,7 @@
 
         $("#periodDiv").on("change", function () {
             renderCasualForm();
-            @*var year = $('#year').val();
-            var period = $('#period').val();
-            var yp = year + "." + period;
-            $("#casual-form").load('@Url.Action("GetTimeRecords", "HRApplication", null,Request.Url.Scheme)?text=' + yp);*@
         });
         
-        //renderCasualForm();
     });
 </script>

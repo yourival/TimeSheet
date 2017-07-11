@@ -22,10 +22,13 @@ namespace TimeSheet.Models
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "r.lin@m.nantien.edu.au";
                 newApplication.UserName = "Robin Lin";
+                newApplication.ManagerID = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 4);
                 newApplication.EndTime = startDate.AddDays(i * 4 + 3);
                 newApplication.leaveType = (_leaveType)(i % 3 +1);
                 newApplication.status = (_status)(i % 4);
+                if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
+                    newApplication.ApprovedTime = new DateTime(2017, 2, 2);
                 newApplication.TotalLeaveTime = 30;
                 applications.Add(newApplication);
 
@@ -56,10 +59,13 @@ namespace TimeSheet.Models
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "y.ben@m.nantien.edu.au";
                 newApplication.UserName = "Rita Ben";
+                newApplication.ManagerID = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i + 1) % 3 + 1);
                 newApplication.status = (_status)(i % 4 + 1);
+                if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
+                    newApplication.ApprovedTime = new DateTime(2017, 1, 10);
                 newApplication.TotalLeaveTime = 22.5;
                 applications.Add(newApplication);
 
@@ -89,10 +95,13 @@ namespace TimeSheet.Models
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "d.yang@m.nantien.edu.au";
                 newApplication.UserName = "Dawen Yang";
+                newApplication.ManagerID = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i +1) % 3 + 1);
                 newApplication.status = (_status)(i % 4 + 1);
+                if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
+                    newApplication.ApprovedTime = new DateTime(2017, 1, 2);
                 newApplication.TotalLeaveTime = 22.5;
                 applications.Add(newApplication);
 

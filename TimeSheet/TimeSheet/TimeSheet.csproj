@@ -52,6 +52,12 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlRenderer, Version=1.5.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlRenderer.Core.1.5.0.5\lib\net45\HtmlRenderer.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlRenderer.PdfSharp, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlRenderer.PdfSharp.1.5.0.6\lib\net45\HtmlRenderer.PdfSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.5\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -125,6 +131,12 @@
       <HintPath>packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -145,6 +157,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -254,7 +267,7 @@
     <Compile Include="Models\LeaveApplication.cs" />
     <Compile Include="Models\LeaveApplicationViewModel.cs" />
     <Compile Include="Models\LeaveBalance.cs" />
-    <Compile Include="Models\Manager.cs" />
+    <Compile Include="Models\UserRoleSetting.cs" />
     <Compile Include="Models\PayPeriod.cs" />
     <Compile Include="Models\TimeRecord.cs" />
     <Compile Include="Models\TimeRecordForm.cs" />
@@ -384,7 +397,7 @@
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
     <Content Include="Views\Admin\_UserLeaves.cshtml" />
-    <Content Include="Views\LeaveApproval\_Approval.cshtml" />
+    <Content Include="Views\LeaveApproval\_Waiting.cshtml" />
     <Content Include="Views\LeaveApproval\Approval.cshtml" />
     <Content Include="Views\LeaveApproval\ApplicationList.cshtml" />
     <Content Include="Views\LeaveApproval\ApprovalDetail.cshtml" />
@@ -394,11 +407,11 @@
     <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
     <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
     <Content Include="Views\Admin\PayrollExport_backup.cshtml" />
-    <Content Include="Views\Admin\CreateManager.cshtml" />
-    <Content Include="Views\Admin\EditManager.cshtml" />
+    <Content Include="Views\Admin\UserRoleManager.cshtml" />
+    <Content Include="Views\Admin\EditUserRole.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />
     <Content Include="Views\Admin\Holidays.cshtml" />
-    <Content Include="Views\Admin\ManagerSetting.cshtml" />
+    <Content Include="Views\Admin\UserRoleSetting.cshtml" />
     <Content Include="Views\HRApplication\Index.cshtml" />
     <Content Include="Views\HRApplication\_Casual.cshtml" />
     <Content Include="Views\HRApplication\_Leave.cshtml" />
@@ -423,6 +436,9 @@
     <Content Include="Views\Admin\_PeriodDetails.cshtml" />
     <Content Include="Views\Shared\_SelectYear.cshtml" />
     <Content Include="Views\Admin\PayrollExport.cshtml" />
+    <Content Include="Views\Shared\PostRequest.cshtml" />
+    <Content Include="Views\LeaveApproval\ApplicationOutput.cshtml" />
+    <Content Include="Views\LeaveApproval\_Confirmed.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

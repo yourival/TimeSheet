@@ -32,7 +32,7 @@ namespace TimeSheet.Models
         [Required]
         public int SMTPPort { get; set; }
 
-        public static async Task SendEmail(string EmailReceiver, string CC,string EmailType, string id)
+        public static async Task SendEmail(string EmailReceiver, string CC, string EmailType, string id)
         {
             AdminDb adminDb = new AdminDb();
             TimeSheetDb timesheetDb = new TimeSheetDb();
@@ -40,6 +40,7 @@ namespace TimeSheet.Models
             string link = "https://hr.nantien.edu.au/";
             string body = string.Empty;
             string subject = string.Empty;
+            string username = string.Empty;
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             string path = Directory.GetCurrentDirectory();// path for loading email template file
             switch (EmailType)
@@ -54,21 +55,23 @@ namespace TimeSheet.Models
                         body = sr.ReadToEnd();
                     }
                     TimeRecordForm form = timesheetDb.TimeRecordForms.Find(ID);
-                    subject = subject + " From " + form.UserID;
-                    body = string.Format(body,form.UserID,form.Period,form.Year,link);
+                    username = timesheetDb.ADUsers.Find(form.UserID).UserName ?? form.UserID;
+                    subject = subject + " From " + username;
+                    body = string.Format(body, username, form.Period, form.Year, link);
                     break;
                 case "LeaveApplication":
                     link += "LeaveApproval/ApprovalDetail/";
                     link += id;
                     subject = "LeaveApplicaiton";
                     path = path + @"\App_Data\Template\LeaveApplication.txt";
-                    using (var sr= new StreamReader(path))
+                    using (var sr = new StreamReader(path))
                     {
                         body = sr.ReadToEnd();
                     }
-                    LeaveApplication leaveModel  = timesheetDb.LeaveApplications.Find(ID);
-                    subject = subject + " From " + leaveModel.UserID;
-                    body = string.Format(body,leaveModel.UserID,leaveModel.StartTime,leaveModel.EndTime,leaveModel.Comment,link);
+                    LeaveApplication leaveModel = timesheetDb.LeaveApplications.Find(ID);
+                    username = leaveModel.UserName ?? leaveModel.UserID;
+                    subject = subject + " From " + username;
+                    body = string.Format(body, username, leaveModel.StartTime, leaveModel.EndTime, leaveModel.Comment, link);
                     break;
                 case "TimesheetApproval":
                     subject = "TimesheetApproval";
@@ -78,8 +81,8 @@ namespace TimeSheet.Models
                         body = sr.ReadToEnd();
                     }
                     TimeRecordForm formModel = timesheetDb.TimeRecordForms.Find(ID);
-                    Manager manager = (from m in adminDb.ManagerSetting
-                                       where m.ManagerID == formModel.ManagerID
+                    UserRoleSetting manager = (from m in adminDb.UserRoleSettings
+                                       where m.UserID == formModel.ManagerID
                                        select m).FirstOrDefault();
                     string comment = string.Empty;
                     if (formModel.Comments != null)
@@ -90,7 +93,7 @@ namespace TimeSheet.Models
                     {
                         comment = "No comments";
                     }
-                    body = string.Format(body, formModel.Period, formModel.Year, formModel.FormStatus, manager.ManagerName, comment);
+                    body = string.Format(body, formModel.Period, formModel.Year, formModel.FormStatus, manager.UserName, comment);
                     break;
                 case "LeaveApproval":
                     subject = "LeaveApproval";
@@ -100,10 +103,10 @@ namespace TimeSheet.Models
                         body = sr.ReadToEnd();
                     }
                     LeaveApplication laModel = timesheetDb.LeaveApplications.Find(ID);
-                    Manager leavemanager = (from m in adminDb.ManagerSetting
-                                       where m.ManagerID == laModel.ManagerID
-                                       select m).FirstOrDefault();
-                    body = string.Format(body, laModel.StartTime,laModel.EndTime,laModel.status,leavemanager.ManagerName);
+                    UserRoleSetting leavemanager = (from m in adminDb.UserRoleSettings
+                                            where m.UserID == laModel.ManagerID
+                                            select m).FirstOrDefault();
+                    body = string.Format(body, laModel.StartTime, laModel.EndTime, laModel.status, leavemanager.UserName);
                     break;
             }
             var message = new MailMessage();
@@ -115,7 +118,7 @@ namespace TimeSheet.Models
             if (CC != "")
             {
                 string[] CopyReceiver = CC.Split(';');
-                foreach(var cc in CopyReceiver)
+                foreach (var cc in CopyReceiver)
                 {
                     message.CC.Add(cc);
                 }
