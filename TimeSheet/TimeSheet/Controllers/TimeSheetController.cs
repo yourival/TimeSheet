@@ -137,9 +137,8 @@ namespace TimeSheet.Controllers
                         {
                             timesheetDb.TimeRecords.Add(model.TimeRecords[i]);
                         }
-                        model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
-                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
-                        model.TimeRecordForm.SubmitTime = DateTime.Now;
+                        model.TimeRecordForm.status = _status.modified;
+                        model.TimeRecordForm.SubmittedTime = DateTime.Now;
                         model.TimeRecordForm.TotalWorkingHours = CalculateTotalWorkingHours(model);
                         model.TimeRecordForm.TotalLeaveHours = CalculateTotalLeaveHours(model);
                         timesheetDb.TimeRecordForms.Add(model.TimeRecordForm);
@@ -168,11 +167,10 @@ namespace TimeSheet.Controllers
                             entry.Property(e => e.Flexi).IsModified = true;
                             timesheetDb.SaveChanges();
                         }
-                        model.TimeRecordForm.FormStatus = TimeRecordForm._formstatus.modified;
-                        model.TimeRecordForm.SumbitStatus = TimeRecordForm._sumbitstatus.saved;
+                        model.TimeRecordForm.status = _status.modified;
                         model.TimeRecordForm.TotalWorkingHours = CalculateTotalWorkingHours(model);
                         model.TimeRecordForm.TotalLeaveHours = CalculateTotalLeaveHours(model);
-                        model.TimeRecordForm.SubmitTime = DateTime.Now;
+                        model.TimeRecordForm.SubmittedTime = DateTime.Now;
                         timesheetDb.TimeRecordForms.Attach(model.TimeRecordForm);
                         timesheetDb.Entry(model.TimeRecordForm).State = EntityState.Modified;
                         timesheetDb.SaveChanges();
@@ -204,14 +202,14 @@ namespace TimeSheet.Controllers
             else
             {
                 formModel.ManagerID = managerID;
-                formModel.SumbitStatus = TimeRecordForm._sumbitstatus.submitted;
-                formModel.SubmitTime = DateTime.Now;
+                formModel.status = _status.submited;
+                formModel.SubmittedTime = DateTime.Now;
                 timesheetDb.TimeRecordForms.Attach(formModel);
                 timesheetDb.Entry(formModel).State = EntityState.Modified;
                 timesheetDb.SaveChanges();
 
                 //do not wait for the async task to complete
-                Task.Run(() => EmailSetting.SendEmail(managerID,string.Empty, "TimesheetApplication", formModel.TimeRecordFormID.ToString()));
+                Task.Run(() => EmailSetting.SendEmail(managerID,string.Empty, "TimesheetApplication", formModel.TimeRecordFormId.ToString()));
 
                 return RedirectToAction("Index", new { message = 2});
             }

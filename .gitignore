@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/TimeSheet/TimeSheet/Models/[15.48_120717]dbo.LeaveBalances.data.sql
+/TimeSheet/TimeSheet/Models/[15.48_120717]dbo.LeaveBalances.data.sql
+/TimeSheet/TimeSheet/Models/[15.48_120717]dbo.LeaveBalances.data.sql

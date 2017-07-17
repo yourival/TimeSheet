@@ -53,14 +53,6 @@
                                                 {
                                                     <li>@Html.ActionLink("User Leaves", "UserLeaves", "Admin")</li>
                                                     <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
-                                                    if (User.IsInRole("Admin"))
-                                                    {
-                                                        <li class="divider"></li>
-                                                        <li class="nav-header">AD Management</li>
-                                                        <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>
-                                                        <li class="nav-header-child">@Html.ActionLink("Group", "Group", "ADManagement")</li>
-                                                        <li class="nav-header-child">@Html.ActionLink("Role", "Role", "ADManagement")</li>
-                                                    }
                                                 }
                                             </ul>
                                         </li>
@@ -74,6 +66,11 @@
                                                 <li>@Html.ActionLink("Public Holiday", "Holidays", "Admin")</li>
                                                 <li>@Html.ActionLink("Email Setting", "EmailSetting", "Admin")</li>
                                                 <li>@Html.ActionLink("User Role Setting", "UserRoleSetting", "Admin")</li>
+                                                <li class="divider"></li>
+                                                <li class="nav-header">AD Management</li>
+                                                <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>
+                                                <li class="nav-header-child">@Html.ActionLink("Group", "Group", "ADManagement")</li>
+                                                <li class="nav-header-child">@Html.ActionLink("Role", "Role", "ADManagement")</li>
                                             </ul>
                                         </li>
                                     }
@@ -84,8 +81,6 @@
                     </nav>
                 </div>
             </div>
-
-
             <div>
                 @RenderBody()
             </div>

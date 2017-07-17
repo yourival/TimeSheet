@@ -10,21 +10,35 @@
 <body>
     <div class="container">
         <div id="tabs">
+
             <ul class="nav nav-tabs">
-                <li class="active">
-                    <a href="#leave" data-toggle="tab">Leave Application</a>
-                </li>
-                <li>
-                    <a href="#casual" data-toggle="tab">Casual Submission</a>
-                </li>
+                @if (User.IsInRole("Admin") || User.IsInRole("FullTimeWorker"))
+                {
+                    <li class="active">
+                        <a href="#leave" data-toggle="tab">Leave Application</a>
+                    </li>
+                }
+                @if (User.IsInRole("Admin") || User.IsInRole("CasualWorker"))
+                {
+                    <li class="@(!User.IsInRole("Admin")? "active":"")">
+                        <a href="#casual" data-toggle="tab">Casual Submission</a>
+                    </li>
+                }
             </ul>
+
             <div class="tab-content clearfix">
-                <div id="leave" class="hrForm-bk tab-pane active" align="center">
-                    @Html.Action("Leave", "HRApplication")
-                </div>
-                <div id="casual" class="hrForm-bk tab-pane" align="center">
-                    @Html.Action("Casual", "HRApplication")
-                </div>
+                @if (User.IsInRole("Admin") || User.IsInRole("FullTimeWorker") || User.IsInRole("PartTimeWorker"))
+                {                
+                    <div id="leave" class="hrForm-bk tab-pane active" align="center">
+                        @Html.Action("Leave", "HRApplication")
+                    </div>
+                }
+                @if (User.IsInRole("Admin") || User.IsInRole("CasualWorker"))
+                {
+                    <div id="casual" class="hrForm-bk tab-pane @(!User.IsInRole("Admin")? " active":"")" align="center">
+                        @Html.Action("Casual", "HRApplication")
+                    </div>
+                }
             </div>
         </div>
     </div>

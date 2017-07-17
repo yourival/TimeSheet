@@ -66,7 +66,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>@Html.DisplayFor(m => m.TimeRecordFormID)</td>
+                    <td>@Html.DisplayFor(m => m.TimeRecordFormId)</td>
                     <td>@ViewBag.PeriodYear</td>
                     <td>@Html.DisplayFor(m => m.TotalWorkingHours)</td>
                     <td>@ViewBag.RequestedHours</td>
@@ -74,14 +74,14 @@
                     <td><a href="javascript:CommentEditor()">@ViewBag.Comments</a></td>
                 </tr>
                 <tr>
-                    <td><button id="approveBtn" value="@Model.TimeRecordFormID">Approved</button></td>
-                    <td><button id="rejectBtn" value="@Model.TimeRecordFormID">Rejected</button></td>
+                    <td><button id="approveBtn" value="@Model.TimeRecordFormId">Approved</button></td>
+                    <td><button id="rejectBtn" value="@Model.TimeRecordFormId">Rejected</button></td>
                 </tr>
             </tbody>
         </table>
         @Html.ActionLink("Return to Timesheet Approval","Approval")
         <br />
-        <a href="javascript:LoadTimesheetDetail(@Model.TimeRecordFormID)" id=" timesheetLink">View Timesheet Details</a>
+        <a href="javascript:LoadTimesheetDetail(@Model.TimeRecordFormId)" id=" timesheetLink">View Timesheet Details</a>
     </div>
     <br />
 </div>
@@ -98,7 +98,7 @@
         <div class="modal-body form-group">
             @Html.Label("Comments:")
             <textarea id="comment" class="form-control" rows="3">@Model.Comments</textarea>
-            <button id="commentBtn" class="btn-default" value="@Model.TimeRecordFormID" onclick="SaveComment()">Save</button>
+            <button id="commentBtn" class="btn-default" value="@Model.TimeRecordFormId" onclick="SaveComment()">Save</button>
         </div>
     </div>
 </div>

@@ -93,6 +93,24 @@ namespace TimeSheet.Models
                         Email = "r.lin@m.nantien.edu.au",
                         JobCode = "Lecturer"
                     });
+                    timesheetDb.ADUsers.Add(new ADUser()
+                    {
+                        UserName = "Kai Zhao",
+                        Email = "z.kai@m.nantien.edu.au",
+                        JobCode = "Lecturer"
+                    });
+                    timesheetDb.ADUsers.Add(new ADUser()
+                    {
+                        UserName = "Rita Ben",
+                        Email = "b.rita@m.nantien.edu.au",
+                        JobCode = "Lecturer"
+                    });
+                    timesheetDb.ADUsers.Add(new ADUser()
+                    {
+                        UserName = "Faith Ben",
+                        Email = "b.faith@m.nantien.edu.au",
+                        JobCode = "Lecturer"
+                    });
 
                     timesheetDb.SaveChanges();
                 }

@@ -31,8 +31,8 @@
                 <td class="action">
                     @if (User.IsInRole("Admin") || User.Identity.Name == Model[i].ManagerID)
                     {
-                        <button class="btn btn-success" value="@Model[i].id">Approved</button>
-                        <button class="btn btn-danger" value="@Model[i].id">Rejected</button>
+                        <button class="btn btn-success" value="@Model[i].id">Approve</button>
+                        <button class="btn btn-danger" value="@Model[i].id">Reject</button>
                     }
                 </td>
             </tr>
@@ -81,15 +81,14 @@
             e.stopPropagation();
             var id = $(this).val();
             var decision = $(this).text();
-            var container = $(this).closest("div");
             $(this).closest("tr").fadeOut(500, function () {
                 $.ajax({
-                    url: "/LeaveApproval/ApprovalPartial/",
+                    url: "/LeaveApproval/ApprovalWaiting/",
                     type: "POST",
-                    data: { id: id, decision: decision, type: "Waiting" }
+                    data: { id: id, decision: decision }
                 })
                     .done(function (result) {
-                        container.html(result);
+                        $("#waiting-apps").html(result);
                         $.ajax({
                             url: "/LeaveApproval/ApprovalPartial/",
                             type: "GET",

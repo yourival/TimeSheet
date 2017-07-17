@@ -99,7 +99,6 @@
                         <p>
                             Click here if you want to edit details
                             <span class="glyphicon glyphicon-pencil"></span>
-
                         </p>
                     </a>
                 </div>
@@ -145,7 +144,7 @@
 
 <script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
-    function renderLeaveForm() {
+    function renderLeaveForm(currentRequest) {
         var start = $('#start').val();
         var end = $('#end').val();
         var leavetypeMain = $('#leavetypeMain').val();
@@ -154,10 +153,15 @@
         $("#leave-form").removeData("validator");
         $("#leave-form").removeData("unobtrusiveValidation");
 
-        $.ajax({
+        currentRequest = $.ajax({
             url: "/HRApplication/CreateLeaveList",
             type: "GET",
-            data: { start: start, end: end, leaveType: leavetypeMain }
+            data: { start: start, end: end, leaveType: leavetypeMain },
+            beforeSend: function () {
+                if (currentRequest != null) {
+                    currentRequest.abort();
+                }
+            }
         })
         .done(function (partialViewResult) {
             //Render partial view
@@ -209,7 +213,7 @@
 
         // Display summary and change style according to content
         $(".textStyleAfter").children(".lefthours").each(function (i) {
-            $(this).text(lefthoursAfter[i]);
+            $(this).text(parseFloat(lefthoursAfter[i]).toFixed(2));
             if (lefthoursAfter[i] == lefthoursBefore[i]) {
                 $(this).attr("class", "lefthours");
             } else if (lefthoursAfter[i] < 0) {
@@ -230,23 +234,23 @@
 
     $(document).ready(function () {
         var fullDate = new Date();
-
+        var currentRequest = null;
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
-        renderLeaveForm();
+        renderLeaveForm(currentRequest);
         // When there is any change on main panel
         $("#start").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#end").val($("#start").val());
-            renderLeaveForm();
+            renderLeaveForm(currentRequest);
         });
         $("#end").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#start").val($("#end").val());
-            renderLeaveForm();
+            renderLeaveForm(currentRequest);
         });
         $("#leavetypeMain").on("change", function () {
-            renderLeaveForm();
+            renderLeaveForm(currentRequest);
         });
 
         // When the form is submitted
@@ -259,10 +263,7 @@
                 }
             });
 
-            if (isValid) {
-                $("#alert").attr('class', "alert alert-success");
-                $("#alert").text("Successfully submitted");
-            } else {
+            if (!isValid) {
                 $("#alert").attr('class', "alert alert-danger");
                 $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
                     " The leaves you applied excess your leave balances.");

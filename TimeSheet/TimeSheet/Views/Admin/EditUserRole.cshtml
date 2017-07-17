@@ -29,12 +29,32 @@
                         @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
                     </td>
                 </tr>
-
                 <tr>
-                    <th>@Html.LabelFor(model => model.IsAdmin)</th>
+                    <th>Administrator</th>
                     <td>
                         @Html.EditorFor(model => model.IsAdmin, new { htmlAttributes = new { @class = "form-control" } })
                         @Html.ValidationMessageFor(model => model.IsAdmin, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Manager</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsManager, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsManager, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Accountant</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsAccountant, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsAccountant, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Work Type</th>
+                    <td>
+                        @Html.EnumDropDownListFor(model => model.WorkType, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.WorkType, "", new { @class = "text-danger" })
                     </td>
                 </tr>
             </table>

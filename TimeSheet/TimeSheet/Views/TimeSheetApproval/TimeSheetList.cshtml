@@ -18,8 +18,8 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr onclick="location.href = '@(Url.Action("ApprovalDetails", "TimeSheetApproval", new { id = item.TimeRecordFormID }))'">
-                <td>@Html.DisplayFor(m => item.TimeRecordFormID)</td>
+            <tr onclick="location.href = '@(Url.Action("ApprovalDetails", "TimeSheetApproval", new { id = item.TimeRecordFormId }))'">
+                <td>@Html.DisplayFor(m => item.TimeRecordFormId)</td>
                 <td>@Html.DisplayFor(m => item.UserID)</td>
                 <td>@Html.DisplayFor(m => item.Year)</td>
                 <td>@Html.DisplayFor(m => item.Period)</td>

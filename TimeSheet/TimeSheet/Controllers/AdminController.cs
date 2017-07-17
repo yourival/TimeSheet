@@ -196,7 +196,7 @@ namespace TimeSheet.Controllers
             return RedirectToAction("UserRoleSetting");
         }
 
-        //Get Edit UserRole  view
+        //Get Edit UserRole view
         public ActionResult EditUserRole(int id)
         {
             UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
@@ -208,6 +208,7 @@ namespace TimeSheet.Controllers
         }
 
         //Save UserRole info to Db
+        [HttpPost]
         public ActionResult EditUserRoleConfirmed(UserRoleSetting model)
         {
             try

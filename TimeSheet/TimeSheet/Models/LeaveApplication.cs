@@ -11,11 +11,11 @@ namespace TimeSheet.Models
 {
     public enum _leaveType
     {
-        [Display(Name = "Sick")]
+        [Display(Name = "Sick Leave")]
         sick,
-        [Display(Name = "Flexi")]
+        [Display(Name = "Flexi Leave")]
         flexi,
-        [Display(Name = "Annual")]
+        [Display(Name = "Annual Leave")]
         annual,
         [Display(Name = "Leave Without Pay")]
         leaveWithoutPay,
@@ -30,7 +30,7 @@ namespace TimeSheet.Models
         [Display(Name = "Additional Hours")]
         additionalHours,
         [Display(Name = "Flexi Hours")]
-        flexiHours,
+        flexiHours
     }
     public enum _status
     {
@@ -49,10 +49,10 @@ namespace TimeSheet.Models
         [Key]
         [Display(Name = "#")]
         public int id { get; set; }
-        [Display(Name = "User Email")]
+        [Display(Name = "Staff Email")]
         public string UserID { get; set; }
 
-        [Display(Name = "User Name")]
+        [Display(Name = "Staff Name")]
         public string UserName { get; set; }
 
         [Required]
@@ -88,12 +88,15 @@ namespace TimeSheet.Models
 
         public virtual ICollection<LeaveAttachment> Attachments { get; set; }
 
+        public DateTime SubmittedTime { get; set; }
+
         public List<TimeRecord> GetTimeRecords()
         {
             TimeSheetDb contextDb = new TimeSheetDb();
             List<TimeRecord> records = (from r in contextDb.TimeRecords
                                     where r.RecordDate >= StartTime &&
                                           r.RecordDate <= EndTime &&
+                                          r.LeaveType != null &&
                                          !r.IsHoliday &&
                                           r.UserID == UserID
                                     select r).ToList();

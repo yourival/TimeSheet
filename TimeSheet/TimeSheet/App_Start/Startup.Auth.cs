@@ -81,6 +81,20 @@ namespace TimeSheet
                                        context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "Accountant"));
                                    }
                                }
+                               switch (userRole.WorkType)
+                               {
+                                   case UserRoleSetting._worktype.fulltime:
+                                       context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "FullTimeWorker"));
+                                       break;
+                                   case UserRoleSetting._worktype.parttime:
+                                       context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "PartTimeWorker"));
+                                       break;
+                                   case UserRoleSetting._worktype.casual:
+                                       context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "CasualWorker"));
+                                       break;
+                                   default:
+                                       break;
+                               }
                            }
 
                            return Task.FromResult(0);

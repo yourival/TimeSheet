@@ -1,15 +1,6 @@
-﻿
-@{
-    ViewBag.Title = "Application";
-}
-
-<div class="container">
-    <h2>Done!</h2>
-    <p>
-        Your application was sent successfully.<br />
-        You will recieve a confirmation email within a couple of minutes. <br />
-        Please wait for the manager to process your application.
-    </p>
+﻿<div class="container">
+    <h2>@ViewBag.Title </h2>
+    <p>@Html.Raw(ViewBag.Body)</p>
     <input type="button" class="btn btn-primary" onclick="JavaScript:window.history.back(1);return false;" value="Go Back" />
 </div>
 

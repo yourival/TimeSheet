@@ -10,6 +10,7 @@ using PdfSharp.Pdf;
 using TheArtOfDev.HtmlRenderer.PdfSharp;
 using System.IO;
 using PdfSharp;
+using System.Diagnostics;
 
 namespace TimeSheet.Controllers
 {
@@ -111,8 +112,15 @@ namespace TimeSheet.Controllers
                 applicationVM.LeaveApplication = application;
                 // Get leave balance
                 List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
-                ViewBag.OriginalBalances = application.OriginalBalances.Split('/') ?? new string[] {"","","" };
-                ViewBag.CloseBalances = application.CloseBalances.Split('/') ?? new string[] { "", "", "" };
+                if (application.OriginalBalances != null)
+                    ViewBag.OriginalBalances = application.OriginalBalances.Split('/');
+                else
+                    ViewBag.OriginalBalances = new string[] { "", "", "" };
+
+                if (application.CloseBalances != null)
+                    ViewBag.CloseBalances = application.CloseBalances.Split('/');
+                else
+                    ViewBag.CloseBalances = new string[] { "", "", "" };
 
                 // Get manager name
                 ViewBag.ManagerName = contextDb.ADUsers.Find(application.ManagerID).UserName;
@@ -130,11 +138,10 @@ namespace TimeSheet.Controllers
             {
                 return HttpNotFound("Cannot find the application in database. Please contact our IT support.");
             }
-
-
         }
 
         // GET: /DownloadAttachment/1
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult DownloadAttachment(int id)
         {
             var fileToRetrieve = contextDb.Attachments.Find(id);
@@ -143,12 +150,13 @@ namespace TimeSheet.Controllers
 
         // GET: /DownloadPdf/1
         //[ValidateInput(false)]
+        [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult DownloadPdf(string html)
         {
             Byte[] res = null;
             using (MemoryStream ms = new MemoryStream())
             {
-                PdfDocument pdf = PdfGenerator.GeneratePdf("!!", PageSize.A4);
+                PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
                 pdf.Save(ms);
                 res = ms.ToArray();
             }
@@ -157,12 +165,19 @@ namespace TimeSheet.Controllers
 
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult ApprovalDetail(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                ApproveApplication(application, decision);
+                if (!User.IsInRole("Admin") && User.Identity.Name != application.ManagerID)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+                                                    "You are not authoried to approve the application");
+                }
+                else
+                    ApproveApplication(application, decision);
             }
             else
             {
@@ -174,19 +189,26 @@ namespace TimeSheet.Controllers
 
         // POST: Admin/ApprovalPartial
         [HttpPost]
-        public ActionResult ApprovalWaiting(int id, string decision, string type)
+        [AuthorizeUser(Roles = "Manager")]
+        public ActionResult ApprovalWaiting(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                ApproveApplication(application, decision);
+                if (!User.IsInRole("Admin") && User.Identity.Name != application.ManagerID)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+                                                    "You are not authoried to approve the application");
+                }
+                else
+                    ApproveApplication(application, decision);
             }
             else
             {
                 return HttpNotFound("Cannot find the application in database. Please contact our IT support.");
             }
 
-            return View("_Waiting", GetApplicationList(type));
+            return View("_Waiting", GetApplicationList("Waiting"));
         }
 
         // Convinence function: Get appllications for a view
@@ -212,39 +234,53 @@ namespace TimeSheet.Controllers
         }
 
         // Convinence function: Approve/Reject an application
-        private void ApproveApplication(LeaveApplication application,string decision)
+        private void ApproveApplication(LeaveApplication application, string decision)
         {
             List<LeaveBalance> userLeaveBalances = (from l in contextDb.LeaveBalances
                                                     where l.UserID == application.UserID
                                                     select l).ToList();
+            List<TimeRecord> appliedTimeRecords = application.GetTimeRecords();
+
             if (decision == "Approve")
             {
+                string[] originalBalances = application.OriginalBalances.Split('/');
+                double[] takenLeaveTimes = new double[] { 0, 0, 0 };
                 string closeBalances = String.Empty;
-                application.status = _status.approved;
-                for(int i=0; i<3; i++)
+                foreach (var timerecord in appliedTimeRecords)
                 {
-                    closeBalances += string.Format("{0:0.00}", userLeaveBalances.First(l => (int)l.LeaveType == i).AvailableLeaveHours);
+                    int index = (int)timerecord.LeaveType;
+                    if(index < 3)
+                        takenLeaveTimes[index] += timerecord.LeaveTime;
+                    else if(timerecord.LeaveType == _leaveType.compassionatePay)
+                        takenLeaveTimes[(int)_leaveType.sick] += timerecord.LeaveTime;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    double originalBalance = double.Parse(originalBalances[i] ?? "0");
+                    closeBalances += string.Format("{0:0.00}", originalBalance - takenLeaveTimes[i]);
                     if (i != 2)
                         closeBalances += "/";
                 }
                 application.CloseBalances = closeBalances;
+                application.status = _status.approved;
             }
             else
             {
                 application.status = _status.rejected;
 
-                // Update leave balances
-                List<TimeRecord> rejectedTimeRecords = application.GetTimeRecords();
                 // Undo leave record in each time record
-                foreach (var record in rejectedTimeRecords)
+                foreach (var record in appliedTimeRecords)
                 {
-                    LeaveBalance leaveBalance = userLeaveBalances.First(l => l.LeaveType == record.LeaveType);
-                    leaveBalance.AvailableLeaveHours += record.LeaveTime;
-                    record.LeaveTime = 0;
-                    record.LeaveType = null;
-                    var entry = contextDb.TimeRecords.Find(record.id);
-                    contextDb.Entry(entry).State = EntityState.Modified;
-                    contextDb.Entry(leaveBalance).State = EntityState.Modified;
+                    if((int)record.LeaveType < 3)
+                    {
+                        LeaveBalance leaveBalance = userLeaveBalances.First(l => l.LeaveType == record.LeaveType);
+                        leaveBalance.AvailableLeaveHours += record.LeaveTime;
+                        record.LeaveTime = 0;
+                        record.LeaveType = null;
+                        var entry = contextDb.TimeRecords.Find(record.id);
+                        contextDb.Entry(entry).State = EntityState.Modified;
+                        contextDb.Entry(leaveBalance).State = EntityState.Modified;
+                    }
                 }
                 application.CloseBalances = application.OriginalBalances;
             }

@@ -19,10 +19,6 @@ namespace TimeSheet.Controllers
         public string username;
         public ActionResult Index()
         {
-            TimeSheetDb contextDb = new TimeSheetDb();
-            if (contextDb.ADUsers.Count() == 0)
-                ADUser.GetADUser();
-
             return View();
         }
 

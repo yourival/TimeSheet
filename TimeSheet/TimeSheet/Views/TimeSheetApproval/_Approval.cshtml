@@ -18,16 +18,16 @@
     <tbody style="cursor:pointer">
         @for (int i = 0; i < 5 && i < Model.Count; i++)
         {
-            <tr class="table-row" data-value="@Model[i].TimeRecordFormID" onclick="location.href='@Url.Action("ApprovalDetail", "TimesheetApproval", new { id = Model[i].TimeRecordFormID })'">
-                <td>@Html.DisplayFor(m => m[i].TimeRecordFormID)</td>
+            <tr class="table-row" data-value="@Model[i].TimeRecordFormId" onclick="location.href='@Url.Action("ApprovalDetail", "TimesheetApproval", new { id = Model[i].TimeRecordFormId })'">
+                <td>@Html.DisplayFor(m => m[i].TimeRecordFormId)</td>
                 <td>@Html.DisplayFor(m => m[i].UserID)</td>
                 <td>@Html.DisplayFor(m => m[i].Year)</td>
                 <td>@Html.DisplayFor(m => m[i].Period)</td>
                 <td>@Html.DisplayFor(m => m[i].TotalWorkingHours)</td>
-                <td id="status-@Model[i].TimeRecordFormID" class=@getStatusClass(Model[i].FormStatus)>@Html.DisplayFor(m => m[i].FormStatus)</td>
+                <td id="status-@Model[i].TimeRecordFormId" class=@getStatusClass(Model[i].FormStatus)>@Html.DisplayFor(m => m[i].FormStatus)</td>
                 <td class="action">
-                    <button class="btn btn-success" value="@Model[i].TimeRecordFormID">Approved</button>
-                    <button class="btn btn-danger" value="@Model[i].TimeRecordFormID">Rejected</button>
+                    <button class="btn btn-success" value="@Model[i].TimeRecordFormId">Approved</button>
+                    <button class="btn btn-danger" value="@Model[i].TimeRecordFormId">Rejected</button>
                 </td>
             </tr>
         }

@@ -13,7 +13,10 @@
                 <tr>
                     <th>User ID</th>
                     <th>Name</th>
-                    <th>IsAdmin</th>
+                    <th>Admin</th>
+                    <th>Manager</th>
+                    <th>Accountant</th>
+                    <th>Work Type</th>
                 </tr>
                 @foreach (var item in Model)
                 {
@@ -21,7 +24,10 @@
                         @Html.HiddenFor(modelItem => item.id)
                         <td>@Html.DisplayFor(modelItem => item.UserID)</td>
                         <td>@Html.DisplayFor(modelItem => item.UserName)</td>
-                        <td>@(item.IsAdmin? "Yes" : "No")</td>
+                        <td>@(item.IsAdmin? Html.Raw("<span class=\"glyphicon glyphicon-ok\"></span>") : Html.Raw(""))</td>
+                        <td>@(item.IsManager ? Html.Raw("<span class=\"glyphicon glyphicon-ok\"></span>") : Html.Raw(""))</td>
+                        <td>@(item.IsAccountant ? Html.Raw("<span class=\"glyphicon glyphicon-ok\"></span>") : Html.Raw(""))</td>
+                        <td>@(item.WorkType.GetDisplayName())</td>
                         <td>
                             @Html.ActionLink("Edit", "EditUserRole", "Admin", new { id = item.id }, null) |
                             @Html.ActionLink("Delete", "DeleteUserRole", "Admin", new { id = item.id }, null)

@@ -93,7 +93,7 @@ namespace TimeSheet.Models
                     {
                         comment = "No comments";
                     }
-                    body = string.Format(body, formModel.Period, formModel.Year, formModel.FormStatus, manager.UserName, comment);
+                    body = string.Format(body, formModel.Period, formModel.Year, formModel.status, manager.UserName, comment);
                     break;
                 case "LeaveApproval":
                     subject = "LeaveApproval";
