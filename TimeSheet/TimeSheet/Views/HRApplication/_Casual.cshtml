@@ -113,14 +113,30 @@
         var starttime = $("#starttime" + id).val();
         var endtime = $("#endtime" + id).val();
         if (starttime == "")
+        {
             starttime = "9:00";
+            $("#starttime" + id).val(starttime)
+        }
         if (endtime == "")
+        {
             endtime = "17:00";
+            $("#endtime" + id).val(enttime);
+        }
+            
         var startdate = new Date("1970-1-1 " + starttime).getTime();
         var enddate = new Date("1970-1-1 " + endtime).getTime();
         var lunchtime = $("#lunchtime" + id).val();
-        var diff = ((enddate - startdate) / (1000 * 3600) - lunchtime).toFixed(1);
-        $("#worktime" + id).text(diff);
+        var worktime_after = ((enddate - startdate) / (1000 * 3600) - lunchtime).toFixed(1);
+        var worktime_before = $("#worktime" + id).text();
+        // update work hours for the row
+        $("#worktime" + id).text(worktime_after);
+
+
+        // update total work hours
+        var total = parseFloat($("#worktime-total").text()) -
+                    parseFloat(worktime_before) +
+                    parseFloat(worktime_after);
+        $("#worktime-total").text(total);
     }
     // summarise total work hours
     function sumTotalWorkHours() {
