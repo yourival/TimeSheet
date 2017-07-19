@@ -8,19 +8,19 @@
     <td>@Html.DisplayFor(m => m.Balances[i].AvailableLeaveHours, new { @class = "col" })</td>
 }
 <td>
-    <button class="edit-btn btn-primary">
+    <button id="edit-btn@(Model.RowId)" class="btn-primary">
         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
         <span>Edit</span>
     </button>
-    @*@Html.ActionLink("Delete", "DeleteUserRole", "Admin", new { id = item.UserId }, null)*@
 </td>
 
 <script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
     $(document).ready(function () {
         var currentRequest = null;
-        $(".edit-btn").click(function () {
-            var userId = '@Model.Balances.First().UserID'
+        $("#edit-btn@(Model.RowId)").click(function (e) {
+            e.stopPropagation();
+            var userId = '@Model.Balances.First().UserID';
             var rowId = '@Model.RowId';
             currentRequest = $.ajax({
                 url: "/Admin/EditUserLeaves",

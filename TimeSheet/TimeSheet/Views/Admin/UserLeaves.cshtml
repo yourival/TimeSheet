@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "User Leaves";
-    int i = 0;
 }
 
 <body>
@@ -18,10 +17,10 @@
                 <th>Flexi Leave</th>
                 <th>Annual Leave</th>
             </tr>
-            @foreach (var item in Model)
+            @for (int i=0; i < Model.Count; i++)
             {
                 <tr id="row@(i)", class="leaverow">
-                    @{ Html.RenderAction("DisplayUserLeaves", new { userId = item, rowId = i }); }
+                    @{ Html.RenderAction("DisplayUserLeaves", new { userId = Model[i], rowId = i }); }
                 </tr>
             }
         </table>
