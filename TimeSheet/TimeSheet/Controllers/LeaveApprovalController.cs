@@ -241,11 +241,12 @@ namespace TimeSheet.Controllers
                                                     select l).ToList();
             List<TimeRecord> appliedTimeRecords = application.GetTimeRecords();
 
+            string[] originalBalances = application.OriginalBalances.Split('/');
+            double[] takenLeaveTimes = new double[] { 0, 0, 0 };
             if (decision == "Approve")
             {
-                string[] originalBalances = application.OriginalBalances.Split('/');
-                double[] takenLeaveTimes = new double[] { 0, 0, 0 };
                 string closeBalances = String.Empty;
+                // Calculate taken leaves
                 foreach (var timerecord in appliedTimeRecords)
                 {
                     int index = (int)timerecord.LeaveType;
@@ -253,7 +254,10 @@ namespace TimeSheet.Controllers
                         takenLeaveTimes[index] += timerecord.LeaveTime;
                     else if(timerecord.LeaveType == _leaveType.compassionatePay)
                         takenLeaveTimes[(int)_leaveType.sick] += timerecord.LeaveTime;
+                    else if(timerecord.LeaveType == _leaveType.flexiHours)
+                        takenLeaveTimes[(int)_leaveType.flexi] -= timerecord.LeaveTime;
                 }
+                // Record closed leave balances
                 for (int i = 0; i < 3; i++)
                 {
                     double originalBalance = double.Parse(originalBalances[i] ?? "0");
@@ -267,21 +271,21 @@ namespace TimeSheet.Controllers
             else
             {
                 application.status = _status.rejected;
-
                 // Undo leave record in each time record
                 foreach (var record in appliedTimeRecords)
                 {
-                    if((int)record.LeaveType < 3)
-                    {
-                        LeaveBalance leaveBalance = userLeaveBalances.First(l => l.LeaveType == record.LeaveType);
-                        leaveBalance.AvailableLeaveHours += record.LeaveTime;
-                        record.LeaveTime = 0;
-                        record.LeaveType = null;
-                        var entry = contextDb.TimeRecords.Find(record.id);
-                        contextDb.Entry(entry).State = EntityState.Modified;
-                        contextDb.Entry(leaveBalance).State = EntityState.Modified;
-                    }
+                    var entry = contextDb.TimeRecords.Find(record.id);
+                    entry.LeaveTime = 0;
+                    entry.LeaveType = null;
+                    contextDb.Entry(entry).State = EntityState.Modified;
                 }
+                // Undo leave balances for the user
+                for (int i = 0; i < 3; i++)
+                {
+                    LeaveBalance balance = contextDb.LeaveBalances.Find(application.UserID, (_leaveType)i);
+                    balance.AvailableLeaveHours = double.Parse(originalBalances[i] ?? "0");
+                }
+                // Record closed leave balances
                 application.CloseBalances = application.OriginalBalances;
             }
             application.ApprovedTime = DateTime.Now;

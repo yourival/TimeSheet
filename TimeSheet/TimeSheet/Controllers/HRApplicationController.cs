@@ -159,16 +159,24 @@ namespace TimeSheet.Controllers
                         else
                         {
                             // Record the difference of applied leave time and the balance in Db
-                            // Compassionate pay will take Sick leaves balance
-                            if (timeRecord.LeaveType == _leaveType.compassionatePay)
+                            if(timeRecord.LeaveType != null)
                             {
-                                appliedLeaveTimes[(int)_leaveType.sick] -= timeRecord.LeaveTime;
-                            }
-                            // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
-                            else if ((int)timeRecord.LeaveType < 3)
-                            {
-                                appliedLeaveTimes[(int)timeRecord.LeaveType] -= timeRecord.LeaveTime;
-                            }
+                                // Compassionate pay will take Sick leaves balance
+                                if (timeRecord.LeaveType == _leaveType.compassionatePay)
+                                {
+                                    appliedLeaveTimes[(int)_leaveType.sick] -= timeRecord.LeaveTime;
+                                }
+                                // Flexi hours will increase Flexi leave balance
+                                else if (timeRecord.LeaveType == _leaveType.flexiHours)
+                                {
+                                    appliedLeaveTimes[(int)_leaveType.flexi] += timeRecord.LeaveTime;
+                                }
+                                // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
+                                else if ((int)timeRecord.LeaveType < 3)
+                                {
+                                    appliedLeaveTimes[(int)timeRecord.LeaveType] -= timeRecord.LeaveTime;
+                                }
+                            }                            
 
                             timeRecord.LeaveTime = r.LeaveTime;
                             timeRecord.LeaveType = r.LeaveType;

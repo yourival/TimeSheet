@@ -22,8 +22,7 @@ namespace TimeSheet.Models
 
         public double TotalLeaveHours { get; set; }
 
-        // if status is null, it is saved for further editing
-        public _status? status { get; set; }
+        public _status status { get; set; }
 
         public DateTime SubmittedTime { get; set; }
 
