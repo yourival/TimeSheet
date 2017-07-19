@@ -260,6 +260,7 @@
     <Compile Include="Models\EnumExtensions.cs" />
     <Compile Include="Models\LeaveAttachment.cs" />
     <Compile Include="Models\EmailSetting.cs" />
+    <Compile Include="Models\LeaveBalanceViewModel.cs" />
     <Compile Include="Models\LeaveType.cs" />
     <Compile Include="Models\Payroll.cs" />
     <Compile Include="Models\TimeSheetInitializer.cs" />
@@ -365,6 +366,8 @@
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -396,7 +399,7 @@
     <Content Include="Views\HRApplication\_LeaveList.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\UserLeaves.cshtml" />
-    <Content Include="Views\Admin\_UserLeaves.cshtml" />
+    <Content Include="Views\Admin\EditUserLeaves.cshtml" />
     <Content Include="Views\LeaveApproval\_Waiting.cshtml" />
     <Content Include="Views\LeaveApproval\Approval.cshtml" />
     <Content Include="Views\LeaveApproval\ApplicationList.cshtml" />
@@ -439,6 +442,10 @@
     <Content Include="Views\Shared\PostRequest.cshtml" />
     <Content Include="Views\LeaveApproval\ApplicationOutput.cshtml" />
     <Content Include="Views\LeaveApproval\_Confirmed.cshtml" />
+    <Content Include="Views\Admin\_EditUserLeaves.cshtml" />
+    <Content Include="Views\Admin\_DisplayUserLeaves.cshtml" />
+    <Content Include="Views\HRApplication\ApplicationHistory.cshtml" />
+    <Content Include="Views\HRApplication\ApplicationlDetail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

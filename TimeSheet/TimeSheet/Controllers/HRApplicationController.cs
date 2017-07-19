@@ -55,6 +55,41 @@ namespace TimeSheet.Controllers
             return PartialView("_Casual", model);
         }
 
+        // GET: LeaveApplication/ApplicationHistory
+        public ActionResult ApplicationHistory()
+        {
+            List<LeaveApplication> applications = contextDb.LeaveApplications.Where(
+                                                        a => a.UserID == User.Identity.Name).ToList();
+            return View(applications);
+        }
+
+        public ActionResult ApplicationDetail(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            LeaveApplicationViewModel model = new LeaveApplicationViewModel();
+
+            // Get the appliction from DB
+            var application = contextDb.LeaveApplications
+                                       .Include(a => a.Attachments)
+                                       .SingleOrDefault(a => a.id == id);
+            if (application == null)
+            {
+                return HttpNotFound("The application you request does not exist in our database. Please contact our IT support.");
+            }
+            else
+            {
+                model.LeaveApplication = application;
+                model.TimeRecords = application.GetTimeRecords();
+
+
+                model.LeaveApplication = application;
+
+                return View(model);
+            }
+        }
+
         // GET: Year
         // POST: Year
         public ActionResult SelectYear(int? year)
@@ -83,7 +118,7 @@ namespace TimeSheet.Controllers
                     // Calculate applied leave times and group by leavetype
                     foreach (var l in applicationVM.TimeRecords)
                     {
-                        // Compassionate pay will take Sick leaves balance
+                        // Compassionate pay will take Sick leave balance
                         if (l.LeaveType == _leaveType.compassionatePay)
                         {
                             appliedLeaveTimes[(int)_leaveType.sick] += l.LeaveTime;
@@ -92,6 +127,11 @@ namespace TimeSheet.Controllers
                         else if ((int)l.LeaveType < 3)
                         {
                             appliedLeaveTimes[(int)l.LeaveType] += l.LeaveTime;
+                        }
+                        // Flexi hours will increase Flexi leave balance
+                        else if (l.LeaveType == _leaveType.flexiHours)
+                        {
+                            appliedLeaveTimes[(int)_leaveType.flexi] -= l.LeaveTime;
                         }
                     }
 
@@ -226,15 +266,14 @@ namespace TimeSheet.Controllers
                     }
 
                 }
-
-                return PostRequest(postRequestStatus.success);
+                return RedirectToAction("PostRequest", new { status = postRequestStatus.success });
             }
             catch (RetryLimitExceededException /* dex */)
             {
                 //Log the error (uncomment dex variable name and add a line here to write a log.
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
-            return PostRequest(postRequestStatus.fail);
+            return RedirectToAction("PostRequest", new { status = postRequestStatus.fail });
         }
 
         // POST: LeaveApplication/Casual
@@ -293,15 +332,15 @@ namespace TimeSheet.Controllers
                     contextDb.SaveChanges();
 
                     ////send email to manager
-                    //TimeRecordForm form = (from f in contextDb.TimeRecordForms
-                    //                       where f.Period == model.TimeRecordForm.Period
-                    //                       where f.Year == model.TimeRecordForm.Year
-                    //                       where f.UserID == model.TimeRecordForm.UserID
-                    //                       select f).FirstOrDefault();
-                    //if (form != null)
-                    //{
-                    //    Task.Run(() => EmailSetting.SendEmail(form.ManagerID, string.Empty, "TimesheetApplication", form.TimeRecordFormId.ToString()));
-                    //}
+                    form = (from f in contextDb.TimeRecordForms
+                            where f.Period == model.TimeRecordForm.Period
+                            where f.Year == model.TimeRecordForm.Year
+                            where f.UserID == model.TimeRecordForm.UserID
+                            select f).FirstOrDefault();
+                    if (form != null)
+                    {
+                        Task.Run(() => EmailSetting.SendEmail(form.ManagerID, string.Empty, "TimesheetApplication", form.TimeRecordFormId.ToString()));
+                    }
                     return RedirectToAction("PostRequest", new { status = postRequestStatus.success });
                 }
                 //TempData["ErrorModel"] = ModelState.Values;

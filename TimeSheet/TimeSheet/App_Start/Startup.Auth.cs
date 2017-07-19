@@ -93,8 +93,13 @@ namespace TimeSheet
                                        context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "CasualWorker"));
                                        break;
                                    default:
+                                       context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "FullTimeWorker"));
                                        break;
                                }
+                           }
+                           else
+                           {
+                               context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "FullTimeWorker"));
                            }
 
                            return Task.FromResult(0);

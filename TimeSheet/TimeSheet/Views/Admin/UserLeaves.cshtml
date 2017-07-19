@@ -1,49 +1,35 @@
-﻿@model List<LeaveBalance>
+﻿@model List<string>
 
 @{
     ViewBag.Title = "User Leaves";
+    int i = 0;
 }
-
-<head>
-    @Styles.Render("~/Content/css")
-</head>
 
 <body>
     <div class="container" align="center">
-    @using (Html.BeginForm())
-    {
-        <br />
-        <h3>User Leaves Management</h3>
-        <div class="searchform">
-                <input class="userID" type="text" id="user-id" placeholder="User ID"/>
-                <input type="button" value="Search" id="search-btn" class="btn searchbutton" />
-        </div>
-        <br />
-        <div id="leave-form"></div>
-        <br/>
-        
-    }
+        <table class="table-fill">
+            <tr>
+                <th rowspan="2">Name</th>
+                <th colspan="3">Balance (hrs)</th>
+                <th rowspan="2">Action</th>
+            </tr>
+            <tr>
+                <th>Sick Leave</th>
+                <th>Flexi Leave</th>
+                <th>Annual Leave</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr id="row@(i)", class="leaverow">
+                    @{ Html.RenderAction("DisplayUserLeaves", new { userId = item, rowId = i }); }
+                </tr>
+            }
+        </table>
     </div>
 </body>
 
 @section Scripts {
+    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ajax")
 }
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $("#search-btn").click(function () {
-            var userId = $("#user-id").val();
-            $.ajax({
-                url: "/Admin/CreateForm",
-                type: "GET",
-                data: { userId: userId }
-            })
-            .done(function (partialViewResult) {
-                $("#leave-form").html(partialViewResult);
-                $("#submit-btn").prop("disabled", false);
-            });
-        });
-    });
-</script>

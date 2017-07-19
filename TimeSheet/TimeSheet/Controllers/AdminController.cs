@@ -23,6 +23,7 @@ namespace TimeSheet.Controllers
         private AdminDb adminDb = new AdminDb();
 
         // GET: Admin
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult Index()
         {
             return View();
@@ -32,47 +33,48 @@ namespace TimeSheet.Controllers
         // GET: Admin/UserLeaves
         public ActionResult UserLeaves()
         {
-            return View();
+            List<string> model = timesheetDb.LeaveBalances.Select(l => l.UserID).Distinct().ToList();
+
+            return View(model);
         }
 
-        // GET: Admin/_UserLeaves
-        public ActionResult CreateForm(string userId)
+        // GET: Admin/DisplayUserLeaves
+        public ActionResult DisplayUserLeaves(string userId, int rowId)
         {
-            List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
-            for (int i = 0; i < Enum.GetNames(typeof(_leaveType)).Length; i++)
-            {
-                var LeaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
-                if (LeaveBalance == null)
-                {
-                    LeaveBalance = new LeaveBalance();
-                    LeaveBalance.LeaveType = (_leaveType)i;
-                    LeaveBalance.UserID = userId;
-                }
-                LeaveBalances.Add(LeaveBalance);
-            }
-            return PartialView(@"~/Views/Admin/_UserLeaves.cshtml", LeaveBalances);
+            return PartialView("_DisplayUserLeaves", GetBalanceVM(userId, rowId));
         }
 
-        // POST: Admin/UserLeaves
+        // GET: Admin/EditUserLeaves
+        public ActionResult EditUserLeaves(string userId, int rowId)
+        {
+            return PartialView("_EditUserLeaves", GetBalanceVM(userId, rowId));
+        }
+
+        // POST: Admin/EditUserLeaves
         [HttpPost]
-        public ActionResult UserLeaves(List<LeaveBalance> LeaveBalances)
+        public ActionResult EditUserLeaves(string userId, int rowId, double[] balances)
         {
             for (int i = 0; i < 3; i++)
             {
-                var LeaveBalance = timesheetDb.LeaveBalances.Find(LeaveBalances.First().UserID, (_leaveType)i);
-                if (LeaveBalance == null)
+                var leaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
+                if (leaveBalance == null)
                 {
-                    timesheetDb.LeaveBalances.Add(LeaveBalances[i]);
+                    timesheetDb.LeaveBalances.Add(new LeaveBalance()
+                    {
+                        UserID = userId,
+                        LeaveType = (_leaveType)i,
+                        AvailableLeaveHours = balances[i]
+                    });
                 }
                 else
                 {
-                    LeaveBalance.AvailableLeaveHours = LeaveBalances[i].AvailableLeaveHours;
-                    timesheetDb.Entry(LeaveBalance).State = EntityState.Modified;
+                    leaveBalance.AvailableLeaveHours = balances[i];
+                    timesheetDb.Entry(leaveBalance).State = EntityState.Modified;
                 }
                 timesheetDb.SaveChanges();
             }
 
-            return View();
+            return PartialView("_DisplayUserLeaves", GetBalanceVM(userId, rowId));
         }
 
         [AuthorizeUser(Roles = "Admin")]
@@ -383,6 +385,35 @@ namespace TimeSheet.Controllers
             }
 
             return File(new UTF8Encoding().GetBytes(sb.ToString()), "text/csv", "Payroll.csv");
+        }
+
+        private LeaveBalanceViewModel GetBalanceVM(string userId, int rowId)
+        {
+            List<LeaveBalance> leaveBalances = new List<LeaveBalance>();
+            
+            for (int i = 0; i < 3; i++)
+            {
+                var leaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
+                if (leaveBalance == null)
+                {
+                    ADUser user = timesheetDb.ADUsers.Where(u => u.Email == userId).FirstOrDefault();
+                    string userName = user.UserName ?? string.Empty;
+                    leaveBalance = new LeaveBalance()
+                    {
+                        LeaveType = (_leaveType)i,
+                        UserID = userId,
+                        UserName = userName
+                    };
+                }
+                leaveBalances.Add(leaveBalance);
+            }
+
+            LeaveBalanceViewModel model = new LeaveBalanceViewModel()
+            {
+                RowId = rowId,
+                Balances = leaveBalances
+            };
+            return model;
         }
 
         //public async Task<FileContentResult> PayrollExportResult(string year, string period)

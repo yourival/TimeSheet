@@ -789,3 +789,7 @@ form p {
         font-size: 44px;
     }
 }
+
+.balance-input {
+    width:7em;
+}

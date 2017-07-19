@@ -1,0 +1,21 @@
+﻿@model List<LeaveBalance>
+
+<div class="container" align="center">
+    <h3>Edit @Model[0].UserName's Leave</h3>
+    @using (Html.BeginForm())
+    {
+        <table class="table-fill">
+            @for (int i = 0; i < 3; i++)
+            {
+                <tr>
+                    @Html.HiddenFor(m => m[i].UserID)
+                    @Html.HiddenFor(m => m[i].LeaveType)
+                    <th>@Model[i].LeaveType.GetDisplayName()</th>
+                    <td>@Html.EditorFor(m => m[i].AvailableLeaveHours, new { @class = "col" }) Hours</td>
+                </tr>
+            }
+        </table>
+        <br />
+        <input type="submit" value="Save" id="submit-btn" class="btn btn-primary" />
+    }
+</div>

@@ -14,6 +14,8 @@ namespace TimeSheet.Models
         public string UserID { get; set; }
         [Key, Column(Order = 1)]
         public _leaveType LeaveType { get; set; }
+
+        public string UserName { get; set; }
         
         public Double AvailableLeaveHours { get; set; }
     }
