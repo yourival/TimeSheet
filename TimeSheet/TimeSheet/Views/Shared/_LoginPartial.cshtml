@@ -7,9 +7,8 @@
         <li id="nameDisplay">
             @Html.ActionLink("Hello " + Model + "!", "Index", "UserProfile", routeValues: null, htmlAttributes: null)
         </li>
-        <li>
-            @Html.ActionLink("Sign out", "SignOut", "Account")
-        </li>
+        <li>@Html.ActionLink("My Application History", "ApplicationHistory", "HRApplication")</li>
+        <li>@Html.ActionLink("Sign out", "SignOut", "Account")</li>
     </ul>
 </text>
 }

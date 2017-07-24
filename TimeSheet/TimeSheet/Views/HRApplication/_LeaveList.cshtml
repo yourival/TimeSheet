@@ -1,9 +1,10 @@
 ﻿@model TimeSheet.Models.LeaveApplicationViewModel
-<br />
 
-<body>
-    <div align="center" class="leaveDetail">
-        <div id="leaveDetail" class="collapse row">
+<div align="center" class="leaveDetail">
+    <div id="leaveDetail" class="collapse row">
+        @if (Model.TimeRecords.Count != 0)
+        {
+            <br />
             <table class="table table-responsive">
                 <tr>
                     <th>Date</th>
@@ -25,7 +26,7 @@
                             @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
                         </td>
                         <td>
-                            @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, new { @class = "form-control leavetype"})
+                            @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, new { @class = "form-control leavetype" })
                         </td>
                         <td class="leaveTimeColumn">
                             @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime form-control", @type = "number", @step = "0.5", @min = 0, @max = 7.5 } })
@@ -34,9 +35,13 @@
                     </tr>
                 }
             </table>
-        </div>
+        }
+        else
+        {
+            <p>No working days in the selected period.</p>
+        } 
     </div>
-</body>
+</div>
 
 
 

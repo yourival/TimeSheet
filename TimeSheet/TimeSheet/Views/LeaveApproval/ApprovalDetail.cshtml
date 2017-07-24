@@ -19,7 +19,7 @@
             </tr>
             <tr>
                 <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
-                <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
+                <td>@Model.LeaveApplication.leaveType.GetDisplayName()</td>
             </tr>
             <tr>
                 <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
@@ -69,26 +69,26 @@
                         <th>Date</th>
                                     <th>Type</th>
                                     <th>Detail Hours</th>
-                                    <th>Who has taken leaves</th>
+                                    <th>Leaves taken on the same day</th>
                     </tr>
                     @foreach (var item in Model.TimeRecords)
                     {
                         <tr>
-                                        <td>
+                            <td>
                                 @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
                             </td>
-                                        <td>
-                                @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
+                            <td>
+                                @item.LeaveType.GetDisplayName()
                             </td>
-                                        <td>
-                                @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
+                            <td>
+                                @Html.DisplayFor(m => item.LeaveTime)
                             </td>
                             @foreach (var takenLeave in Model.TakenLeaves)
                             {
-                                if (takenLeave.RecordDate == item.RecordDate)
+                                if (takenLeave.Item1 == item.RecordDate)
                                 {
                                     <td>
-                                        <a href="#" data-toggle="tooltip" title="@takenLeave.UserID, @takenLeave.LeaveTime hrs">
+                                        <a href="#" data-toggle="tooltip" title="@takenLeave.Item2, @takenLeave.Item3 hrs">
                                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                                         </a>
                                     </td>
@@ -121,31 +121,6 @@
         </div>
     </div>
 </div>
-@functions {
-    string getStatusClass(_status status)
-    {
-        string className;
-        switch (status)
-        {
-            case _status.submited:
-                className = "text-primary";
-                break;
-            case _status.approved:
-                className = "text-success";
-                break;
-            case _status.rejected:
-                className = "text-danger";
-                break;
-            case _status.modified:
-                className = "text-warning";
-                break;
-            default:
-                className = "";
-                break;
-        }
-        return className;
-    }
-}
 
 <script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>

@@ -10,13 +10,11 @@
     <thead>
         <tr>
             <th>#</th>
-            <th>User</th>
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Total Hours</th>
             <th>Status</th>
-            <th>Output</th>
         </tr>
     </thead>
     <tbody style="cursor:pointer">
@@ -24,13 +22,11 @@
         {
             <tr class="table-row" onclick="location.href='@Url.Action("ApplicationDetail", "HRApplication", new { id = Model[i].id })'">
                 <td>@Html.DisplayFor(m => m[i].id)</td>
-                <td>@Html.DisplayFor(m => m[i].UserName)</td>
                 <td>@Html.DisplayFor(m => m[i].leaveType)</td>
                 <td>@Html.DisplayFor(m => m[i].StartTime)</td>
                 <td>@Html.DisplayFor(m => m[i].EndTime)</td>
                 <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
                 <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Html.DisplayFor(m => m[i].status)</td>
-                <td style="cursor:default"><span class="glyphicon glyphicon-print"></span></td>
             </tr>
         }
     </tbody>

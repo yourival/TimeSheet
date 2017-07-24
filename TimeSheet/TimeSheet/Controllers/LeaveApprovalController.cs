@@ -71,9 +71,17 @@ namespace TimeSheet.Controllers
                                                          r.UserID == a.UserID &&
                                                          r.LeaveType != null
                                                 select r).ToList();
-                    records.ForEach(r => approvalVM.TakenLeaves.Add(r));
+                    foreach(var r in records)
+                    {
+                        string username = contextDb.ADUsers.Find(r.UserID).UserName;
+                        approvalVM.TakenLeaves.Add(new Tuple<DateTime, string, double>
+                        (
+                            r.RecordDate,
+                            username,
+                            r.LeaveTime)
+                        );
+                    }
                 }
-                approvalVM.TakenLeaves.Sort((x, y) => x.RecordDate.CompareTo(y.RecordDate));
                 approvalVM.LeaveApplication = application;
                 if (User.Identity.Name == application.ManagerID)
                     ViewBag.Authorized = true;

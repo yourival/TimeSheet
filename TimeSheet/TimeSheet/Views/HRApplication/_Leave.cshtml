@@ -11,7 +11,7 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
             <div>
-                <label>Balance (hrs):&nbsp;</label>
+                <label>Your current balance (hrs):&nbsp;</label>
                 <text class="textStyleBefore">
                     @for (int i = 0; i < LeaveNames.Length; i++)
                     {
@@ -90,7 +90,6 @@
                             @Html.TextBoxFor(model => model.Attachments, new { id = "files", type = "file", style = "display: none", multiple = "multiple" })
                         </label>
                     </p>
-
                 </div>
             </div>
             <div class="row" align="right">
@@ -112,7 +111,7 @@
             <div id="alert"></div>
             <div class="row" align="right">
                 <div class="col-sm-offset-1 col-sm-10">
-                    <label>Balance After (hrs):&nbsp;</label>
+                    <label>Balance after application (hrs):&nbsp;</label>
                     <text class="textStyleAfter">
                         @for (int i = 0; i < LeaveNames.Length; i++)
                         {
@@ -124,7 +123,7 @@
                             if (i != LeaveNames.Length - 1)
                             {
                                 @: ,&nbsp;&nbsp;
-                    }
+                            }
                         }
                     </text>
                 </div>

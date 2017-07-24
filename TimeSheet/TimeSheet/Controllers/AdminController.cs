@@ -96,22 +96,14 @@ namespace TimeSheet.Controllers
                     adminDb.Holidays.Remove(item);
                 }
                 adminDb.SaveChanges();
-                holidayList = PayPeriod.GetHoliday();
-                foreach (Holiday item in holidayList)
-                {
-                    adminDb.Holidays.Add(item);
-                }
-                adminDb.SaveChanges();
             }
-            else
+
+            holidayList = PayPeriod.GetHoliday();
+            foreach (Holiday item in holidayList)
             {
-                holidayList = PayPeriod.GetHoliday();
-                foreach (Holiday item in holidayList)
-                {
-                    adminDb.Holidays.Add(item);
-                }
-                adminDb.SaveChanges();
+                adminDb.Holidays.Add(item);
             }
+            adminDb.SaveChanges();
 
             return RedirectToAction("Holidays");
         }
@@ -294,15 +286,14 @@ namespace TimeSheet.Controllers
             return PartialView("_PeriodDetails");
         }
 
-        public async Task<FileContentResult> PayrollExportResult(string year, string period)
+        public async Task<FileContentResult> PayrollExportResult(int year, int period)
         {
             //update the ADUser from AD first before exporting the csv file
             await ADUser.GetADUser();
 
-            int y = Convert.ToInt32(year);
-            int p = Convert.ToInt32(period);
-            DateTime StartDate = PayPeriod.GetStartDay(y, p);
-            DateTime EndDate = PayPeriod.GetEndDay(y, p);
+            
+            DateTime StartDate = PayPeriod.GetStartDay(year, period);
+            DateTime EndDate = PayPeriod.GetEndDay(year, period);
 
             List<Payroll> payrolls = (from t1 in timesheetDb.TimeRecords
                                       where t1.LeaveType != null

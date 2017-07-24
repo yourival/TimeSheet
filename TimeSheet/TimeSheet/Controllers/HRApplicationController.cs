@@ -29,7 +29,7 @@ namespace TimeSheet.Controllers
         // GET: LeaveApplication/Leave
         public ActionResult Leave()
         {
-            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
+            LeaveApplicationViewModel model = new LeaveApplicationViewModel();
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             //get manager droplist
             ViewBag.Manager = UserRoleSetting.GetManagerItems();
@@ -38,9 +38,9 @@ namespace TimeSheet.Controllers
                 var availableLeave = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
                 LeaveBalances.Add(availableLeave == null ? new LeaveBalance() : availableLeave);
             }
-            applicationVM.LeaveBalances = LeaveBalances;
+            model.LeaveBalances = LeaveBalances;
 
-            return PartialView("_Leave", applicationVM);
+            return PartialView("_Leave", model);
         }
 
         // GET: LeaveApplication/Casual
@@ -63,6 +63,7 @@ namespace TimeSheet.Controllers
             return View(applications);
         }
 
+        // GET: LeaveApplication/ApplicationDetail
         public ActionResult ApplicationDetail(int? id)
         {
             if (id == null)
@@ -82,8 +83,6 @@ namespace TimeSheet.Controllers
             {
                 model.LeaveApplication = application;
                 model.TimeRecords = application.GetTimeRecords();
-
-
                 model.LeaveApplication = application;
 
                 return View(model);
@@ -364,7 +363,7 @@ namespace TimeSheet.Controllers
         public ActionResult CreateLeaveList(DateTime start, DateTime end, _leaveType leaveType)
         {
             // Create new Leaveapplication
-            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
+            LeaveApplicationViewModel model = new LeaveApplicationViewModel();
             List<TimeRecord> newTimeRecords = new List<TimeRecord>();
 
             for (int i = 0; i <= (end - start).Days; i++)
@@ -382,12 +381,9 @@ namespace TimeSheet.Controllers
                     newTimeRecords.Add(newTimeRecord);
                 }
             }
-            applicationVM.TimeRecords = newTimeRecords;
+            model.TimeRecords = newTimeRecords;
 
-            if (applicationVM.TimeRecords.Count == 0)
-                return Content("No working days were found.");
-
-            return PartialView("_LeaveList", applicationVM);
+            return PartialView("_LeaveList", model);
         }
 
         // Get time records based on year period

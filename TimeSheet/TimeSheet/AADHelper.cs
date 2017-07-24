@@ -11,10 +11,13 @@ namespace TimeSheet
     {
         public static UserRoleSetting GetUserRole(String email)
         {
-            AdminDb context = new AdminDb();
-            var userRole = (from m in context.UserRoleSettings
-                           where m.UserID == email
-                           select m).FirstOrDefault();
+            UserRoleSetting userRole = null;
+            using (AdminDb context = new AdminDb())
+            {
+                userRole = (from m in context.UserRoleSettings
+                            where m.UserID == email
+                            select m).FirstOrDefault();
+            }
             return userRole;
         }
     }

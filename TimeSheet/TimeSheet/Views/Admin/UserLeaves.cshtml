@@ -25,6 +25,14 @@
             }
         </table>
     </div>
+    @*@using (Html.BeginForm("ImportCsv", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "lform" }))
+    {
+        <h4>Update Leave Balances by CSV</h4>
+        <input type="file" name="file" value="Browse..." />
+        <button id="preview-btn">Preview</button>
+        <input type="button" value="Submit" style="display:none"/>
+    }*@
+
 </body>
 
 @section Scripts {
@@ -32,3 +40,24 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/ajax")
 }
+<script>
+    $(document).ready(function () {
+        var uploadRequest = null;
+        $("preview-btn").click(function (e) {
+            e.preventDefault();
+            uploadRequest = $.ajax({
+                url: "/Admin/Preview",
+                type: "get",
+                data: { userId: userId, rowId: rowId },
+                beforeSend: function () {
+                    if (currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                }
+            })
+                .done(function (partialViewResult) {
+                    $("#row" + rowId).html(partialViewResult);
+                });
+        })
+    });
+</script>

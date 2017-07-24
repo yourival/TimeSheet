@@ -51,30 +51,23 @@ namespace TimeSheet.Models
             return GetEndDay(year, period).AddDays(-13);
         }
 
-        //get dropdown list for year, allow user to select upto 3 years
+        //get dropdown list for year, allow user to select upto 5 years
         public static List<SelectListItem> GetYearItems()
         {
             List<SelectListItem> listItems = new List<SelectListItem>();
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 5; i++)
             {
-                if ( i==0 )
+                int year = DateTime.Now.Year + i;
+                SelectListItem newItem = new SelectListItem
                 {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = DateTime.Now.Year.ToString(),
-                        Value = DateTime.Now.Year.ToString(),
-                        Selected = true
-                    });
-                }
-                else
-                {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = (DateTime.Now.Year+i).ToString(),
-                        Value = (DateTime.Now.Year+i).ToString()
-                    });
-                }
-                
+                    Text = year.ToString(),
+                    Value = year.ToString()
+                };
+
+                if (i == 0)
+                    newItem.Selected = true;
+
+                listItems.Add(newItem);
             }
             return listItems;
         }
@@ -83,25 +76,24 @@ namespace TimeSheet.Models
         public static List<SelectListItem> GetPeriodItems(int year)
         {
             List<SelectListItem> listItems = new List<SelectListItem>();
-            for (int i = 0; i < GetPeriodAmount(year); i++)
+            int currentPeriod = GetPeriodNum(DateTime.Now);
+            int periodAmount = GetPeriodAmount(year);
+            for (int i = 0; i < periodAmount; i++)
             {
-                if (i == (int)(DateTime.Now - FirstPayDayOfYear(year)).Days/14 + 1)
+                int period = i + 1;
+                DateTime start = GetStartDay(year, period);
+                DateTime end = GetEndDay(year, period); 
+                SelectListItem newItem = new SelectListItem
                 {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = (i + 1).ToString(),
-                        Value = (i + 1).ToString(),
-                        Selected = true
-                    });
-                }
-                else
-                {
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = (i + 1).ToString(),
-                        Value = (i + 1).ToString()
-                    });
-                }
+                    Text = period.ToString() +
+                           String.Format(" ({0:dd/MM} - {1:dd/MM})", start, end),
+                    Value = (i + 1).ToString()
+                };
+
+                if (i == currentPeriod || (currentPeriod == periodAmount && i == 0))
+                    newItem.Selected = true;
+
+                listItems.Add(newItem);
             }
             return listItems;
         }

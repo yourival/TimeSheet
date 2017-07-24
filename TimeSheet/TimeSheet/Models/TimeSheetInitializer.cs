@@ -25,7 +25,7 @@ namespace TimeSheet.Models
                 newApplication.ManagerID = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 4);
                 newApplication.EndTime = startDate.AddDays(i * 4 + 3);
-                newApplication.leaveType = (_leaveType)(i % 3 +1);
+                newApplication.leaveType = (_leaveType)(i % 3);
                 newApplication.status = (_status)(i % 4);
                 newApplication.SubmittedTime = new DateTime(2017, 2, 1);
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
@@ -38,20 +38,15 @@ namespace TimeSheet.Models
                 {
                     TimeRecord newTimeRecord = new TimeRecord(startDate.AddDays(i * 4 + j));
                     newTimeRecord.UserID = "r.lin@m.nantien.edu.au";
-                    newTimeRecord.LeaveType = (_leaveType)(i % 3 +1);
+                    newTimeRecord.LeaveType = (_leaveType)(i % 3);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    if (newTimeRecord.IsHoliday)
+                    if (!newTimeRecord.IsHoliday)
                     {
                         newTimeRecord.LeaveTime = 7.5;
                         newTimeRecord.SetAttendence(null, null, 0);
-                    }
-                    else
-                    {
-                        newTimeRecord.LeaveTime = 0;
-                        newTimeRecord.LeaveType = null;
+                        timeRecords.Add(newTimeRecord);
                     }
 
-                    timeRecords.Add(newTimeRecord);
                 }
             }
 
@@ -63,7 +58,7 @@ namespace TimeSheet.Models
                 newApplication.ManagerID = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
-                newApplication.leaveType = (_leaveType)((i + 1) % 3 + 1);
+                newApplication.leaveType = (_leaveType)((i + 1) % 3);
                 newApplication.status = (_status)(i % 4 + 1);
                 newApplication.SubmittedTime = new DateTime(2017, 1, 10);
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
@@ -76,19 +71,14 @@ namespace TimeSheet.Models
                 {
                     TimeRecord newTimeRecord = new TimeRecord(startDate.AddDays(i * 3 + j));
                     newTimeRecord.UserID = "y.ben@m.nantien.edu.au";
-                    newTimeRecord.LeaveType = (_leaveType)((i + 1) % 3 + 1);
+                    newTimeRecord.LeaveType = (_leaveType)((i + 1) % 3);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    if (newTimeRecord.IsHoliday)
+                    if (!newTimeRecord.IsHoliday)
                     {
                         newTimeRecord.LeaveTime = 7.5;
                         newTimeRecord.SetAttendence(null, null, 0);
+                        timeRecords.Add(newTimeRecord);
                     }
-                    else
-                    {
-                        newTimeRecord.LeaveTime = 0;
-                        newTimeRecord.LeaveType = null;
-                    }
-                    timeRecords.Add(newTimeRecord);
                 }
             }
 
@@ -100,7 +90,7 @@ namespace TimeSheet.Models
                 newApplication.ManagerID = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
-                newApplication.leaveType = (_leaveType)((i +1) % 3 + 1);
+                newApplication.leaveType = (_leaveType)((i +1) % 3);
                 newApplication.status = (_status)(i % 4 + 1);
                 newApplication.SubmittedTime = new DateTime(2017, 1, 1);
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
@@ -113,19 +103,14 @@ namespace TimeSheet.Models
                 {
                     TimeRecord newTimeRecord = new TimeRecord(startDate.AddDays(i * 3 + j));
                     newTimeRecord.UserID = "d.yang@m.nantien.edu.au";
-                    newTimeRecord.LeaveType = (_leaveType)((i + 1) % 3 + 1);
+                    newTimeRecord.LeaveType = (_leaveType)((i + 1) % 3);
                     PayPeriod.SetPublicHoliday(newTimeRecord);
-                    if (newTimeRecord.IsHoliday)
+                    if (!newTimeRecord.IsHoliday)
                     {
                         newTimeRecord.LeaveTime = 7.5;
                         newTimeRecord.SetAttendence(null, null, 0);
+                        timeRecords.Add(newTimeRecord);
                     }
-                    else
-                    {
-                        newTimeRecord.LeaveTime = 0;
-                        newTimeRecord.LeaveType = null;
-                    }
-                    timeRecords.Add(newTimeRecord);
                 }
             }
             applications.ForEach(a => context.LeaveApplications.Add(a));
@@ -133,19 +118,19 @@ namespace TimeSheet.Models
             context.SaveChanges();
 
             // Initialise Leaves
-            context.LeaveBalances.Add(new LeaveBalance()
+            context.LeaveBalances.Add(new LeaveBalance
             {
                 UserID = "r.lin@m.nantien.edu.au",
                 LeaveType = _leaveType.annual,
                 AvailableLeaveHours = 100.39
             });
-            context.LeaveBalances.Add(new LeaveBalance()
+            context.LeaveBalances.Add(new LeaveBalance
             {
                 UserID = "r.lin@m.nantien.edu.au",
                 LeaveType = _leaveType.flexi,
                 AvailableLeaveHours = 22.5
             });
-            context.LeaveBalances.Add(new LeaveBalance()
+            context.LeaveBalances.Add(new LeaveBalance
             {
                 UserID = "r.lin@m.nantien.edu.au",
                 LeaveType = _leaveType.sick,

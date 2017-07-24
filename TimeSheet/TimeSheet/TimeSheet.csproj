@@ -436,7 +436,6 @@
     <Content Include="Views\ADManagement\GroupGetMembers.cshtml" />
     <Content Include="Views\ADManagement\Role.cshtml" />
     <Content Include="Views\ADManagement\RoleDetails.cshtml" />
-    <Content Include="Views\Admin\_PeriodDetails.cshtml" />
     <Content Include="Views\Shared\_SelectYear.cshtml" />
     <Content Include="Views\Admin\PayrollExport.cshtml" />
     <Content Include="Views\Shared\PostRequest.cshtml" />
@@ -445,7 +444,7 @@
     <Content Include="Views\Admin\_EditUserLeaves.cshtml" />
     <Content Include="Views\Admin\_DisplayUserLeaves.cshtml" />
     <Content Include="Views\HRApplication\ApplicationHistory.cshtml" />
-    <Content Include="Views\HRApplication\ApplicationlDetail.cshtml" />
+    <Content Include="Views\HRApplication\ApplicationDetail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
