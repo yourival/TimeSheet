@@ -49,7 +49,7 @@ namespace TimeSheet.Models
                     link += "TimesheetApproval/ApprovalDetail/";
                     link += id;
                     subject = "TimesheetApplicaiton";
-                    path = path + @"\App_Data\Template\TimesheetApplication.txt";
+                    path = path + @"\Template\TimesheetApplication.txt";
                     using (var sr = new StreamReader(path))
                     {
                         body = sr.ReadToEnd();
@@ -63,7 +63,7 @@ namespace TimeSheet.Models
                     link += "LeaveApproval/ApprovalDetail/";
                     link += id;
                     subject = "LeaveApplicaiton";
-                    path = path + @"\App_Data\Template\LeaveApplication.txt";
+                    path = path + @"\Template\LeaveApplication.txt";
                     using (var sr = new StreamReader(path))
                     {
                         body = sr.ReadToEnd();
@@ -72,10 +72,11 @@ namespace TimeSheet.Models
                     username = leaveModel.UserName ?? leaveModel.UserID;
                     subject = subject + " From " + username;
                     body = string.Format(body, username, leaveModel.StartTime, leaveModel.EndTime, leaveModel.Comment, link);
+                    File.AppendAllText(@"C:\Users\Public\TestFolder\test.txt", body + ".");
                     break;
                 case "TimesheetApproval":
                     subject = "TimesheetApproval";
-                    path = path + @"\App_Data\Template\TimesheetApproval.txt";
+                    path = path + @"\Template\TimesheetApproval.txt";
                     using (var sr = new StreamReader(path))
                     {
                         body = sr.ReadToEnd();
@@ -97,7 +98,7 @@ namespace TimeSheet.Models
                     break;
                 case "LeaveApproval":
                     subject = "LeaveApproval";
-                    path = path + @"\App_Data\Template\LeaveApproval.txt";
+                    path = path + @"\Template\LeaveApproval.txt";
                     using (var sr = new StreamReader(path))
                     {
                         body = sr.ReadToEnd();

@@ -160,18 +160,18 @@ namespace TimeSheet.Controllers
 
         // GET: /DownloadPdf/1
         //[ValidateInput(false)]
-        [AuthorizeUser(Roles = "Manager, Accountant")]
-        public ActionResult DownloadPdf(string html)
-        {
-            Byte[] res = null;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
-                pdf.Save(ms);
-                res = ms.ToArray();
-            }
-            return File(res, "application/pdf");
-        }
+        //[AuthorizeUser(Roles = "Manager, Accountant")]
+        //public ActionResult DownloadPdf(string html)
+        //{
+        //    Byte[] res = null;
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
+        //        pdf.Save(ms);
+        //        res = ms.ToArray();
+        //    }
+        //    return File(res, "application/pdf");
+        //}
 
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
