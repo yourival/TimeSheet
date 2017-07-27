@@ -9,6 +9,17 @@ namespace TimeSheet.Models
     public class LeaveBalanceViewModel
     { 
         public int RowId { get; set; }
-        public List<LeaveBalance> Balances { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public double[] Balances { get; set; }
+        public string Note { get; set; }
+
+        public LeaveBalanceViewModel()
+        {
+            UserId = string.Empty;
+            UserName = string.Empty;
+            Note = string.Empty;
+            Balances = new double[3];
+        }
     }
 }

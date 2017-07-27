@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewBag.Title = "Import User Leaves";
+}
+
+<div class="container" align="center">
+    <h3>Import User Leaves from CSV</h3>
+    <div class="col-lg-6 col-sm-8 col-xs-12" align="left">
+        <p>To successfully import user leaves from a CSV file, please make sure its format matches:</p>
+        <div id="preview"></div>
+        @using (Html.BeginForm("ImportUserLeaves", "UserLeaves", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <label id="upload-file-info"></label>
+            <label class="btn btn-default">
+                Browse...<input id="file" type="file" name="file" value="Browse..." style = "display: none"/>
+            </label>
+            <br />
+            <br />
+            <button id="btn-upload" class="btn btn-default">Preview</button>
+            <input type="submit" class="btn btn-danger" name="button" value="Cancel" style = "display: none" />
+            <input type="submit" class="btn btn-success" name="button" value="Save" style = "display: none" />
+        }
+</div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ajax")
+}
+
+@section MyScripts{
+    <script>
+        $(document).ready(function () {
+            $("#btn-upload").click(function (e) {
+                e.preventDefault();
+                if ($("#file").get(0).files.length == 0)
+                {
+                    alert("Please select a file first.");
+                    return false;
+                }
+                // Checking whether FormData is available in browser  
+                if (window.FormData !== undefined) {
+
+                    var formData = new FormData();
+                    // Attach file
+                    formData.append('csv', $('input[type=file]')[0].files[0]); 
+
+                    $.ajax({
+                        url: '/UserLeaves/Preview',
+                        type: "POST",
+                        contentType: false, // Not to set any content header  
+                        processData: false, // Not to process data  
+                        data: formData
+                    })
+                    .done(function (result) {
+                        $("#preview").html(result);
+                        $('.btn').removeAttr('style');
+                    })
+                    .fail(function (err) {
+                        alert(err.statusText);
+                    });
+                } else {
+                    alert("FormData is not supported.");
+                }
+            });
+
+            // Display filename if any file is selected
+            $(':file').on('fileselect', function (event, numFiles, label) {
+                $("#upload-file-info").text(label);
+            });
+        });
+
+        $(document).on('change', ':file', function () {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [numFiles, label]);
+        });
+    </script>
+}

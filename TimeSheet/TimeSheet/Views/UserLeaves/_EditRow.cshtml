@@ -2,13 +2,13 @@
 
 
 <td>
-    @Model.Balances.First().UserName
+    @Model.UserName
 </td>
 
 @for (int i = 0; i < 3; i++)
 {
     <td>
-        @Html.EditorFor(m => m.Balances[i].AvailableLeaveHours,
+        @Html.EditorFor(m => m.Balances[i],
             new { htmlAttributes = new { @class = "form-control balance-input", @type = "number", step="0.01"} })
     </td>
 }
@@ -27,7 +27,7 @@
 <script>
     $(document).ready(function () {
         var currentRequest = null;
-            var userId = '@Model.Balances.First().UserID';
+            var userId = '@Model.UserId';
             var rowId = '@Model.RowId';
 
         // If 'save' button is clicked
@@ -39,7 +39,7 @@
                 balances.push($(this).val());
             });
             currentRequest = $.ajax({
-                url: "/Admin/EditUserLeaves",
+                url: "/UserLeaves/EditRow",
                 type: "post",
                 data: { userId: userId, rowId: rowId, balances: balances },
                 beforeSend: function () {
@@ -50,7 +50,6 @@
             })
                 .done(function (partialViewResult) {
                     $("#row" + rowId).html(partialViewResult);
-                    alert("done" + rowId);
                 });
         });
 
@@ -58,7 +57,7 @@
         $("#cancel-btn@(Model.RowId)").click(function (e) {
             e.preventDefault();
             currentRequest = $.ajax({
-                url: "/Admin/DisplayUserLeaves",
+                url: "/UserLeaves/DisplayRow",
                 type: "get",
                 data: { userId: userId, rowId: rowId },
                 beforeSend: function () {

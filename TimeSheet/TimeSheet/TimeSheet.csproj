@@ -247,6 +247,7 @@
     <Compile Include="Controllers\HRApplicationController.cs" />
     <Compile Include="Controllers\TimesheetApprovalController.cs" />
     <Compile Include="Controllers\TimeSheetController.cs" />
+    <Compile Include="Controllers\UserLeavesController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -398,8 +399,7 @@
     <Content Include="Views\TimeSheet\_CreateTimeSheet.cshtml" />
     <Content Include="Views\HRApplication\_LeaveList.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\UserLeaves.cshtml" />
-    <Content Include="Views\Admin\EditUserLeaves.cshtml" />
+    <Content Include="Views\UserLeaves\Index.cshtml" />
     <Content Include="Views\LeaveApproval\_Waiting.cshtml" />
     <Content Include="Views\LeaveApproval\Approval.cshtml" />
     <Content Include="Views\LeaveApproval\ApplicationList.cshtml" />
@@ -441,10 +441,12 @@
     <Content Include="Views\Shared\PostRequest.cshtml" />
     <Content Include="Views\LeaveApproval\ApplicationOutput.cshtml" />
     <Content Include="Views\LeaveApproval\_Confirmed.cshtml" />
-    <Content Include="Views\Admin\_EditUserLeaves.cshtml" />
-    <Content Include="Views\Admin\_DisplayUserLeaves.cshtml" />
+    <Content Include="Views\UserLeaves\_EditRow.cshtml" />
+    <Content Include="Views\UserLeaves\_DisplayRow.cshtml" />
     <Content Include="Views\HRApplication\ApplicationHistory.cshtml" />
     <Content Include="Views\HRApplication\ApplicationDetail.cshtml" />
+    <Content Include="Views\UserLeaves\ImportUserLeaves.cshtml" />
+    <Content Include="Views\UserLeaves\_Preview.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

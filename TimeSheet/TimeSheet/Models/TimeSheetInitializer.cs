@@ -136,6 +136,24 @@ namespace TimeSheet.Models
                 LeaveType = _leaveType.sick,
                 AvailableLeaveHours = 20
             });
+            context.LeaveBalances.Add(new LeaveBalance
+            {
+                UserID = "d.yang@m.nantien.edu.au",
+                LeaveType = _leaveType.annual,
+                AvailableLeaveHours = 123
+            });
+            context.LeaveBalances.Add(new LeaveBalance
+            {
+                UserID = "d.yang@m.nantien.edu.au",
+                LeaveType = _leaveType.flexi,
+                AvailableLeaveHours = 34
+            });
+            context.LeaveBalances.Add(new LeaveBalance
+            {
+                UserID = "d.yang@m.nantien.edu.au",
+                LeaveType = _leaveType.sick,
+                AvailableLeaveHours = 1.53
+            });
             context.SaveChanges();
 
 

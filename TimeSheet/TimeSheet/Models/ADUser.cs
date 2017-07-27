@@ -24,7 +24,11 @@ namespace TimeSheet.Models
 
         public string JobCode { get; set; }
 
+        public string Department { get; set; }
+
         public int EmployeeID { get; set; }
+
+        //public string Manager { get; set; }
 
         public virtual ICollection<TimeRecord> TimeRecords { get; set; }
 
@@ -48,7 +52,8 @@ namespace TimeSheet.Models
                         {
                             if (directoryObject is User)
                             {
-                                userList.Add((User)directoryObject);
+                                var user = (User)directoryObject;
+                                userList.Add(user);
                             }
                         }
                         pagedCollection = await pagedCollection.GetNextPageAsync();
@@ -65,52 +70,17 @@ namespace TimeSheet.Models
                 List<ADUser> SystemUserList = timesheetDb.ADUsers.ToList();
                 if (SystemUserList.Count != userList.Count)
                 {
-                    foreach (var item in SystemUserList)
-                    {
-                        timesheetDb.ADUsers.Remove(item);
-                    }
-                    timesheetDb.SaveChanges();
                     foreach (var item in userList)
                     {
-                        ADUser user = new ADUser();
-                        user.UserName = item.DisplayName;
-                        user.Email = item.Mail;
-                        user.JobCode = item.JobTitle;
-                        timesheetDb.ADUsers.Add(user);
+                        if (timesheetDb.ADUsers.Find(item.Mail) == null)
+                            timesheetDb.ADUsers.Add(new ADUser {
+                                UserName = item.DisplayName,
+                                Email = item.Mail,
+                                JobCode = item.JobTitle,
+                                Department = item.Department
+                            }
+                        );
                     }
-                    timesheetDb.SaveChanges();
-
-                    // These sample data should be removed for production.
-                    timesheetDb.ADUsers.Add(new ADUser()
-                    {
-                        UserName = "Dawen Yang",
-                        Email = "d.yang@m.nantien.edu.au",
-                        JobCode = "Lecturer"
-                    });
-                    timesheetDb.ADUsers.Add(new ADUser()
-                    {
-                        UserName = "Robin Lin",
-                        Email = "r.lin@m.nantien.edu.au",
-                        JobCode = "Lecturer"
-                    });
-                    timesheetDb.ADUsers.Add(new ADUser()
-                    {
-                        UserName = "Kai Zhao",
-                        Email = "z.kai@m.nantien.edu.au",
-                        JobCode = "Lecturer"
-                    });
-                    timesheetDb.ADUsers.Add(new ADUser()
-                    {
-                        UserName = "Rita Ben",
-                        Email = "b.rita@m.nantien.edu.au",
-                        JobCode = "Lecturer"
-                    });
-                    timesheetDb.ADUsers.Add(new ADUser()
-                    {
-                        UserName = "Faith Ben",
-                        Email = "b.faith@m.nantien.edu.au",
-                        JobCode = "Lecturer"
-                    });
 
                     timesheetDb.SaveChanges();
                 }

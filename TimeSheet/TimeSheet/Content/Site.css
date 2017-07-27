@@ -772,6 +772,10 @@ form p {
     display: list-item;
 }
 
+.alert-danger, .alert-success {
+    padding: 10px;
+}
+
 /*Printing*/
 @media print {
     .do-not-print {

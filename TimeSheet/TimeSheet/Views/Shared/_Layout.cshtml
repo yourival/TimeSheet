@@ -51,7 +51,7 @@
                                                 <li>@Html.ActionLink("Payroll Export", "PayrollExport", "Admin")</li>
                                                 @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
                                                 {
-                                                    <li>@Html.ActionLink("User Leaves", "UserLeaves", "Admin")</li>
+                                                    <li>@Html.ActionLink("User Leaves", "Index", "UserLeaves")</li>
                                                     <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
                                                 }
                                             </ul>
@@ -143,6 +143,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    @RenderSection("MyScripts", required: false)
 </body>
 
 

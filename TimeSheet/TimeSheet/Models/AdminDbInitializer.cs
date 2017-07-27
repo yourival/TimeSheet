@@ -32,6 +32,7 @@ namespace TimeSheet.Models
                 IsAccountant = false,
                 IsManager = true
             });
+
             context.SaveChanges();
         }
     }

@@ -1,11 +1,11 @@
 ﻿@model LeaveBalanceViewModel
 
 <td>
-    @Model.Balances.First().UserName
+    @Model.UserName
 </td>
 @for (int i = 0; i < 3; i++)
 {
-    <td>@Html.DisplayFor(m => m.Balances[i].AvailableLeaveHours, new { @class = "col" })</td>
+    <td>@Html.DisplayFor(m => m.Balances[i], new { @class = "col" })</td>
 }
 <td>
     <button id="edit-btn@(Model.RowId)" class="btn-primary">
@@ -20,10 +20,10 @@
         var currentRequest = null;
         $("#edit-btn@(Model.RowId)").click(function (e) {
             e.stopPropagation();
-            var userId = '@Model.Balances.First().UserID';
+            var userId = '@Model.UserId';
             var rowId = '@Model.RowId';
             currentRequest = $.ajax({
-                url: "/Admin/EditUserLeaves",
+                url: "/UserLeaves/EditRow",
                 type: "get",
                 data: { userId: userId, rowId: rowId },
                 beforeSend: function () {

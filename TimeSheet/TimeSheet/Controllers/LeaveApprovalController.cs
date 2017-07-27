@@ -27,9 +27,7 @@ namespace TimeSheet.Controllers
         [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult Approval()
         {
-            List<LeaveApplication> applications = contextDb.LeaveApplications.ToList();
-
-            return View(applications);
+            return View();
         }
 
         // GET: Admin/Approval/1
@@ -96,14 +94,21 @@ namespace TimeSheet.Controllers
         [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult ApprovalPartial(string type)
         {
-            return PartialView("_" + type, GetApplicationList(type));
+            List<LeaveApplication> model = GetApplicationList(type);
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+            return PartialView("_" + type, model);
         }
 
         // GET: Admin/ApplicationList
         [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult ApplicationList(string type)
         {
-            return View(GetApplicationList(type));
+            List<LeaveApplication> model = GetApplicationList(type);
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+
+            return View(model);
         }
 
         // GET: Admin/ApplicationList
