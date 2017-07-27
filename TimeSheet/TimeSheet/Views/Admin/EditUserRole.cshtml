@@ -1,0 +1,70 @@
+﻿@model UserRoleSetting
+
+@{
+    ViewBag.Title = "Edit User Role";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div class="container" align="center">
+        <h2>Edit Manager</h2>
+
+        @using (Html.BeginForm("EditUserRoleConfirmed", "Admin",FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model=>model.id)
+            <table class="table-fill">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <tr>
+                    <th>@Html.LabelFor(model => model.UserID)</th>
+                    <td>
+                        @Html.EditorFor(model => model.UserID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.UserID, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model => model.UserName)</th>
+                    <td>
+                        @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Administrator</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsAdmin, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsAdmin, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Manager</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsManager, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsManager, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Accountant</th>
+                    <td>
+                        @Html.EditorFor(model => model.IsAccountant, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.IsAccountant, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <th>Work Type</th>
+                    <td>
+                        @Html.EnumDropDownListFor(model => model.WorkType, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.WorkType, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <input type="submit" value="Save" class="btn btn-primary" />
+        }
+
+        <br />
+        <div>
+            @Html.ActionLink("Back to User Role Setting", "UserRoleSetting")
+        </div>
+    </div>
+</body>

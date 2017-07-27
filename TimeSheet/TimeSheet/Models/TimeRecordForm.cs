@@ -9,13 +9,8 @@ namespace TimeSheet.Models
 {
     public class TimeRecordForm
     {
-
-        public enum _formstatus { approved, rejected, modified, submitted }
-
-        public enum _sumbitstatus { submitted, saved}
-
         [Key]
-        public int TimeRecordFormID { get; set; }
+        public int TimeRecordFormId { get; set; }
 
         public int Year { get; set; }
         public int Period { get; set; }
@@ -27,14 +22,13 @@ namespace TimeSheet.Models
 
         public double TotalLeaveHours { get; set; }
 
-        public _formstatus FormStatus { get; set; }
+        public _status status { get; set; }
 
-        public _sumbitstatus SumbitStatus { get; set; }
+        public DateTime SubmittedTime { get; set; }
 
-        public DateTime SubmitTime { get; set; }
+        public DateTime? ApprovedTime { get; set; }
 
         [DataType(DataType.MultilineText)]
         public string Comments { get; set; }
-        
     }
 }

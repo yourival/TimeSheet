@@ -9,23 +9,16 @@ namespace TimeSheet
 {
     public class AADHelper
     {
-        public static String GetUserRole(String email)
+        public static UserRoleSetting GetUserRole(String email)
         {
-            AdminDb context = new AdminDb();
-            var manager = (from m in context.ManagerSetting
-                           where m.ManagerID == email
-                           select m).FirstOrDefault();
-            if (manager != null)
+            UserRoleSetting userRole = null;
+            using (AdminDb context = new AdminDb())
             {
-                if (manager.IsAdmin)
-                    return "IsAdmin";
-                else
-                    return "IsManager";
+                userRole = (from m in context.UserRoleSettings
+                            where m.UserID == email
+                            select m).FirstOrDefault();
             }
-            else
-            {
-                return "Normal User";
-            }
+            return userRole;
         }
     }
 }

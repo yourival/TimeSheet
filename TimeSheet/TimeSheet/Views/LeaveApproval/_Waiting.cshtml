@@ -14,6 +14,7 @@
             <th>End Date</th>
             <th>Total Hours</th>
             <th>Status</th>
+            <th>Approval</th>
         </tr>
     </thead>
     <tbody style="cursor:pointer">
@@ -21,19 +22,19 @@
         {
             <tr class="table-row" onclick="location.href='@Url.Action("ApprovalDetail", "LeaveApproval", new { id = Model[i].id })'">
                 <td>@Html.DisplayFor(m => m[i].id)</td>
-                <td>@Html.DisplayFor(m => m[i].UserID)</td>
-                <td>@Html.DisplayFor(m => m[i].leaveType)</td>
+                <td>@Html.DisplayFor(m => m[i].UserName)</td>
+                <td>@Model[i].leaveType.GetDisplayName()</td>
                 <td>@Html.DisplayFor(m => m[i].StartTime)</td>
                 <td>@Html.DisplayFor(m => m[i].EndTime)</td>
                 <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
-                <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Html.DisplayFor(m => m[i].status)</td>
-                @if (ViewBag.Type == "Waiting")
-                {
-                    <td class="action">
-                        <button class="btn btn-success" value="@Model[i].id">Approved</button>
-                        <button class="btn btn-danger" value="@Model[i].id">Rejected</button>
-                    </td>
-                }
+                <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Model[i].status.GetDisplayName()</td>
+                <td class="action">
+                    @if (User.IsInRole("Admin") || User.Identity.Name == Model[i].ManagerID)
+                    {
+                        <button class="btn btn-success" value="@Model[i].id">Approve</button>
+                        <button class="btn btn-danger" value="@Model[i].id">Reject</button>
+                    }
+                </td>
             </tr>
         }
         <tr>
@@ -41,15 +42,12 @@
             <td>
                 @if (Model.Count > 5)
                 {
-                    @Html.ActionLink("More...", "ApplicationList", new { type = @ViewBag.Type })
+                    @Html.ActionLink("More...", "ApplicationList", new { type = "Waiting" })
                 }
             </td>
         </tr>
     </tbody>
 </table>
-<div class="alert-danger" id="error"></div>
-
-
 
 @functions {
     string getStatusClass(_status status)
@@ -59,12 +57,6 @@
         {
             case _status.submited:
                 className = "text-primary";
-                break;
-            case _status.approved:
-                className = "text-success";
-                break;
-            case _status.rejected:
-                className = "text-danger";
                 break;
             case _status.modified:
                 className = "text-warning";
@@ -77,8 +69,6 @@
     }
 }
 
-
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
@@ -90,37 +80,31 @@
             e.stopPropagation();
             var id = $(this).val();
             var decision = $(this).text();
-            var container = $(this).closest("div");
-            var type = (container.attr("id") == "waiting-apps" ? "Waiting" : "Confirmed")
             $(this).closest("tr").fadeOut(500, function () {
                 $.ajax({
-                    url: "/LeaveApproval/ApprovalPartial/",
+                    url: "/LeaveApproval/ApprovalWaiting/",
                     type: "POST",
-                    data: { id: id, decision: decision, type: type }
+                    data: { id: id, decision: decision }
                 })
                     .done(function (result) {
-                        container.html(result);
-
-                        if (type == "Waiting")
-                            $.ajax({
-                                url: "/LeaveApproval/ApprovalPartial/",
-                                type: "GET",
-                                data: { type: "Confirmed" }
+                        $("#waiting-apps").html(result);
+                        $.ajax({
+                            url: "/LeaveApproval/ApprovalPartial/",
+                            type: "GET",
+                            data: { type: "Confirmed" }
+                        })
+                            .done(function (result) {
+                                $("#confirmed-apps").html(result);
                             })
-                                .done(function (result) {
-                                    $("#confirmed-apps").html(result);
-                                })
-                                .fail(function (xmlHttpRequest, textStatus, errorThrown) {
-                                    $("#error").html(xmlHttpRequest.responseText);
-                                });
+                            .fail(function (xmlHttpRequest, textStatus, errorThrown) {
+                                $("#error").html(xmlHttpRequest.responseText);
+                            });
                     })
                     .fail(function (xmlHttpRequest, textStatus, errorThrown) {
                         $("#error").html(xmlHttpRequest.responseText);
                     });
 
             });
-
-
         });
     });
 </script>

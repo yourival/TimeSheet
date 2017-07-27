@@ -2,18 +2,19 @@
     ViewBag.Title = "Leave Application Approval";
 }
 
-
-
-<div class="container" align="center">
-    <h3>Leave Application Approval</h3>
-    <h4>Waiting Applications</h4>
-    <div id="waiting-apps">
-        @Html.Action("ApprovalPartial", "LeaveApproval", new { type = "Waiting" })
+@if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+{
+    <div class="container" align="center">
+        <h3>Leave Application Approval</h3>
+        <h4 style="text-align:left">Waiting Applications</h4>
+        <div id="waiting-apps">
+            @Html.Action("ApprovalPartial", "LeaveApproval", new { type = "Waiting" })
+        </div>
     </div>
-</div>
+}
 
 <div class="container" align="center">
-    <h4>Confirmed Applications</h4>
+    <h4 style="text-align:left">Confirmed Applications</h4>
     <div id="confirmed-apps">
         @Html.Action("ApprovalPartial", "LeaveApproval", new { type = "Confirmed" })
     </div>

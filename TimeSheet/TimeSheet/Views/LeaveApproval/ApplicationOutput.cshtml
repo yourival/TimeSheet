@@ -1,0 +1,113 @@
+﻿@model LeaveApplicationViewModel
+
+@{
+    ViewBag.Title = "Application Output";
+    string[] LeaveNames = { "Sick Leave", "Flexi Leave", "Annual Leave" };
+}
+
+<br />
+<div class="container" align="center">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div id="detailForm" class="col-lg-7 col-sm-10 col-xs-12 approval-detail print-form">
+            <h3>Leave Application</h3>
+            <table class="table-bordered">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserName)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.UserName)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserID)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.UserID)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
+                </tr>
+                <tr>
+                    <th>Period</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)&nbsp;-&nbsp;
+                        @Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalLeaveTime)</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.TotalLeaveTime)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.status)</th>
+                    <td>@Model.LeaveApplication.status.GetDisplayName()</td>
+                </tr>
+                <tr>
+                    <th>Manager</th>
+                    <td>@ViewBag.ManagerName</td>
+                </tr>
+                <tr>
+                    <th>Signed&nbsp;At</th>
+                    <td>@Html.DisplayFor(m => m.LeaveApplication.ApprovedTime)</td>
+                </tr>
+                <tr>
+                    <th>Original Balance (hrs)</th>
+                    <td>
+                        @for (int i = 0; i < LeaveNames.Length; i++)
+                        {
+                            @LeaveNames[i]
+                            @:   :&nbsp;
+
+                            <span>@ViewBag.OriginalBalances[i]</span>
+
+                            if (i != LeaveNames.Length - 1)
+                            {
+                                @: ,&nbsp;&nbsp;
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <th>Close Balance (hrs)</th>
+                    <td>
+                        @for (int i = 0; i < LeaveNames.Length; i++)
+                        {
+                            @LeaveNames[i]
+                            @:   :&nbsp;
+
+                            <span>@ViewBag.CloseBalances[i]</span>
+
+                            if (i != LeaveNames.Length - 1)
+                            {
+                                @: ,&nbsp;&nbsp;
+                            }
+                        }
+                    </td>
+                </tr>
+            </table>
+            <div class="col-sm-3"></div>
+        </div>
+    </div>
+    <div>
+        <br />
+        <row>
+            <button id="downloadPdf" class="btn btn-primary do-not-print" onclick="javascript:window.print();">
+                <span class="glyphicon glyphicon-print"></span> Print Pdf
+            </button>
+        </row>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script>
+$(document).ready(function () {
+    //$("#downloadPdf").on('click', function (e) {
+    //    e.preventDefault();
+    //    var html = $("#detailForm").html();
+    //    //var dataToSend = JSON.stringify({ html: "" });
+    //    $.ajax({
+    //        url: "/LeaveApproval/DownloadPdf",
+    //        type: "GET",
+    //        data: { html: "1" }
+    //    })
+    //        .done(function (file) {
+    //            alert("Yeah");
+    //        });
+    //});  
+});
+</script>

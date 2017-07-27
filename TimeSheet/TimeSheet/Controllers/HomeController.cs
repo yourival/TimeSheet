@@ -19,16 +19,6 @@ namespace TimeSheet.Controllers
         public string username;
         public ActionResult Index()
         {
-            if (User.IsInRole("Admin"))
-            {
-                Debug.WriteLine("In Admin Role");
-            }
-
-            if (User.IsInRole("Manager"))
-            {
-                Debug.WriteLine("In Manager Role");
-            }
-
             return View();
         }
 

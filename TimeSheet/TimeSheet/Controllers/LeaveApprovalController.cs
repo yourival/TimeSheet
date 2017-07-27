@@ -6,10 +6,11 @@ using System.Web.Mvc;
 using System.Data.Entity;
 using TimeSheet.Models;
 using System.Net;
+using System.IO;
+using System.Diagnostics;
 
 namespace TimeSheet.Controllers
 {
-    [AuthorizeUser(Roles = "Manager")]
     public class LeaveApprovalController : Controller
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
@@ -20,18 +21,18 @@ namespace TimeSheet.Controllers
         }
 
         // GET: Admin/Approval
+        [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult Approval()
         {
-            List<LeaveApplication> applications = contextDb.LeaveApplications.ToList();
-
-            return View(applications);
+            return View();
         }
 
         // GET: Admin/Approval/1
         // GET: Admin/Approval/ApplicationDetails/1
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult ApprovalDetail(int? id)
         {
-            if(id == null)
+            if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             ApprovalViewModel approvalVM = new ApprovalViewModel();
@@ -42,7 +43,7 @@ namespace TimeSheet.Controllers
                                        .SingleOrDefault(a => a.id == id);
             if (application == null)
             {
-                return HttpNotFound();
+                return HttpNotFound("The application you request does not exist in our database. Please contact our IT support.");
             }
             else
             {
@@ -65,45 +66,128 @@ namespace TimeSheet.Controllers
                                                          r.UserID == a.UserID &&
                                                          r.LeaveType != null
                                                 select r).ToList();
-                    records.ForEach(r => approvalVM.TakenLeaves.Add(r));
+                    foreach(var r in records)
+                    {
+                        string username = contextDb.ADUsers.Find(r.UserID).UserName;
+                        approvalVM.TakenLeaves.Add(new Tuple<DateTime, string, double>
+                        (
+                            r.RecordDate,
+                            username,
+                            r.LeaveTime)
+                        );
+                    }
                 }
-                approvalVM.TakenLeaves.Sort((x, y) => x.RecordDate.CompareTo(y.RecordDate));
                 approvalVM.LeaveApplication = application;
+                if (User.Identity.Name == application.ManagerID)
+                    ViewBag.Authorized = true;
+                else
+                    ViewBag.Authorized = false;
 
                 return View(approvalVM);
             }
         }
 
+        // GET: Admin/ApprovalPartial
+        [AuthorizeUser(Roles = "Manager, Accountant")]
+        public ActionResult ApprovalPartial(string type)
+        {
+            List<LeaveApplication> model = GetApplicationList(type);
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+            return PartialView("_" + type, model);
+        }
+
+        // GET: Admin/ApplicationList
+        [AuthorizeUser(Roles = "Manager, Accountant")]
+        public ActionResult ApplicationList(string type)
+        {
+            List<LeaveApplication> model = GetApplicationList(type);
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+
+            return View(model);
+        }
+
+        // GET: Admin/ApplicationList
+        [AuthorizeUser(Roles = "Manager, Accountant")]
+        public ActionResult ApplicationOutput(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            LeaveApplicationViewModel applicationVM = new LeaveApplicationViewModel();
+            LeaveApplication application = contextDb.LeaveApplications.Find(id);
+            if (application != null)
+            {
+                applicationVM.LeaveApplication = application;
+                // Get leave balance
+                List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
+                if (application.OriginalBalances != null)
+                    ViewBag.OriginalBalances = application.OriginalBalances.Split('/');
+                else
+                    ViewBag.OriginalBalances = new string[] { "", "", "" };
+
+                if (application.CloseBalances != null)
+                    ViewBag.CloseBalances = application.CloseBalances.Split('/');
+                else
+                    ViewBag.CloseBalances = new string[] { "", "", "" };
+
+                // Get manager name
+                ViewBag.ManagerName = contextDb.ADUsers.Find(application.ManagerID).UserName;
+                // Get pay period
+                int payPeriod1 = PayPeriod.GetPeriodNum(application.StartTime);
+                int payPeriod2 = PayPeriod.GetPeriodNum(application.EndTime);
+                string period = "Pay Period " + payPeriod1;
+                if (payPeriod1 != payPeriod2)
+                    period += " - " + payPeriod2;
+                ViewBag.PayPeriod = period;
+
+                return View(applicationVM);
+            }
+            else
+            {
+                return HttpNotFound("Cannot find the application in database. Please contact our IT support.");
+            }
+        }
+
+        // GET: /DownloadAttachment/1
+        [AuthorizeUser(Roles = "Manager")]
+        public ActionResult DownloadAttachment(int id)
+        {
+            var fileToRetrieve = contextDb.Attachments.Find(id);
+            return File(fileToRetrieve.Content, fileToRetrieve.ContentType);
+        }
+
+        // GET: /DownloadPdf/1
+        //[ValidateInput(false)]
+        [AuthorizeUser(Roles = "Manager, Accountant")]
+        public ActionResult DownloadPdf(string html)
+        {
+            Byte[] res = null;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
+                pdf.Save(ms);
+                res = ms.ToArray();
+            }
+            return File(res, "application/pdf");
+        }
+
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult ApprovalDetail(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                if (decision == "Approve")
-                    application.status = _status.approved;
-                else
+                if (!User.IsInRole("Admin") && User.Identity.Name != application.ManagerID)
                 {
-                    application.status = _status.rejected;
-                    // Update leave balances
-                    List<TimeRecord> rejectedTimeRecords = application.GetTimeRecords();
-                    List<LeaveBalance> userLeaveBalances = (from l in contextDb.LeaveBalances
-                                                            where l.UserID == application.UserID
-                                                            select l).ToList();
-                    foreach(var record in rejectedTimeRecords)
-                    {
-                        LeaveBalance leaveBalance = userLeaveBalances.First(l => l.LeaveType == record.LeaveType);
-                        leaveBalance.AvailableLeaveHours += record.LeaveTime;
-                        TimeRecord updatedRecord = new TimeRecord(record.RecordDate);
-                        updatedRecord.UserID = application.UserID;
-                        contextDb.Entry(updatedRecord).State = EntityState.Modified;
-                        contextDb.Entry(leaveBalance).State = EntityState.Modified;
-                    }
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+                                                    "You are not authoried to approve the application");
                 }
-
-                contextDb.Entry(application).State = EntityState.Modified;
-                contextDb.SaveChanges();
+                else
+                    ApproveApplication(application, decision);
             }
             else
             {
@@ -113,50 +197,33 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Approval");
         }
 
-
-        // GET: Admin/Approval/ApplicationList
-        public ActionResult ApplicationList(string type)
-        {
-            List<LeaveApplication> applications = GetApplicationList(type);
-            return View(applications);
-        }
-
-        // GET: Admin/ApprovalPartial
-        public ActionResult ApprovalPartial(string type)
-        {
-            List<LeaveApplication> applications = GetApplicationList(type);
-            ViewBag.Type = type;
-
-            return PartialView(@"~/Views/LeaveApproval/_Approval.cshtml", applications);
-        }
-
         // POST: Admin/ApprovalPartial
         [HttpPost]
-        public ActionResult ApprovalPartial(int id, string decision, string type)
+        [AuthorizeUser(Roles = "Manager")]
+        public ActionResult ApprovalWaiting(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                if (decision == "Approved")
-                    application.status = _status.approved;
+                if (!User.IsInRole("Admin") && User.Identity.Name != application.ManagerID)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+                                                    "You are not authoried to approve the application");
+                }
                 else
-                    application.status = _status.rejected;
-
-                contextDb.Entry(application).State = EntityState.Modified;
-                contextDb.SaveChanges();
+                    ApproveApplication(application, decision);
             }
             else
             {
                 return HttpNotFound("Cannot find the application in database. Please contact our IT support.");
             }
 
-            return View("_Approval", GetApplicationList(type));
+            return View("_Waiting", GetApplicationList("Waiting"));
         }
 
         // Convinence function: Get appllications for a view
         private List<LeaveApplication> GetApplicationList(string type)
         {
-
             List<LeaveApplication> applications = new List<LeaveApplication>();
             if (type == "Waiting")
             {
@@ -176,11 +243,64 @@ namespace TimeSheet.Controllers
             return applications;
         }
 
-        // GET: /File/1
-        public ActionResult Download(int id)
+        // Convinence function: Approve/Reject an application
+        private void ApproveApplication(LeaveApplication application, string decision)
         {
-            var fileToRetrieve = contextDb.Attachments.Find(id);
-            return File(fileToRetrieve.Content, fileToRetrieve.ContentType);
+            List<LeaveBalance> userLeaveBalances = (from l in contextDb.LeaveBalances
+                                                    where l.UserID == application.UserID
+                                                    select l).ToList();
+            List<TimeRecord> appliedTimeRecords = application.GetTimeRecords();
+
+            string[] originalBalances = application.OriginalBalances.Split('/');
+            double[] takenLeaveTimes = new double[] { 0, 0, 0 };
+            if (decision == "Approve")
+            {
+                string closeBalances = String.Empty;
+                // Calculate taken leaves
+                foreach (var timerecord in appliedTimeRecords)
+                {
+                    int index = (int)timerecord.LeaveType;
+                    if(index < 3)
+                        takenLeaveTimes[index] += timerecord.LeaveTime;
+                    else if(timerecord.LeaveType == _leaveType.compassionatePay)
+                        takenLeaveTimes[(int)_leaveType.sick] += timerecord.LeaveTime;
+                    else if(timerecord.LeaveType == _leaveType.flexiHours)
+                        takenLeaveTimes[(int)_leaveType.flexi] -= timerecord.LeaveTime;
+                }
+                // Record closed leave balances
+                for (int i = 0; i < 3; i++)
+                {
+                    double originalBalance = double.Parse(originalBalances[i] ?? "0");
+                    closeBalances += string.Format("{0:0.00}", originalBalance - takenLeaveTimes[i]);
+                    if (i != 2)
+                        closeBalances += "/";
+                }
+                application.CloseBalances = closeBalances;
+                application.status = _status.approved;
+            }
+            else
+            {
+                application.status = _status.rejected;
+                // Undo leave record in each time record
+                foreach (var record in appliedTimeRecords)
+                {
+                    var entry = contextDb.TimeRecords.Find(record.id);
+                    entry.LeaveTime = 0;
+                    entry.LeaveType = null;
+                    contextDb.Entry(entry).State = EntityState.Modified;
+                }
+                // Undo leave balances for the user
+                for (int i = 0; i < 3; i++)
+                {
+                    LeaveBalance balance = contextDb.LeaveBalances.Find(application.UserID, (_leaveType)i);
+                    balance.AvailableLeaveHours = double.Parse(originalBalances[i] ?? "0");
+                }
+                // Record closed leave balances
+                application.CloseBalances = application.OriginalBalances;
+            }
+            application.ApprovedTime = DateTime.Now;
+            contextDb.Entry(application).State = EntityState.Modified;
+            contextDb.SaveChanges();
         }
     }
 }

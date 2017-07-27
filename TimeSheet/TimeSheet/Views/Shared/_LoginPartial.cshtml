@@ -3,13 +3,12 @@
 @if (Request.IsAuthenticated)
 {
 <text>
-    <ul class="nav navbar-nav navbar-right">
+    <ul class="nav navbar-nav navbar-right do-not-print">
         <li id="nameDisplay">
             @Html.ActionLink("Hello " + Model + "!", "Index", "UserProfile", routeValues: null, htmlAttributes: null)
         </li>
-        <li>
-            @Html.ActionLink("Sign out", "SignOut", "Account")
-        </li>
+        <li>@Html.ActionLink("My Application History", "ApplicationHistory", "HRApplication")</li>
+        <li>@Html.ActionLink("Sign out", "SignOut", "Account")</li>
     </ul>
 </text>
 }

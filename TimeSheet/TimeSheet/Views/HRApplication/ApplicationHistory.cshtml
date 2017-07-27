@@ -1,0 +1,59 @@
+﻿@model List<LeaveApplication>
+
+@{
+    ViewBag.Title = "Application History";
+}
+
+<h2>My Application History</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Total Hours</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody style="cursor:pointer">
+        @for (int i = 0; i < 5 && i < Model.Count; i++)
+        {
+            <tr class="table-row" onclick="location.href='@Url.Action("ApplicationDetail", "HRApplication", new { id = Model[i].id })'">
+                <td>@Html.DisplayFor(m => m[i].id)</td>
+                <td>@Html.DisplayFor(m => m[i].leaveType)</td>
+                <td>@Html.DisplayFor(m => m[i].StartTime)</td>
+                <td>@Html.DisplayFor(m => m[i].EndTime)</td>
+                <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
+                <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Html.DisplayFor(m => m[i].status)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@functions {
+    string getStatusClass(_status status)
+    {
+        string className;
+        switch (status)
+        {
+            case _status.approved:
+                className = "text-success";
+                break;
+            case _status.rejected:
+                className = "text-danger";
+                break;
+            case _status.submited:
+                className = "text-primary";
+                break;
+            case _status.modified:
+                className = "text-warning";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}

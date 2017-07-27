@@ -14,16 +14,21 @@ namespace TimeSheet.Models
 {
     public class ADUser
     {
-        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int id { get; set; }
 
+        [Key, Column(Order = 0)]
         public string Email { get; set; }
 
         public string UserName { get; set; }
 
         public string JobCode { get; set; }
 
+        public string Department { get; set; }
+
         public int EmployeeID { get; set; }
+
+        //public string Manager { get; set; }
 
         public virtual ICollection<TimeRecord> TimeRecords { get; set; }
 
@@ -47,7 +52,8 @@ namespace TimeSheet.Models
                         {
                             if (directoryObject is User)
                             {
-                                userList.Add((User)directoryObject);
+                                var user = (User)directoryObject;
+                                userList.Add(user);
                             }
                         }
                         pagedCollection = await pagedCollection.GetNextPageAsync();
@@ -62,30 +68,22 @@ namespace TimeSheet.Models
             if (userList != null)
             {
                 List<ADUser> SystemUserList = timesheetDb.ADUsers.ToList();
-                if (SystemUserList.Count != 0)
+                if (SystemUserList.Count != userList.Count)
                 {
-                    foreach (var item in SystemUserList)
+                    foreach (var item in userList)
                     {
-                        timesheetDb.ADUsers.Remove(item);
+                        if (timesheetDb.ADUsers.Find(item.Mail) == null)
+                            timesheetDb.ADUsers.Add(new ADUser {
+                                UserName = item.DisplayName,
+                                Email = item.Mail,
+                                JobCode = item.JobTitle,
+                                Department = item.Department
+                            }
+                        );
                     }
+
                     timesheetDb.SaveChanges();
                 }
-                foreach (var item in userList)
-                {
-                    ADUser user = new ADUser();
-                    user.UserName = item.DisplayName;
-                    user.Email = item.Mail;
-                    user.JobCode = item.JobTitle;
-                    timesheetDb.ADUsers.Add(user);
-                }
-                timesheetDb.SaveChanges();
-                // This sample data should be removed for production.
-                ADUser u = new ADUser();
-                u.UserName = "Dawen Yang";
-                u.Email = "d.yang@m.nantien.edu.au";
-                u.JobCode = "Lecture";
-                timesheetDb.ADUsers.Add(u);
-                timesheetDb.SaveChanges();
             }
         }
     }

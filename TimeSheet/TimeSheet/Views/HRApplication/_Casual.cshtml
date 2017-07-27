@@ -1,118 +1,155 @@
 ﻿@model TimeSheetContainer
 
-<div class="hrForm-content">
-    <div>
-        @using (Html.BeginForm("Casual", "HRApplication", FormMethod.Post))
-        {
+@using (Ajax.BeginForm("Casual", "HRApplication", new AjaxOptions {  UpdateTargetId = "casual" }))
+{
+    <div class="hrForm-content">
+        <div>
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.TimeRecordForm.TimeRecordFormID)
-            <form>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2">
-                        Period
-                    </label>
-                    <div class="form form-inline col-sm-8" >
-                        <div class="form-group">
-                            @Html.DropDownList("year", Model.YearList, new { @class = "form-control" })
-                        </div>
-                        <div id="periodDiv" class="form-group">
-                            @{Html.RenderAction("SelectYear");}
-                        </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2">
+                    Period
+                </label>
+                <div class="form form-inline col-sm-8">
+                    <div class="form-group">
+                        @Html.DropDownListFor(m => m.TimeRecordForm.Year, Model.YearList, new { @id = "year", @class = "form-control" })
+                    </div>
+                    <div id="periodDiv" class="form-group">
+                        @{Html.RenderAction("SelectYear");}
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="casual-manager">
-                        @Html.Label("Manager")
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.DropDownList("manager", (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control", @id = "casual-manager" })
-                        </p>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="casual-manager">
+                    @Html.Label("Manager")
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.DropDownListFor(m => m.TimeRecordForm.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control", @id = "casual-manager" })
+                    </p>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="casual-comment">
-                        @Html.LabelFor(model => model.TimeRecordForm.Comments)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.TimeRecordForm.Comments, new { htmlAttributes = new { @class = "form-control", @id = "casual-comment", @style = "resize: vertical" } })
-                        </p>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="casual-comment">
+                    @Html.LabelFor(model => model.TimeRecordForm.Comments)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.TimeRecordForm.Comments, new { htmlAttributes = new { @class = "form-control", @id = "casual-comment", @style = "resize: vertical" } })
+                    </p>
                 </div>
-                @*<div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <a href="#CasualDetail" id="toggle-details" data-toggle="collapse">
-                            <p>
-                                Click here if you want to hide details
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </p>
-                        </a>
-                    </div>
-                </div>*@
+            </div>
 
-                <div class="appDetails">
-                    <div class="col-sm-offset-1 col-sm-2"></div>
-                    <div id="casual-form" class="col-sm-8"></div>
+            <div class="appDetails">
+                <div id="casual-form"></div>
+            </div>
+            <hr />
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <label>Total:</label>
+                    <span class="total" id="worktime-total"></span>
+                </div>
+            </div>
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            <div class="button-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
 
-                </div>
-                <hr />
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <label>Total:</label>
-                        <span class="total" id="worktime-total"></span>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <input type="submit" value="Submit" class="btn btn-primary" />
-                </div>
-            </form>
-        }
+        </div>
     </div>
-</div>
+}
 
 <script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
-    function renderCasualForm() {
+    function renderCasualForm(currentRequest) {
         var year = $('#year').val();
         var period = $('#period').val();
-
-        $("#casual-form").text("Loading...");
 
         //Clear previous validation message
         $("#casual-form").removeData("validator");
         $("#casual-form").removeData("unobtrusiveValidation");
 
-        $.ajax({
+        currentRequest = $.ajax({
             url: "/HRApplication/CreateCasualList",
             type: "GET",
-            data: { year: year, period: period }
-        })
+            data: { year: year, period: period },
+            // Abort previous request
+            beforeSend: function () {
+                if (currentRequest != null) {
+                    currentRequest.abort();
+                }
+            }
+            })
             .done(function (partialViewResult) {
-            //Render partial view
-            $("#casual-form").html(partialViewResult);
+                //Render partial view
+                $("#casual-form").html(partialViewResult);
 
-            //Enable jquery validation
-            $.validator.unobtrusive.parse("#casual-form");
+                //Enable jquery validation
+                $.validator.unobtrusive.parse("#casual-form");
 
-            // When there is any change on detail of leave time
-            $(".worktime").on("change", function () {
+                // When there is any change on detail of leave time
+                $(".worktime").on("change", function () {
+                    sumTotalWorkHours();
+                });
+
+                // Update work hours if there any change to start, end, and lunch time
+                $(".starttime").on("change", function () {
+                    var id = $(this).data("id");
+                    updateWorkHour(id);
+                });
+                $(".endtime").on("change", function () {
+                    var id = $(this).data("id");
+                    updateWorkHour(id);
+                });
+                $(".lunchtime").on("change", function () {
+                    var id = $(this).data("id");
+                    updateWorkHour(id);
+                });
+
                 sumTotalWorkHours();
             });
-            sumTotalWorkHours();
-
-        });
     }
+    // Update work hours
+    function updateWorkHour(id) {
+        var starttime = $("#starttime" + id).val();
+        var endtime = $("#endtime" + id).val();
+        if (starttime == "")
+        {
+            starttime = "9:00";
+            $("#starttime" + id).val(starttime)
+        }
+        if (endtime == "")
+        {
+            endtime = "17:00";
+            $("#endtime" + id).val(enttime);
+        }
+            
+        var startdate = new Date("1970-1-1 " + starttime).getTime();
+        var enddate = new Date("1970-1-1 " + endtime).getTime();
+        var lunchtime = $("#lunchtime" + id).val();
+        var worktime_after = ((enddate - startdate) / (1000 * 3600) - lunchtime).toFixed(1);
+        var worktime_before = $("#worktime" + id).text();
+        // update work hours for the row
+        $("#worktime" + id).text(worktime_after);
 
+
+        // update total work hours
+        var total = parseFloat($("#worktime-total").text()) -
+                    parseFloat(worktime_before) +
+                    parseFloat(worktime_after);
+        $("#worktime-total").text(total);
+    }
+    // summarise total work hours
     function sumTotalWorkHours() {
         var total = 0;
         $(".worktime").each(function (i) {
-            total += parseFloat($(this).val());
+            total += parseFloat($(this).text());
         });
         $("#worktime-total").text(total + " (" + (total / 7.5).toFixed(2) + " days)");
     }
 
     $(document).ready(function () {
+        var currentRequest = null;
+        renderCasualForm(currentRequest);
         $("#year").on("change", function () {
             var val = $('#year').val();
             $.ajax({
@@ -127,12 +164,6 @@
 
         $("#periodDiv").on("change", function () {
             renderCasualForm();
-            @*var year = $('#year').val();
-            var period = $('#period').val();
-            var yp = year + "." + period;
-            $("#casual-form").load('@Url.Action("GetTimeRecords", "HRApplication", null,Request.Url.Scheme)?text=' + yp);*@
         });
-        
-        //renderCasualForm();
     });
 </script>

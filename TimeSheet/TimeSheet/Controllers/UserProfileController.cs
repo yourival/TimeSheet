@@ -24,6 +24,7 @@ namespace TimeSheet.Controllers
         private static string appKey = ConfigurationManager.AppSettings["ida:ClientSecret"];
         private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
         private static string graphResourceID = "https://graph.windows.net";
+        private static string tenantID = ConfigurationManager.AppSettings["ida:TenantId"];
 
         // GET: UserProfile
         public async Task<ActionResult> Index()
@@ -77,8 +78,8 @@ namespace TimeSheet.Controllers
 
         public static ActiveDirectoryClient GetActiveDirectoryClient()
         {
-            string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-            string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            //string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+            //string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             Uri servicePointUri = new Uri(graphResourceID);
             Uri serviceRoot = new Uri(servicePointUri, tenantID);
             ActiveDirectoryClient client = new ActiveDirectoryClient(serviceRoot,

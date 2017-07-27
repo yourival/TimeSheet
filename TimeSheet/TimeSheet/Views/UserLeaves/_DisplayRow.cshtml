@@ -1,0 +1,40 @@
+﻿@model LeaveBalanceViewModel
+
+<td>
+    @Model.UserName
+</td>
+@for (int i = 0; i < 3; i++)
+{
+    <td>@Html.DisplayFor(m => m.Balances[i], new { @class = "col" })</td>
+}
+<td>
+    <button id="edit-btn@(Model.RowId)" class="btn-primary">
+        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        <span>Edit</span>
+    </button>
+</td>
+
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script>
+    $(document).ready(function () {
+        var currentRequest = null;
+        $("#edit-btn@(Model.RowId)").click(function (e) {
+            e.stopPropagation();
+            var userId = '@Model.UserId';
+            var rowId = '@Model.RowId';
+            currentRequest = $.ajax({
+                url: "/UserLeaves/EditRow",
+                type: "get",
+                data: { userId: userId, rowId: rowId },
+                beforeSend: function () {
+                    if (currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                }
+            })
+                .done(function (partialViewResult) {
+                    $("#row" + rowId).html(partialViewResult);
+                });
+        });
+    });
+</script>

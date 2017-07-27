@@ -5,9 +5,13 @@
 }
 
 <h2>EmailSetting</h2>
-
+@if (ViewBag.Message != null)
+{
+    <div class="alert-success">@ViewBag.Message</div>
+}
 @using (Html.BeginForm("UpdateEmailSetting", "Admin", FormMethod.Post))
 {
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
         @Html.LabelFor(m => m.FromEmail, new { @class= "control-label" })
         @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control" })
@@ -22,7 +26,7 @@
 
     <div class="form-group">
         @Html.LabelFor(m => m.Password, new { @class = "control-label" })
-        @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
+        @Html.TextBoxFor(m => m.Password, new { @type="password", @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Password)
     </div>
 

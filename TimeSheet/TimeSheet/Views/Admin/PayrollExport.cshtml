@@ -17,10 +17,6 @@
             </div>
         </div>
         <br/>
-        <div id ="periodDetailDiv" class="row">
-            @{Html.RenderAction("DefaultPeriodDetails");}
-        </div>
-        <br />
         <button id="expBtn" class="btn btn-default">Export</button>
     </div>
 </body>
@@ -37,19 +33,6 @@
             })
                 .done(function (partialviewresult) {
                     $("#perioddiv").html(partialviewresult);
-                });
-        });
-
-        $("#period").on("change", function () {
-            var val = $('#year').val();
-            var period = $('#period').val();
-            $.ajax({
-                url: "/Admin/PeriodDetails",
-                type: "get",
-                data: { year: val, period: period }
-            })
-                .done(function (partialviewresult) {
-                    $("#periodDetailDiv").html(partialviewresult);
                 });
         });
 

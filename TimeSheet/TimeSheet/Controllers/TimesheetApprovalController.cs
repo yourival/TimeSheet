@@ -21,7 +21,7 @@ namespace TimeSheet.Controllers
             List<TimeRecordForm> formList = new List<TimeRecordForm>();
             formList = (from f in contextDb.TimeRecordForms
                         where f.ManagerID == User.Identity.Name
-                        select f).OrderByDescending(f => f.TimeRecordFormID).ToList();
+                        select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
             return View(formList);
         }
 
@@ -39,9 +39,9 @@ namespace TimeSheet.Controllers
             if (form != null)
             {
                 if (decision == "Approved")
-                    form.FormStatus = TimeRecordForm._formstatus.approved;
+                    form.status = _status.approved;
                 else
-                    form.FormStatus = TimeRecordForm._formstatus.rejected;
+                    form.status = _status.rejected;
                 contextDb.Entry(form).State = EntityState.Modified;
                 contextDb.SaveChanges();
             }
@@ -66,19 +66,17 @@ namespace TimeSheet.Controllers
             {
                 formList = (from f in contextDb.TimeRecordForms
                             where f.ManagerID == User.Identity.Name
-                            where f.SumbitStatus == TimeRecordForm._sumbitstatus.submitted
-                            where f.FormStatus == TimeRecordForm._formstatus.modified ||
-                                    f.FormStatus == TimeRecordForm._formstatus.submitted
-                            select f).OrderByDescending(f => f.TimeRecordFormID).ToList();
+                            where f.status == _status.submited ||
+                                    f.status == _status.submited
+                            select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
             }
             else if (type == "Confirmed")
             {
                 formList = (from f in contextDb.TimeRecordForms
                             where f.ManagerID == User.Identity.Name
-                            where f.SumbitStatus == TimeRecordForm._sumbitstatus.submitted
-                            where f.FormStatus == TimeRecordForm._formstatus.approved ||
-                                    f.FormStatus == TimeRecordForm._formstatus.rejected
-                            select f).OrderByDescending(f => f.TimeRecordFormID).ToList();
+                            where f.status == _status.submited ||
+                                    f.status == _status.submited
+                            select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
             }
             return formList;
         }
@@ -94,10 +92,10 @@ namespace TimeSheet.Controllers
                 ViewBag.PeriodEnd = PayPeriod.GetEndDay(form.Year, form.Period);
                 ViewBag.RequestedHours = 7.5 * 14;
                 ViewBag.UserName = "Waiting for creating user table";
-                Manager m = (from a in adminDb.ManagerSetting
-                             where a.ManagerID == form.ManagerID
+                UserRoleSetting m = (from a in adminDb.UserRoleSettings
+                             where a.UserID == form.ManagerID
                              select a).FirstOrDefault();
-                ViewBag.ManagerName = m.ManagerName;
+                ViewBag.ManagerName = m.UserName;
                 return View(form);
             }
             else
@@ -113,9 +111,9 @@ namespace TimeSheet.Controllers
             if(form != null)
             {
                 if (decision == "Approved")
-                    form.FormStatus = TimeRecordForm._formstatus.approved;
+                    form.status = _status.approved;
                 if (decision == "Rejected")
-                    form.FormStatus = TimeRecordForm._formstatus.rejected;
+                    form.status = _status.rejected;
                 contextDb.Entry(form).State = EntityState.Modified;
                 contextDb.SaveChanges();
                 Task.Run(() => EmailSetting.SendEmail(form.UserID, string.Empty, "TimesheetApproval",id));

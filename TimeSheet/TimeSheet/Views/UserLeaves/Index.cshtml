@@ -1,0 +1,58 @@
+﻿@model List<string>
+
+@{
+    ViewBag.Title = "User Leaves";
+}
+
+<body>
+    <div class="container" align="center">
+        <table class="table-fill">
+            <tr>
+                <th rowspan="2">Name</th>
+                <th colspan="3">Balance (hrs)</th>
+                <th rowspan="2">Action</th>
+            </tr>
+            <tr>
+                <th>Sick Leave</th>
+                <th>Flexi Leave</th>
+                <th>Annual Leave</th>
+            </tr>
+            @for (int i=0; i < Model.Count; i++)
+            {
+                <tr id="row@(i)", class="leaverow">
+                    @{ Html.RenderAction("DisplayRow", new { userId = Model[i], rowId = i }); }
+                </tr>
+            }
+        </table>
+        <br/>
+        <button class="btn-primary" onclick="location.href='@Url.Action("ImportUserLeaves", "UserLeaves")'">Import from CSV</button>
+    </div>
+
+</body>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ajax")
+}
+@*<script>
+    $(document).ready(function () {
+        var uploadRequest = null;
+        $("preview-btn").click(function (e) {
+            e.preventDefault();
+            uploadRequest = $.ajax({
+                url: "/Admin/Preview",
+                type: "get",
+                data: { userId: userId, rowId: rowId },
+                beforeSend: function () {
+                    if (currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                }
+            })
+                .done(function (partialViewResult) {
+                    $("#row" + rowId).html(partialViewResult);
+                });
+        })
+    });
+</script>*@

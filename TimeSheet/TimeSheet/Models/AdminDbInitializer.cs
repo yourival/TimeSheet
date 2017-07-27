@@ -16,18 +16,23 @@ namespace TimeSheet.Models
             holidayList.ForEach(h => context.Holidays.Add(h));
 
             // Initialise manager
-            context.ManagerSetting.Add(new Manager()
+            context.UserRoleSettings.Add(new UserRoleSetting()
             {
-                ManagerID = "d.yang@m.nantien.edu.au",
-                ManagerName = "Dawen Yang",
-                IsAdmin = true
+                UserID = "d.yang@m.nantien.edu.au",
+                UserName = "Dawen Yang",
+                IsAdmin = true,
+                IsAccountant = false,
+                IsManager = true
             });
-            context.ManagerSetting.Add(new Manager()
+            context.UserRoleSettings.Add(new UserRoleSetting()
             {
-                ManagerID = "r.lin@m.nantien.edu.au",
-                ManagerName = "Robin Lin",
-                IsAdmin = true
+                UserID = "r.lin@m.nantien.edu.au",
+                UserName = "Robin Lin",
+                IsAdmin = true,
+                IsAccountant = false,
+                IsManager = true
             });
+
             context.SaveChanges();
         }
     }

@@ -23,57 +23,12 @@ namespace TimeSheet.Controllers
         private AdminDb adminDb = new AdminDb();
 
         // GET: Admin
+        [AuthorizeUser(Roles = "Manager")]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeUser(Roles = "Manager")]
-        // GET: Admin/UserLeaves
-        public ActionResult UserLeaves()
-        {
-            return View();
-        }
-
-        // GET: Admin/_UserLeaves
-        public ActionResult CreateForm(string userId)
-        {
-            List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
-            for (int i = 0; i < Enum.GetNames(typeof(_leaveType)).Length; i++)
-            {
-                var LeaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
-                if (LeaveBalance == null)
-                {
-                    LeaveBalance = new LeaveBalance();
-                    LeaveBalance.LeaveType = (_leaveType)i;
-                    LeaveBalance.UserID = userId;
-                }
-                LeaveBalances.Add(LeaveBalance);
-            }
-            return PartialView(@"~/Views/Admin/_UserLeaves.cshtml", LeaveBalances);
-        }
-
-        // POST: Admin/UserLeaves
-        [HttpPost]
-        public ActionResult UserLeaves(List<LeaveBalance> LeaveBalances)
-        {
-            for (int i = 0; i < Enum.GetNames(typeof(_leaveType)).Length; i++)
-            {
-                var LeaveBalance = timesheetDb.LeaveBalances.Find(LeaveBalances.First().UserID, (_leaveType)i);
-                if (LeaveBalance == null)
-                {
-                    timesheetDb.LeaveBalances.Add(LeaveBalances[i]);
-                }
-                else
-                {
-                    LeaveBalance.AvailableLeaveHours = LeaveBalances[i].AvailableLeaveHours;
-                    timesheetDb.Entry(LeaveBalance).State = EntityState.Modified;
-                }
-                timesheetDb.SaveChanges();
-            }
-
-            return View();
-        }
 
         [AuthorizeUser(Roles = "Admin")]
         //get holidays
@@ -94,22 +49,14 @@ namespace TimeSheet.Controllers
                     adminDb.Holidays.Remove(item);
                 }
                 adminDb.SaveChanges();
-                holidayList = PayPeriod.GetHoliday();
-                foreach (Holiday item in holidayList)
-                {
-                    adminDb.Holidays.Add(item);
-                }
-                adminDb.SaveChanges();
             }
-            else
+
+            holidayList = PayPeriod.GetHoliday();
+            foreach (Holiday item in holidayList)
             {
-                holidayList = PayPeriod.GetHoliday();
-                foreach (Holiday item in holidayList)
-                {
-                    adminDb.Holidays.Add(item);
-                }
-                adminDb.SaveChanges();
+                adminDb.Holidays.Add(item);
             }
+            adminDb.SaveChanges();
 
             return RedirectToAction("Holidays");
         }
@@ -150,10 +97,10 @@ namespace TimeSheet.Controllers
                         mailSettings.Smtp.Network.Host = model.SMTPHost;
                         mailSettings.Smtp.Network.Port = model.SMTPPort;
                         config.Save();
+                        ViewBag.Message = "Successfully saved.";
                     }
-
                 }
-                return RedirectToAction("EmailSetting");
+                return View("EmailSetting", model);
             }
             catch (Exception ex)
             {
@@ -162,21 +109,21 @@ namespace TimeSheet.Controllers
         }
 
         [AuthorizeUser(Roles = "Admin")]
-        public ActionResult ManagerSetting()
+        public ActionResult UserRoleSetting()
         {
-            List<Manager> ManagerList = adminDb.ManagerSetting.ToList();
-            return View(ManagerList);
+            List<UserRoleSetting> UserRoleList = adminDb.UserRoleSettings.ToList();
+            return View(UserRoleList);
         }
 
-        //Get CreateManager view
-        public ActionResult CreateManager()
+        //Get CreateUserRole view
+        public ActionResult CreateUserRole()
         {
             return View();
         }
 
-        //Save Manager Info to Db
+        //Save UserRole Info to Db
         [HttpPost]
-        public ActionResult CreateManager(Manager model)
+        public ActionResult CreateUserRole(UserRoleSetting model)
         {
             try
             {
@@ -184,7 +131,7 @@ namespace TimeSheet.Controllers
                 {
                     if (model != null)
                     {
-                        adminDb.ManagerSetting.Add(model);
+                        adminDb.UserRoleSettings.Add(model);
                         adminDb.SaveChanges();
                     }
                 }
@@ -193,13 +140,13 @@ namespace TimeSheet.Controllers
             {
                 throw ex;
             }
-            return RedirectToAction("ManagerSetting");
+            return RedirectToAction("UserRoleSetting");
         }
 
-        //Get Edit Manager  view
-        public ActionResult EditManager(int id)
+        //Get Edit UserRole view
+        public ActionResult EditUserRole(int id)
         {
-            Manager model = adminDb.ManagerSetting.Find(id);
+            UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
             if (model == null)
             {
                 return HttpNotFound();
@@ -207,18 +154,19 @@ namespace TimeSheet.Controllers
             return View(model);
         }
 
-        //Save Manager info to Db
-        public ActionResult EditManagerConfirmed(Manager model)
+        //Save UserRole info to Db
+        [HttpPost]
+        public ActionResult EditUserRoleConfirmed(UserRoleSetting model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    adminDb.ManagerSetting.Attach(model);
+                    adminDb.UserRoleSettings.Attach(model);
                     adminDb.Entry(model).State = EntityState.Modified;
                     adminDb.SaveChanges();
                 }
-                return RedirectToAction("ManagerSetting");
+                return RedirectToAction("UserRoleSetting");
             }
             catch (Exception ex)
             {
@@ -226,20 +174,20 @@ namespace TimeSheet.Controllers
             }
         }
 
-        //Delete a Manager by ID
-        public ActionResult DeleteManager(int id)
+        //Delete a UserRole by ID
+        public ActionResult DeleteUserRole(int id)
         {
-            Manager model = adminDb.ManagerSetting.Find(id);
+            UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
             if (model == null)
             {
                 return HttpNotFound();
             }
-            adminDb.ManagerSetting.Remove(model);
+            adminDb.UserRoleSettings.Remove(model);
             adminDb.SaveChanges();
-            return RedirectToAction("ManagerSetting");
+            return RedirectToAction("UserRoleSetting");
         }
 
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult PayrollExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();
@@ -291,15 +239,14 @@ namespace TimeSheet.Controllers
             return PartialView("_PeriodDetails");
         }
 
-        public async Task<FileContentResult> PayrollExportResult(string year, string period)
+        public async Task<FileContentResult> PayrollExportResult(int year, int period)
         {
             //update the ADUser from AD first before exporting the csv file
             await ADUser.GetADUser();
 
-            int y = Convert.ToInt32(year);
-            int p = Convert.ToInt32(period);
-            DateTime StartDate = PayPeriod.GetStartDay(y, p);
-            DateTime EndDate = PayPeriod.GetEndDay(y, p);
+            
+            DateTime StartDate = PayPeriod.GetStartDay(year, period);
+            DateTime EndDate = PayPeriod.GetEndDay(year, period);
 
             List<Payroll> payrolls = (from t1 in timesheetDb.TimeRecords
                                       where t1.LeaveType != null

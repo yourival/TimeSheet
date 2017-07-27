@@ -1,17 +1,17 @@
 ﻿@model LeaveApplicationViewModel
 
 @{
-    string[] LeaveNames = {"Sick Leave", "Flexi Leave", "Annual Leave" };
+    string[] LeaveNames = { "Sick Leave", "Flexi Leave", "Annual Leave" };
 }
 
 <div class="hrForm-content">
     <div>
-        @using (Html.BeginForm("Leave", "HRApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Leave", "HRApplication", FormMethod.Post, new { enctype = "multipart/form-data", id = "lform" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
             <div>
-                <label>Balance (hrs):&nbsp;</label>
+                <label>Your current balance (hrs):&nbsp;</label>
                 <text class="textStyleBefore">
                     @for (int i = 0; i < LeaveNames.Length; i++)
                     {
@@ -27,126 +27,123 @@
                 </text>
             </div>
             <hr>
-            <form id="#lform">
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="startTime">
-                        @Html.LabelFor(model => model.LeaveApplication.StartTime)
-                    </label>
-                    <div class="col-sm-8">
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="startTime">
+                    @Html.LabelFor(model => model.LeaveApplication.StartTime)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
+                        @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                    </p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="endTime">
+                    @Html.LabelFor(model => model.LeaveApplication.EndTime)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
+                    </p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="type">
+                    @Html.LabelFor(model => model.LeaveApplication.leaveType)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, new { @class = "form-control", @id = "leavetypeMain" })
+                    </p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="manager">
+                    @Html.Label("Manager")
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.DropDownListFor(model => model.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                    </p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="comment">
+                    @Html.LabelFor(model => model.LeaveApplication.Comment)
+                </label>
+                <div class="col-sm-8">
+                    <p>
+                        @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "comment", @style = "resize: vertical" } })
+                    </p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="files">
+                    Attachments
+                </label>
+                <div class="col-sm-8 ">
+                    <p class="right-align-cell">
+                        <text id="upload-file-info"></text>
+                        <label class="btn btn-default">
+                            Browse...
+                            @Html.TextBoxFor(model => model.Attachments, new { id = "files", type = "file", style = "display: none", multiple = "multiple" })
+                        </label>
+                    </p>
+                </div>
+            </div>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <a href="#leaveDetail" data-toggle="collapse">
                         <p>
-                            @Html.EditorFor(model => model.LeaveApplication.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "start" } })
-                            @Html.ValidationMessageFor(model => model.LeaveApplication.StartTime, "", new { @class = "text-danger" })
+                            Click here if you want to edit details
+                            <span class="glyphicon glyphicon-pencil"></span>
                         </p>
-                    </div>
+                    </a>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="endTime">
-                        @Html.LabelFor(model => model.LeaveApplication.EndTime)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.LeaveApplication.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "end" } })
-                        </p>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="type">
-                        @Html.LabelFor(model => model.LeaveApplication.leaveType)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EnumDropDownListFor(model => model.LeaveApplication.leaveType, new { @class = "form-control", @id = "leavetypeMain" } )
-                        </p>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="manager">
-                        @Html.Label("Manager")
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.DropDownListFor(model => model.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-                        </p>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="comment">
-                        @Html.LabelFor(model => model.LeaveApplication.Comment)
-                    </label>
-                    <div class="col-sm-8">
-                        <p>
-                            @Html.EditorFor(model => model.LeaveApplication.Comment, new { htmlAttributes = new { @class = "form-control", @id = "comment", @style = "resize: vertical" } })
-                        </p>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-offset-1 col-sm-2" for="files">
-                        Attachments
-                    </label>
-                    <div class="col-sm-8 ">
-                        <p class="right-align-cell">
-                                <text id="upload-file-info"></text>
-                                <label class="btn btn-default">
-                                    Browse...
-                                    @Html.TextBoxFor(model => model.Attachments, new { id = "files", type = "file", style = "display: none", multiple = "multiple" })
-                                </label>    
-                        </p>
-                        
-                    </div>
-                </div>
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <a href="#leaveDetail" data-toggle="collapse">
-                            <p>
-                                Click here if you want to edit details
-                                <span class="glyphicon glyphicon-pencil"></span>
+            </div>
 
-                            </p>
-                        </a>
-                    </div>
-                </div>
+            <div class="appDetails">
+                <div class="col-sm-offset-1 col-sm-2"></div>
+                <div id="leave-form" class="col-sm-8"></div>
+            </div>
+            <hr />
+            <div id="alert"></div>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <label>Balance after application (hrs):&nbsp;</label>
+                    <text class="textStyleAfter">
+                        @for (int i = 0; i < LeaveNames.Length; i++)
+                        {
+                            @LeaveNames[i]
+                            @:   :&nbsp;
 
-                <div class="appDetails">
-                    <div class="col-sm-offset-1 col-sm-2"></div>
-                    <div id="leave-form" class="col-sm-8"></div>
-                </div>
-                <hr />
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <label>Balance After (hrs):&nbsp;</label>
-                        <text class="textStyleAfter">
-                            @for (int i = 0; i < LeaveNames.Length; i++)
+                            <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
+
+                            if (i != LeaveNames.Length - 1)
                             {
-                                @LeaveNames[i]
-                                @:   :&nbsp;
-
-                                <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
-
-                                if (i != LeaveNames.Length - 1)
-                                {
-                                    @: ,&nbsp;&nbsp;
-                                }
+                                @: ,&nbsp;&nbsp;
                             }
-                        </text>
-                    </div>
+                        }
+                    </text>
                 </div>
-                <div class="row" align="right">
-                    <div class="col-sm-offset-1 col-sm-10">
-                            <label>Total:</label>
-                            <span class="total" id="leave-total"></span>
-                    </div>
+            </div>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <label>Total:</label>
+                    <span class="total" id="leave-total"></span>
                 </div>
-                <div class="button-group">
-                    <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
-                </div>
-            </form>
+            </div>
+            <div class="button-group">
+                <input type="submit" value="Submit" id="submit-btn" class="btn btn-primary" />
+            </div>
         }
     </div>
 </div>
 
 <script src="~/Scripts/jquery-3.1.1.js"></script>
 <script>
-    function renderLeaveForm() {
+    function renderLeaveForm(currentRequest) {
         var start = $('#start').val();
         var end = $('#end').val();
         var leavetypeMain = $('#leavetypeMain').val();
@@ -155,27 +152,32 @@
         $("#leave-form").removeData("validator");
         $("#leave-form").removeData("unobtrusiveValidation");
 
-        $.ajax({
+        currentRequest = $.ajax({
             url: "/HRApplication/CreateLeaveList",
             type: "GET",
-            data: { start: start, end: end, leaveType: leavetypeMain }
+            data: { start: start, end: end, leaveType: leavetypeMain },
+            beforeSend: function () {
+                if (currentRequest != null) {
+                    currentRequest.abort();
+                }
+            }
         })
-        .done(function (partialViewResult) {
-            //Render partial view
-            $("#leave-form").html(partialViewResult);
+            .done(function (partialViewResult) {
+                //Render partial view
+                $("#leave-form").html(partialViewResult);
 
-            //Enable jquery validation
-            $.validator.unobtrusive.parse("#leave-form");
+                //Enable jquery validation
+                $.validator.unobtrusive.parse("#leave-form");
 
-            // When there is any change on detail of leave time
-            $(".leavetime, .leavetype").on("change", function () {
+                // When there is any change on detail of leave time
+                $(".leavetime, .leavetype").on("change", function () {
+                    sumLeavesByType();
+                    sumTotalLeaveHours();
+                });
+
                 sumLeavesByType();
                 sumTotalLeaveHours();
             });
-
-            sumLeavesByType();
-            sumTotalLeaveHours();
-        });
     }
 
     function getFormattedDate(date) {
@@ -201,8 +203,13 @@
         // Subtract each time in detail
         for (var i = 0; i < length; i++) {
             // Compassionate pay will take Sick leaves balance
-            if ($(leavetypes[i]).val() == 4)
-                lefthoursAfter[0] -= $(leavetimes[i]).val();
+            if ($(leavetypes[i]).val() == @((int)_leaveType.compassionatePay))
+                lefthoursAfter[@((int)_leaveType.sick)] -= $(leavetimes[i]).val();
+            // Flexi hour will increase flexi leave balance
+            else if ($(leavetypes[i]).val() == @((int)_leaveType.flexiHours)){
+                lefthoursAfter[@((int)_leaveType.flexi)] = parseFloat(lefthoursAfter[@((int)_leaveType.flexi)]) +
+                                                           parseFloat($(leavetimes[i]).val());
+            }
             // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
             else if ($(leavetypes[i]).val() >= 0 && $(leavetypes[i]).val() < 3)
                 lefthoursAfter[$(leavetypes[i]).val()] -= $(leavetimes[i]).val();
@@ -210,7 +217,7 @@
 
         // Display summary and change style according to content
         $(".textStyleAfter").children(".lefthours").each(function (i) {
-            $(this).text(lefthoursAfter[i]);
+            $(this).text(parseFloat(lefthoursAfter[i]).toFixed(2));
             if (lefthoursAfter[i] == lefthoursBefore[i]) {
                 $(this).attr("class", "lefthours");
             } else if (lefthoursAfter[i] < 0) {
@@ -231,23 +238,23 @@
 
     $(document).ready(function () {
         var fullDate = new Date();
-
+        var currentRequest = null;
         $("#start").val(getFormattedDate(new Date()));
         $("#end").val(getFormattedDate(new Date()));
-        renderLeaveForm();
+        renderLeaveForm(currentRequest);
         // When there is any change on main panel
         $("#start").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#end").val($("#start").val());
-            renderLeaveForm();
+            renderLeaveForm(currentRequest);
         });
         $("#end").on("change", function () {
             if ($("#start").val() > $("#end").val())
                 $("#start").val($("#end").val());
-            renderLeaveForm();
+            renderLeaveForm(currentRequest);
         });
         $("#leavetypeMain").on("change", function () {
-            renderLeaveForm();
+            renderLeaveForm(currentRequest);
         });
 
         // When the form is submitted
@@ -260,17 +267,14 @@
                 }
             });
 
-            if (isValid) {
-                $("#alert").attr('class', "alert alert-success");
-                $("#alert").text("Successfully submitted"); 
-            } else {
+            if (!isValid) {
                 $("#alert").attr('class', "alert alert-danger");
                 $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
-                    "Your leaves application excesses your leave balance.");
+                    " The leaves you applied excess your leave balances.");
                 e.preventDefault(e);
                 return false;
             }
-                       
+
         });
 
         // If there is any file attached
