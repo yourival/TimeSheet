@@ -6,10 +6,7 @@ using System.Web.Mvc;
 using System.Data.Entity;
 using TimeSheet.Models;
 using System.Net;
-using PdfSharp.Pdf;
-using TheArtOfDev.HtmlRenderer.PdfSharp;
 using System.IO;
-using PdfSharp;
 using System.Diagnostics;
 
 namespace TimeSheet.Controllers

@@ -72,6 +72,7 @@ namespace TimeSheet.Models
                     username = leaveModel.UserName ?? leaveModel.UserID;
                     subject = subject + " From " + username;
                     body = string.Format(body, username, leaveModel.StartTime, leaveModel.EndTime, leaveModel.Comment, link);
+                    File.AppendAllText(@"C:\Users\Public\TestFolder\test.txt", body + ".");
                     break;
                 case "TimesheetApproval":
                     subject = "TimesheetApproval";
