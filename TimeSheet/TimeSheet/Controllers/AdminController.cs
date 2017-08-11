@@ -187,6 +187,7 @@ namespace TimeSheet.Controllers
             return RedirectToAction("UserRoleSetting");
         }
 
+        // GET: Admin/PayrollExport
         [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult PayrollExport()
         {
@@ -239,30 +240,36 @@ namespace TimeSheet.Controllers
             return PartialView("_PeriodDetails");
         }
 
-        public async Task<FileContentResult> PayrollExportResult(int year, int period)
+        // Export Leave Applications in a period
+        public async Task<FileContentResult> CSVExport(string year, string period)
         {
-            //update the ADUser from AD first before exporting the csv file
-            await ADUser.GetADUser();
+            // update the ADUser from AD first before exporting the csv file
+            //await ADUser.GetADUser();
 
-            
-            DateTime StartDate = PayPeriod.GetStartDay(year, period);
-            DateTime EndDate = PayPeriod.GetEndDay(year, period);
+            DataTable dt = GetDataTable(year, period);
+            return GetCSV(dt, year, period);
+        }
 
-            List<Payroll> payrolls = (from t1 in timesheetDb.TimeRecords
-                                      where t1.LeaveType != null
-                                            && t1.RecordDate >= StartDate
-                                            && t1.RecordDate <= EndDate
-                                      group t1 by new { t1.UserID, t1.LeaveType } into t2
-                                      join u in timesheetDb.ADUsers on t2.FirstOrDefault().UserID equals u.Email // Email used as UserID in TimeRecord table
+        private DataTable GetDataTable(string year, string period)
+        {
+            int y = Convert.ToInt32(year);
+            int p = Convert.ToInt32(period);
+            DateTime StartDate = PayPeriod.GetStartDay(y, p);
+            DateTime EndDate = PayPeriod.GetEndDay(y, p);
+
+            List<Payroll> payrolls = (from t in timesheetDb.TimeRecords
+                                      join u in timesheetDb.ADUsers on t.UserID equals u.Email // Email used as UserID in TimeRecord table
+                                      where t.RecordDate >= StartDate &&
+                                            t.RecordDate <= EndDate &&
+                                            t.LeaveType != null
                                       select new Payroll
                                       {
                                           UserName = u.UserName,
-                                          JobCode = u.JobCode,
-                                          EmployeeID = u.EmployeeID,
-                                          RecordDate = t2.FirstOrDefault().RecordDate,
-                                          Flexi = t2.FirstOrDefault().Flexi,
-                                          LeaveTime = t2.Sum(t => t.LeaveTime),
-                                          LeaveType = t2.FirstOrDefault().LeaveType
+                                          IsHoliday = t.IsHoliday,
+                                          RecordDate = t.RecordDate,
+                                          Flexi = t.Flexi,
+                                          LeaveTime = t.LeaveTime,
+                                          LeaveType = t.LeaveType
                                       }).ToList();
 
             DataTable dt = new DataTable();
@@ -272,17 +279,14 @@ namespace TimeSheet.Controllers
             DataColumn FirstName = new DataColumn("Employee First Name", typeof(string));
             dt.Columns.Add(FirstName);
 
-            DataColumn Job = new DataColumn("Job", typeof(string));
-            dt.Columns.Add(Job);
-
             DataColumn Payroll = new DataColumn("Leave Type", typeof(string));
             dt.Columns.Add(Payroll);
-            
+
+            DataColumn date = new DataColumn("Date", typeof(string));
+            dt.Columns.Add(date);
+
             DataColumn Units = new DataColumn("Units", typeof(double));
             dt.Columns.Add(Units);
-
-            DataColumn Notes = new DataColumn("Notes", typeof(string));
-            dt.Columns.Add(Notes);
 
             DataColumn ID = new DataColumn("Employee Card ID", typeof(int));
             dt.Columns.Add(ID);
@@ -291,35 +295,30 @@ namespace TimeSheet.Controllers
             {
                 for (int i = 0; i < payrolls.Count; i++)
                 {
+                    string[] words = payrolls[i].UserName.Split(' ');
+
                     DataRow dr = dt.NewRow();
-
-                    if(payrolls[i].UserName.Contains(' '))
-                    {
-                        string[] words = payrolls[i].UserName.Split(' ');
-                        dr["Employee Last Name"] = words[1];
-                        dr["Employee First Name"] = words[0];
-                    }
-                    else
-                        dr["Employee Last Name"] = payrolls[i].UserName;
-
-                    dr["Job"] = payrolls[i].JobCode;
-                    dr["Employee Card ID"] = payrolls[i].EmployeeID;
-                    dr["Notes"] = null;
-                    
+                    dr["Employee Last Name"] = words[1];
+                    dr["Employee First Name"] = words[0];
                     dr["Leave Type"] = payrolls[i].LeaveType.GetDisplayName();
+
+                    dr["Employee Card ID"] = payrolls[i].EmployeeID;
+
+                    dr["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
                     dr["Units"] = payrolls[i].LeaveTime;
+
                     dt.Rows.Add(dr);
                 }
             }
 
-            return GetCSV(dt);
+            return dt;
         }
 
-        public FileContentResult GetCSV(DataTable dt)
+        private FileContentResult GetCSV(DataTable dt, string year, string period)
         {
             StringBuilder sb = new StringBuilder();
-            IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().
-                                              Select(column => column.ColumnName);
+            IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>()
+                                                .Select(column => column.ColumnName);
             sb.AppendLine(string.Join(",", columnNames));
 
             foreach (DataRow row in dt.Rows)
@@ -328,36 +327,37 @@ namespace TimeSheet.Controllers
                 sb.AppendLine(string.Join(",", fields));
             }
 
-            return File(new UTF8Encoding().GetBytes(sb.ToString()), "text/csv", "Payroll.csv");
+            // Filename
+            string filename = "Payroll_" + period.PadLeft(2, '0') + year.Substring(year.Length - 2) + ".csv";
+
+            return File(new UTF8Encoding().GetBytes(sb.ToString()), "text/csv", filename);
         }
 
-        //public async Task<FileContentResult> PayrollExportResult(string year, string period)
+        // Sum
+        //public async Task<FileContentResult> PayrollExportResult(int year, int period)
         //{
-        //    update the ADUser from AD first before exporting the csv file
+        //    //update the ADUser from AD first before exporting the csv file
         //    await ADUser.GetADUser();
 
-        //    int y = Convert.ToInt32(year);
-        //    int p = Convert.ToInt32(period);
-        //    DateTime StartDate = PayPeriod.GetStartDay(y, p);
-        //    DateTime EndDate = PayPeriod.GetEndDay(y, p);
 
-        //    List<Payroll> payrolls = (from t in timesheetDb.TimeRecords
-        //                              join u in timesheetDb.ADUsers on t.UserID equals u.Email // Email used as UserID in TimeRecord table
-        //                              where t.RecordDate >= StartDate && t.RecordDate <= EndDate
-        //                              group by
+        //    DateTime StartDate = PayPeriod.GetStartDay(year, period);
+        //    DateTime EndDate = PayPeriod.GetEndDay(year, period);
+
+        //    List<Payroll> payrolls = (from t1 in timesheetDb.TimeRecords
+        //                              where t1.LeaveType != null
+        //                                    && t1.RecordDate >= StartDate
+        //                                    && t1.RecordDate <= EndDate
+        //                              group t1 by new { t1.UserID, t1.LeaveType } into t2
+        //                              join u in timesheetDb.ADUsers on t2.FirstOrDefault().UserID equals u.Email // Email used as UserID in TimeRecord table
         //                              select new Payroll
         //                              {
         //                                  UserName = u.UserName,
         //                                  JobCode = u.JobCode,
         //                                  EmployeeID = u.EmployeeID,
-        //                                  IsHoliday = t.IsHoliday,
-        //                                  RecordDate = t.RecordDate,
-        //                                  StartTime = t.StartTime,
-        //                                  EndTime = t.EndTime,
-        //                                  LunchBreak = t.LunchBreak,
-        //                                  Flexi = t.Flexi,
-        //                                  LeaveTime = t.LeaveTime,
-        //                                  LeaveType = t.LeaveType
+        //                                  RecordDate = t2.FirstOrDefault().RecordDate,
+        //                                  Flexi = t2.FirstOrDefault().Flexi,
+        //                                  LeaveTime = t2.Sum(t => t.LeaveTime),
+        //                                  LeaveType = t2.FirstOrDefault().LeaveType
         //                              }).ToList();
 
         //    DataTable dt = new DataTable();
@@ -367,20 +367,17 @@ namespace TimeSheet.Controllers
         //    DataColumn FirstName = new DataColumn("Employee First Name", typeof(string));
         //    dt.Columns.Add(FirstName);
 
-        //    DataColumn Payroll = new DataColumn("Payroll Category", typeof(string));
-        //    dt.Columns.Add(Payroll);
-
         //    DataColumn Job = new DataColumn("Job", typeof(string));
         //    dt.Columns.Add(Job);
 
-        //    DataColumn Notes = new DataColumn("Notes", typeof(string));
-        //    dt.Columns.Add(Notes);
-
-        //    DataColumn date = new DataColumn("Date", typeof(string));
-        //    dt.Columns.Add(date);
+        //    DataColumn Payroll = new DataColumn("Leave Type", typeof(string));
+        //    dt.Columns.Add(Payroll);
 
         //    DataColumn Units = new DataColumn("Units", typeof(double));
         //    dt.Columns.Add(Units);
+
+        //    DataColumn Notes = new DataColumn("Notes", typeof(string));
+        //    dt.Columns.Add(Notes);
 
         //    DataColumn ID = new DataColumn("Employee Card ID", typeof(int));
         //    dt.Columns.Add(ID);
@@ -389,49 +386,24 @@ namespace TimeSheet.Controllers
         //    {
         //        for (int i = 0; i < payrolls.Count; i++)
         //        {
-        //            string[] words = payrolls[i].UserName.Split(' ');
-
         //            DataRow dr = dt.NewRow();
-        //            dr["Employee Last Name"] = words[1];
-        //            dr["Employee First Name"] = words[0];
+
+        //            if(payrolls[i].UserName.Contains(' '))
+        //            {
+        //                string[] words = payrolls[i].UserName.Split(' ');
+        //                dr["Employee Last Name"] = words[1];
+        //                dr["Employee First Name"] = words[0];
+        //            }
+        //            else
+        //                dr["Employee Last Name"] = payrolls[i].UserName;
 
         //            dr["Job"] = payrolls[i].JobCode;
         //            dr["Employee Card ID"] = payrolls[i].EmployeeID;
         //            dr["Notes"] = null;
 
-        //            dr["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
-        //            dr["Units"] = payrolls[i].WorkHours * (payrolls[i].Flexi ? 1.5 : 1);
-
-        //            if (payrolls[i].IsHoliday)
-        //            {
-        //                if (payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Saturday ||
-        //                    payrolls[i].RecordDate.DayOfWeek == DayOfWeek.Sunday)
-        //                    dr["Payroll Category"] = "Holiday Pay";
-        //                else
-        //                    dr["Payroll Category"] = "Public Holiday Pay";
-        //            }
-        //            else
-        //            {
-        //                dr["Payroll Category"] = "Base Hourly";
-        //            }
+        //            dr["Leave Type"] = payrolls[i].LeaveType.GetDisplayName();
+        //            dr["Units"] = payrolls[i].LeaveTime;
         //            dt.Rows.Add(dr);
-
-        //            if (payrolls[i].LeaveTime != 0 && payrolls[i].LeaveType != null)
-        //            {
-        //                DataRow drw = dt.NewRow();
-        //                drw["Employee Last Name"] = words[1];
-        //                drw["Employee First Name"] = words[0];
-
-        //                drw["Job"] = payrolls[i].JobCode;
-        //                drw["Employee Card ID"] = payrolls[i].EmployeeID;
-        //                drw["Notes"] = null;
-
-        //                drw["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
-        //                drw["Units"] = payrolls[i].LeaveTime;
-        //                drw["Payroll Category"] = payrolls[i].LeaveType.GetDisplayName();
-
-        //                dt.Rows.Add(drw);
-        //            }
         //        }
         //    }
 

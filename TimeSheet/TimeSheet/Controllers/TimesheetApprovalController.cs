@@ -22,12 +22,18 @@ namespace TimeSheet.Controllers
             formList = (from f in contextDb.TimeRecordForms
                         where f.ManagerID == User.Identity.Name
                         select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
+
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                formList = formList.Where(a => a.ManagerID == User.Identity.Name).ToList();
+
             return View(formList);
         }
 
         public ActionResult ApprovalPartial (string type)
         {
             List<TimeRecordForm> formList = GetFormList(type);
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+                formList = formList.Where(a => a.ManagerID == User.Identity.Name).ToList();
 
             return PartialView(@"~/Views/TimesheetApproval/_Approval.cshtml", formList);
         }

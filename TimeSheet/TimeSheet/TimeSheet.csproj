@@ -280,16 +280,16 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Template\LeaveApplication.txt">
+    <Content Include="Template\LeaveApplication.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\Template\LeaveApproval.txt">
+    <Content Include="Template\LeaveApproval.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\Template\TimesheetApplication.txt">
+    <Content Include="Template\TimesheetApplication.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\Template\TimesheetApproval.txt">
+    <Content Include="Template\TimesheetApproval.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\bootstrap-theme.css" />
@@ -447,8 +447,11 @@
     <Content Include="Views\HRApplication\ApplicationDetail.cshtml" />
     <Content Include="Views\UserLeaves\ImportUserLeaves.cshtml" />
     <Content Include="Views\UserLeaves\_Preview.cshtml" />
+    <Content Include="Views\Admin\_Preview.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>

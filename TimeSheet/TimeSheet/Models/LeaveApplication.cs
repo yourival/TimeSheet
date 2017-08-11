@@ -79,6 +79,9 @@ namespace TimeSheet.Models
 
         public DateTime? ApprovedTime { get; set; }
 
+        // The Email(ID) of who approved the application
+        public string ApprovedBy { get; set; }
+
         [DataType(DataType.MultilineText)]
         public string Comment { get; set; }
 
@@ -103,20 +106,5 @@ namespace TimeSheet.Models
 
             return records ?? new List<TimeRecord>();
         }
-
-        //public static IEnumerable<SelectListItem> GetLeaveTypeItems()
-        //{
-        //    IEnumerable<SelectListItem> listItems =
-        //        Enum.GetValues(typeof(_leaveType))
-        //        .Cast<_leaveType>()
-        //        .Select(e => new SelectListItem
-        //        {
-        //            Text = e.ToString(),
-        //            Value = ((int)e).ToString()
-        //        });
-
-        //    return listItems;
-        //}
-
     }
 }

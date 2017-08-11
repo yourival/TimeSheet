@@ -3,6 +3,7 @@ using Microsoft.Azure.ActiveDirectory.GraphClient.Extensions;
 using Microsoft.Owin.Security.OpenIdConnect;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Services.Client;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,18 +24,25 @@ namespace TimeSheet.Controllers
         public async Task<ActionResult> User()
         {
             var userList = new List<User>();
+            string NTI_Staff_GroupID = ConfigurationManager.AppSettings["ida:NTI_Staff_GroupID"];
             try
             {
                 ActiveDirectoryClient client = UserProfileController.GetActiveDirectoryClient();
-                IPagedCollection<IUser> pagedCollection = await client.Users.ExecuteAsync();
+                IGroup group = await client.Groups.GetByObjectId(NTI_Staff_GroupID).ExecuteAsync();
+                IGroupFetcher groupFetcher = group as IGroupFetcher;
+                IPagedCollection<IDirectoryObject> pagedCollection = await groupFetcher.Members.ExecuteAsync();
                 if (pagedCollection != null)
                 {
                     do
                     {
-                        List<IUser> usersList = pagedCollection.CurrentPage.ToList();
-                        foreach (IUser user in usersList)
+                        List<IDirectoryObject> directoryObjects = pagedCollection.CurrentPage.ToList();
+                        foreach (IDirectoryObject directoryObject in directoryObjects)
                         {
-                            userList.Add((User)user);
+                            if (directoryObject is User)
+                            {
+                                var user = (User)directoryObject;
+                                userList.Add(user);
+                            }
                         }
                         pagedCollection = await pagedCollection.GetNextPageAsync();
                     } while (pagedCollection != null);

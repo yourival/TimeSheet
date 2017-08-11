@@ -1,11 +1,11 @@
 ﻿
 @{
-    ViewBag.Title = "CSVExport";
+    ViewBag.Title = "Leave Records Export";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <body>
     <div class="container">
-        <h2>Export payrolls by period</h2>
+        <h2>Export payroll by period</h2>
         <div class="row">
             <div class="col-md-2 col-lg-3 col-xs-6">
                 @Html.Label("Year: ")
@@ -16,6 +16,9 @@
                 @{Html.RenderAction("SelectDefaultPeriod");}
             </div>
         </div>
+
+        <div class="preview"></div>
+
         <br/>
         <button id="expBtn" class="btn btn-default">Export</button>
     </div>
@@ -33,13 +36,19 @@
             })
                 .done(function (partialviewresult) {
                     $("#perioddiv").html(partialviewresult);
+
+                    // Create preview
+                    var year = $('#year').val();
+                    var period = $('#period').val();
+
+
                 });
         });
 
         $("#expBtn").on("click", function () {
             var year = $('#year').val();
             var period = $('#period').val();
-            location.href = '@Url.Action("PayrollExportResult", "Admin")?year=' + year + '&period=' + period;
+            location.href = '@Url.Action("CSVExport", "Admin")?year=' + year + '&period=' + period;
         });
     });
 </script>

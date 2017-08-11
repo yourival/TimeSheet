@@ -8,13 +8,16 @@
 <table id="directoryObjects" class="table table-bordered table-striped">
     <tr>
         <th>
-            UserPrincipalName
+            User Principal Name
         </th>
         <th>
-            DisplayName
+            Display Name
         </th>
         <th>
             JobTitle
+        </th>
+        <th>
+            Department
         </th>
         <th>
             ObjectId
@@ -33,6 +36,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => user.JobTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.Department)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => user.ObjectId)

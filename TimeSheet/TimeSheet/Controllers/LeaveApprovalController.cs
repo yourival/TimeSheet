@@ -95,8 +95,10 @@ namespace TimeSheet.Controllers
         public ActionResult ApprovalPartial(string type)
         {
             List<LeaveApplication> model = GetApplicationList(type);
-            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin") &&
+                !(User.IsInRole("Accountant") && type == "Confirmed"))
                 model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+
             return PartialView("_" + type, model);
         }
 
@@ -105,7 +107,8 @@ namespace TimeSheet.Controllers
         public ActionResult ApplicationList(string type)
         {
             List<LeaveApplication> model = GetApplicationList(type);
-            if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin") &&
+                !(User.IsInRole("Accountant") && type == "Confirmed"))
                 model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
 
             return View(model);
@@ -136,7 +139,11 @@ namespace TimeSheet.Controllers
                     ViewBag.CloseBalances = new string[] { "", "", "" };
 
                 // Get manager name
-                ViewBag.ManagerName = contextDb.ADUsers.Find(application.ManagerID).UserName;
+                if(application.ApprovedBy != null)
+                    ViewBag.ManagerName = contextDb.ADUsers.Find(application.ApprovedBy).UserName;
+                else
+                    ViewBag.ManagerName = contextDb.ADUsers.Find(application.ManagerID).UserName;
+
                 // Get pay period
                 int payPeriod1 = PayPeriod.GetPeriodNum(application.StartTime);
                 int payPeriod2 = PayPeriod.GetPeriodNum(application.EndTime);
@@ -163,18 +170,18 @@ namespace TimeSheet.Controllers
 
         // GET: /DownloadPdf/1
         //[ValidateInput(false)]
-        [AuthorizeUser(Roles = "Manager, Accountant")]
-        public ActionResult DownloadPdf(string html)
-        {
-            Byte[] res = null;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
-                pdf.Save(ms);
-                res = ms.ToArray();
-            }
-            return File(res, "application/pdf");
-        }
+        //[AuthorizeUser(Roles = "Manager, Accountant")]
+        //public ActionResult DownloadPdf(string html)
+        //{
+        //    Byte[] res = null;
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
+        //        pdf.Save(ms);
+        //        res = ms.ToArray();
+        //    }
+        //    return File(res, "application/pdf");
+        //}
 
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
@@ -301,7 +308,9 @@ namespace TimeSheet.Controllers
                 // Record closed leave balances
                 application.CloseBalances = application.OriginalBalances;
             }
+            // Record approval info
             application.ApprovedTime = DateTime.Now;
+            application.ApprovedBy = User.Identity.Name;
             contextDb.Entry(application).State = EntityState.Modified;
             contextDb.SaveChanges();
         }
