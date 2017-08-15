@@ -45,6 +45,287 @@
 </body>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jquery")*@
     @Scripts.Render("~/bundles/jqueryval")
+    
+}
+
+@section MyScripts{
+    <script>
+        /***** Leave application *****/
+        function renderLeaveForm(currentRequest) {
+            var start = $('#start').val();
+            var end = $('#end').val();
+            var leavetypeMain = $('#leavetypeMain').val();
+
+            //Clear previous validation message
+            $("#leave-form").removeData("validator");
+            $("#leave-form").removeData("unobtrusiveValidation");
+
+            currentRequest = $.ajax({
+                url: "/HRApplication/CreateLeaveList",
+                type: "GET",
+                data: { start: start, end: end, leaveType: leavetypeMain },
+                beforeSend: function () {
+                    if (currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                }
+            })
+                .done(function (partialViewResult) {
+                    //Render partial view
+                    $("#leave-form").html(partialViewResult);
+
+                    //Enable jquery validation
+                    $.validator.unobtrusive.parse("#leave-form");
+
+                    // When there is any change on detail of leave time
+                    $(".leavetime, .leavetype").on("change", function () {
+                        sumLeavesByType();
+                        sumTotalLeaveHours();
+                    });
+
+                    sumLeavesByType();
+                    sumTotalLeaveHours();
+                });
+        }
+
+        function getFormattedDate(date) {
+            var year = date.getFullYear();
+            var month = (1 + date.getMonth()).toString();
+            month = month.length > 1 ? month : '0' + month;
+            var day = date.getDate().toString();
+            day = day.length > 1 ? day : '0' + day;
+            return year + '-' + month + '-' + day;
+        }
+
+        function sumLeavesByType() {
+            var leavetypes = $(".leavetype :selected");
+            var leavetimes = $(".leavetime");
+            var length = leavetimes.length;
+            var lefthoursBefore = [];
+            var lefthoursAfter = [];
+            $(".textStyleBefore").children(".lefthours").each(function (i) {
+                lefthoursAfter.push($(this).text());
+                lefthoursBefore.push($(this).text());
+            });
+
+            // Subtract each time in detail
+            for (var i = 0; i < length; i++) {
+                // Compassionate pay will take Sick leaves balance
+                if ($(leavetypes[i]).val() == @((int)_leaveType.compassionatePay))
+                    lefthoursAfter[@((int)_leaveType.sick)] -= $(leavetimes[i]).val();
+                // Flexi hour will increase flexi leave balance
+                else if ($(leavetypes[i]).val() == @((int)_leaveType.flexiHours)){
+                    lefthoursAfter[@((int)_leaveType.flexi)] = parseFloat(lefthoursAfter[@((int)_leaveType.flexi)]) +
+                                                                parseFloat($(leavetimes[i]).val());
+                }
+                // Subtract balance for Sick Leave, Flexi Leave, and Annual Leave
+                else if ($(leavetypes[i]).val() >= 0 && $(leavetypes[i]).val() < 3)
+                    lefthoursAfter[$(leavetypes[i]).val()] -= $(leavetimes[i]).val();
+            }
+
+            // Display summary and change style according to content
+            $(".textStyleAfter").children(".lefthours").each(function (i) {
+                $(this).text(parseFloat(lefthoursAfter[i]).toFixed(2));
+                if (lefthoursAfter[i] == lefthoursBefore[i]) {
+                    $(this).attr("class", "lefthours");
+                } else if (lefthoursAfter[i] < 0) {
+                    $(this).attr("class", "lefthours excess");
+                } else {
+                    $(this).attr("class", "lefthours modified");
+                }
+            });
+        }
+
+        function sumTotalLeaveHours() {
+            var total = 0;
+            $(".leavetime").each(function (i) {
+                total += parseFloat($(this).val());
+            });
+            $("#leave-total").text(total + " (" + (total / 7.5).toFixed(2) + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
+        }
+
+
+        /***** Casual application *****/
+        function renderCasualForm(currentRequest) {
+            var year = $('#year').val();
+            var period = $('#period').val();
+
+            //Clear previous validation message
+            $("#casual-form").removeData("validator");
+            $("#casual-form").removeData("unobtrusiveValidation");
+
+            currentRequest = $.ajax({
+                url: "/HRApplication/CreateCasualList",
+                type: "GET",
+                data: { year: year, period: period },
+                // Abort previous request
+                beforeSend: function () {
+                    if (currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                }
+            })
+                .done(function (partialViewResult) {
+                    //Render partial view
+                    $("#casual-form").html(partialViewResult);
+
+                    //Enable jquery validation
+                    $.validator.unobtrusive.parse("#casual-form");
+
+                    // When there is any change on detail of leave time
+                    $(".worktime").on("change", function () {
+                        sumTotalWorkHours();
+                    });
+
+                    // Update work hours if there any change to start, end, and lunch time
+                    $(".starttime").on("change", function () {
+                        var id = $(this).data("id");
+                        updateWorkHour(id);
+                    });
+                    $(".endtime").on("change", function () {
+                        var id = $(this).data("id");
+                        updateWorkHour(id);
+                    });
+                    $(".lunchtime").on("change", function () {
+                        var id = $(this).data("id");
+                        updateWorkHour(id);
+                    });
+
+                    sumTotalWorkHours();
+                });
+        }
+        // Update work hours
+        function updateWorkHour(id) {
+            var starttime = $("#starttime" + id).val();
+            var endtime = $("#endtime" + id).val();
+            if (starttime == "") {
+                starttime = "9:00";
+                $("#starttime" + id).val(starttime)
+            }
+            if (endtime == "") {
+                endtime = "17:00";
+                $("#endtime" + id).val(enttime);
+            }
+
+            var startdate = new Date("1970-1-1 " + starttime).getTime();
+            var enddate = new Date("1970-1-1 " + endtime).getTime();
+            var lunchtime = $("#lunchtime" + id).val();
+            var worktime_after = ((enddate - startdate) / (1000 * 3600) - lunchtime).toFixed(1);
+            var worktime_before = $("#worktime" + id).text();
+            // update work hours for the row
+            $("#worktime" + id).text(worktime_after);
+
+
+            // update total work hours
+            var total = parseFloat($("#worktime-total").text()) -
+                parseFloat(worktime_before) +
+                parseFloat(worktime_after);
+            $("#worktime-total").text(total);
+        }
+        // summarise total work hours
+        function sumTotalWorkHours() {
+            var total = 0;
+            $(".worktime").each(function (i) {
+                total += parseFloat($(this).text());
+            });
+            $("#worktime-total").text(total + " (" + (total / 7.5).toFixed(2) + " days)");
+        }
+        /***** End of Functions *****/
+
+
+        $(document).ready(function () {
+            /***** Leave application *****/
+            $("#type-popover").popover({
+                html: true,
+                container: 'body'
+            });
+
+            var fullDate = new Date();
+            var currentRequest = null;
+            $("#start").val(getFormattedDate(new Date()));
+            $("#end").val(getFormattedDate(new Date()));
+            renderLeaveForm(currentRequest);
+
+            // When there is any change on main panel
+            $("#start").on("change", function () {
+                if ($("#start").val() > $("#end").val())
+                    $("#end").val($("#start").val());
+                renderLeaveForm(currentRequest);
+            });
+            $("#end").on("change", function () {
+                if ($("#start").val() > $("#end").val())
+                    $("#start").val($("#end").val());
+                renderLeaveForm(currentRequest);
+            });
+            $("#leavetypeMain").on("change", function () {
+                renderLeaveForm(currentRequest);
+            });
+
+            // When the form is submitted
+            $("#lform").submit(function (e) {
+                // Test if applied leave times excess available leave balance
+                var isValid = true;
+                $(".textStyleAfter").children(".lefthours").each(function (i) {
+                    if ($(this).text() < 0) {
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    $("#alert").attr('class', "alert alert-danger");
+                    $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
+                        " The leaves you applied excess your leave balances.");
+                    e.preventDefault(e);
+                    return false;
+                }
+
+            });
+
+            // If there is any file attached
+            $(':file').on('fileselect', function (event, numFiles, label) {
+                var files = $('#files').prop("files");
+                var names = $.map(files, function (val) {
+                    return '<span class="glyphicon glyphicon-file"></span>' + val.name;
+                });
+                names = (names + "").replace(/,/g, '&nbsp;&nbsp;');
+                var input = $(this).parents('.input-group').find(':text');
+                var log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                if (input.length) {
+                    input.val(log);
+                } else {
+                    $("#upload-file-info").html(names + '<br>');
+                }
+
+            });
+
+
+            /***** Casual application *****/
+            renderCasualForm(currentRequest);
+            $("#year").on("change", function () {
+                var val = $('#year').val();
+                $.ajax({
+                    url: "/HRApplication/SelectYear",
+                    type: "get",
+                    data: { year: val }
+                })
+                    .done(function (partialviewresult) {
+                        $("#periodDiv").html(partialviewresult);
+                    });
+            });
+
+            $("#periodDiv").on("change", function () {
+                renderCasualForm();
+            });
+        });
+
+        $(document).on('change', ':file', function () {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [numFiles, label]);
+        });
+    </script>
 }

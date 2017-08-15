@@ -13,7 +13,7 @@ namespace TimeSheet.Models
     {
         [Display(Name = "Sick Leave")]
         sick,
-        [Display(Name = "Flexi Leave")]
+        [Display(Name = "Flexi Leave (taken)")]
         flexi,
         [Display(Name = "Annual Leave")]
         annual,
@@ -29,7 +29,7 @@ namespace TimeSheet.Models
         parentalLeave,
         [Display(Name = "Additional Hours")]
         additionalHours,
-        [Display(Name = "Flexi Hours")]
+        [Display(Name = "Flexi Hours (earned)")]
         flexiHours
     }
     public enum _status

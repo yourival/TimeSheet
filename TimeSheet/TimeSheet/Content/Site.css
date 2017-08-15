@@ -318,6 +318,53 @@ form p {
 /*aprrove detail page style end*/
 
 
+/*Payroll report page style start*/
+.payroll-preview {
+    margin: 1em;
+    padding: 1em;
+    border: 1px solid lightgrey;
+    border-radius: 2px;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    font-family: Calibri, Arial, sans-serif;
+}
+
+    .payroll-preview tbody {
+        border: 1px solid;
+    }
+
+    .payroll-preview .table-logo {
+        width: 80%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .payroll-preview tbody th,
+    .payroll-preview tbody td {
+        padding: 4px 8px 4px 8px;
+    }
+
+    .payroll-preview td.title {
+        font: bold;
+        font-size: 22px;
+        padding-bottom: 0;
+        color: #1382ce;
+    }
+
+    .payroll-preview tbody td {
+        text-align: center;
+        border: thin dotted;
+    }
+
+    .payroll-preview tbody th {
+        text-align: center;
+        border: thin solid;
+    }
+
+/*Payroll report page style end*/
+
+
 /*time sheet detain holiday indication*/
 .nomoresheet .th-holiday {
     color: red;
@@ -486,7 +533,6 @@ form p {
 .emailSetting td {
     width: 500px;
 }
-
 
 /*User ID search bar end*/
 
@@ -776,6 +822,10 @@ form p {
     padding: 10px;
 }
 
+.popover {
+    max-width: 100%;
+}
+
 /*Printing*/
 @media print {
     .do-not-print {
@@ -792,8 +842,31 @@ form p {
     div.print-form h3 {
         font-size: 44px;
     }
+    div.payroll-preview {
+        border: none;
+        box-shadow: none;
+    }
+    div.payroll-preview td.title {
+        color: #1382ce !important;
+    }
+    @page {
+        size: landscape
+    }
 }
 
 .balance-input {
     width:6.7em;
 }
+
+
+/*Loader style start*/
+#loader {
+  font-size: 20px;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/*Loader style end*/

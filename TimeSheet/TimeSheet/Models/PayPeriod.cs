@@ -139,6 +139,5 @@ namespace TimeSheet.Models
             }
             return holidayList;
         }
-
     }
 }

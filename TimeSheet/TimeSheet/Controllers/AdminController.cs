@@ -244,72 +244,140 @@ namespace TimeSheet.Controllers
         public async Task<FileContentResult> CSVExport(string year, string period)
         {
             // update the ADUser from AD first before exporting the csv file
-            //await ADUser.GetADUser();
+            await ADUser.GetADUser();
 
             DataTable dt = GetDataTable(year, period);
             return GetCSV(dt, year, period);
+        }
+
+        // GET: Admin/_Preview
+        public ActionResult PayrollPreview(string year, string period)
+        {
+            DataTable dt = GetDataTable(year, period);
+            return PartialView("_Preview", dt);
         }
 
         private DataTable GetDataTable(string year, string period)
         {
             int y = Convert.ToInt32(year);
             int p = Convert.ToInt32(period);
-            DateTime StartDate = PayPeriod.GetStartDay(y, p);
-            DateTime EndDate = PayPeriod.GetEndDay(y, p);
+            DateTime startPeriod = PayPeriod.GetStartDay(y, p);
+            DateTime endPeriod = PayPeriod.GetEndDay(y, p);
+            ViewBag.Period = String.Format("{0:dd/MM/yy}", startPeriod) + " - " +
+                             String.Format("{0:dd/MM/yy}", endPeriod);
 
-            List<Payroll> payrolls = (from t in timesheetDb.TimeRecords
-                                      join u in timesheetDb.ADUsers on t.UserID equals u.Email // Email used as UserID in TimeRecord table
-                                      where t.RecordDate >= StartDate &&
-                                            t.RecordDate <= EndDate &&
-                                            t.LeaveType != null
-                                      select new Payroll
-                                      {
-                                          UserName = u.UserName,
-                                          IsHoliday = t.IsHoliday,
-                                          RecordDate = t.RecordDate,
-                                          Flexi = t.Flexi,
-                                          LeaveTime = t.LeaveTime,
-                                          LeaveType = t.LeaveType
-                                      }).ToList();
+            List<LeaveApplication> applications = (from a in timesheetDb.LeaveApplications
+                                                  where !(a.EndTime < startPeriod ||
+                                                          a.StartTime > endPeriod) &&
+                                                         (a.status == _status.approved ||
+                                                          a.status == _status.rejected)
+                                                   select a).ToList();
 
             DataTable dt = new DataTable();
-            DataColumn LastName = new DataColumn("Employee Last Name", typeof(string));
-            dt.Columns.Add(LastName);
 
-            DataColumn FirstName = new DataColumn("Employee First Name", typeof(string));
-            dt.Columns.Add(FirstName);
+            DataColumn employeeId_col = new DataColumn("Employee Card ID", typeof(string));
+            dt.Columns.Add(employeeId_col);
 
-            DataColumn Payroll = new DataColumn("Leave Type", typeof(string));
-            dt.Columns.Add(Payroll);
+            DataColumn surnaame_col = new DataColumn("Surname", typeof(string));
+            dt.Columns.Add(surnaame_col);
 
-            DataColumn date = new DataColumn("Date", typeof(string));
-            dt.Columns.Add(date);
+            DataColumn firstName_col = new DataColumn("First Name", typeof(string));
+            dt.Columns.Add(firstName_col);
 
-            DataColumn Units = new DataColumn("Units", typeof(double));
-            dt.Columns.Add(Units);
+            DataColumn position_col = new DataColumn("Position", typeof(string));
+            dt.Columns.Add(position_col);
 
-            DataColumn ID = new DataColumn("Employee Card ID", typeof(int));
-            dt.Columns.Add(ID);
+            DataColumn date_col = new DataColumn("Date or Period", typeof(string));
+            dt.Columns.Add(date_col);
 
-            if (payrolls != null)
+            DataColumn totalHours_col = new DataColumn("Total Hours", typeof(double));
+            dt.Columns.Add(totalHours_col);
+
+            DataColumn type_col = new DataColumn("Leave Type / Additional Hours", typeof(string));
+            dt.Columns.Add(type_col);
+
+            DataColumn approvedBy_col = new DataColumn("Approved By", typeof(string));
+            dt.Columns.Add(approvedBy_col);
+
+
+            if (applications != null)
             {
-                for (int i = 0; i < payrolls.Count; i++)
+                foreach (var application in applications)
                 {
-                    string[] words = payrolls[i].UserName.Split(' ');
+                    ADUser user = timesheetDb.ADUsers.Find(application.UserID);
+                    string[] words = user.UserName.Split(' ');
 
-                    DataRow dr = dt.NewRow();
-                    dr["Employee Last Name"] = words[1];
-                    dr["Employee First Name"] = words[0];
-                    dr["Leave Type"] = payrolls[i].LeaveType.GetDisplayName();
+                    List<TimeRecord> records = application.GetTimeRecords()
+                                                .Where(r => r.RecordDate >= startPeriod &&
+                                                            r.RecordDate <= endPeriod)
+                                                .OrderBy(r => r.RecordDate).ToList();
 
-                    dr["Employee Card ID"] = payrolls[i].EmployeeID;
+                    // If the application is within the period and contains only 1 type
+                    bool multiplyTypes = records.Any(r => r.LeaveType != application.leaveType);
+                    if (application.StartTime >= startPeriod &&
+                        application.EndTime <= endPeriod &&
+                        !multiplyTypes)
+                    {
+                        DataRow dr = dt.NewRow();
+                        dr["Employee Card ID"] = user.EmployeeID;
+                        dr["Surname"] = words[1];
+                        dr["First Name"] = words[0];
+                        dr["Position"] = user.JobCode;
+                        dr["Date or Period"] = String.Format("{0:dd/MM/yy}", application.StartTime);
+                        if(application.StartTime != application.EndTime)
+                            dr["Date or Period"] += " - " + String.Format("{0:dd/MM/yy}", application.EndTime);
+                        dr["Total Hours"] = application.TotalLeaveTime;
+                        dr["Leave Type / Additional Hours"] = application.leaveType.GetDisplayName();
 
-                    dr["Date"] = payrolls[i].RecordDate.ToString("dd/MM/yyyy");
-                    dr["Units"] = payrolls[i].LeaveTime;
+                        string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy).UserName.Split(' ');
+                        dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                        dt.Rows.Add(dr);
+                    }
+                    else
+                    {
+                        _leaveType previousType = records.First().LeaveType.Value;
+                        string startDate = String.Format("{0:dd/MM/yy}", records.First().RecordDate);
+                        string endDate = string.Empty;
+                        double totalHours = 0.0;
 
-                    dt.Rows.Add(dr);
+                        for (int i = 0; i < records.Count && records[i].RecordDate <= endPeriod; i++)
+                        {
+                            if (records[i].LeaveType == previousType)
+                            {
+                                totalHours += records[i].LeaveTime;
+                                endDate = String.Format("{0:dd/MM/yy}", records[i].RecordDate);
+                            }
+                            if (records[i].LeaveType != previousType ||
+                                i == records.Count - 1)
+                            {
+                                DataRow dr = dt.NewRow();
+                                dr["Employee Card ID"] = user.EmployeeID;
+                                dr["Surname"] = words[1];
+                                dr["First Name"] = words[0];
+                                dr["Position"] = user.JobCode;
+                                dr["Leave Type / Additional Hours"] = previousType.GetDisplayName();
+                                dr["Date or Period"] = startDate;
+                                if (startDate != endDate)
+                                    dr["Date or Period"] += " - " + endDate;
+                                dr["Total Hours"] = totalHours;
+                                string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy)
+                                                                  .UserName.Split(' ');
+                                dr["Approved By"] = managerName[1] + ", " + managerName[0];
+
+                                dt.Rows.Add(dr);
+
+                                // initialise variables
+                                totalHours = records[i].LeaveTime;
+                                previousType = records[i].LeaveType.Value;
+                                startDate = String.Format("{0:dd/MM/yy}", records[i].RecordDate);
+                                endDate = String.Format("{0:dd/MM/yy}", records[i].RecordDate);
+                            }
+                        }
+                    }
                 }
             }
+            dt.DefaultView.Sort = "Surname";
+            dt = dt.DefaultView.ToTable(true);
 
             return dt;
         }

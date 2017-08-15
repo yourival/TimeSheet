@@ -1,12 +1,15 @@
 ﻿
 @{
-    ViewBag.Title = "Leave Records Export";
+    ViewBag.Title = "Payroll Report";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<head>
+    <link media="print" rel="Alternate" href="print.pdf">
+</head>
 <body>
     <div class="container">
-        <h2>Export payroll by period</h2>
-        <div class="row">
+        <h2 class="do-not-print">Export payroll by period</h2>
+        <div class="row do-not-print">
             <div class="col-md-2 col-lg-3 col-xs-6">
                 @Html.Label("Year: ")
                 @Html.DropDownList("year", (IEnumerable<SelectListItem>)ViewBag.Year, new { @class = "form-control" })
@@ -16,39 +19,57 @@
                 @{Html.RenderAction("SelectDefaultPeriod");}
             </div>
         </div>
-
-        <div class="preview"></div>
+        <span id="loader" class="glyphicon glyphicon-refresh"></span>
+        <div id="preview"></div>
 
         <br/>
-        <button id="expBtn" class="btn btn-default">Export</button>
+        @*<button id="expBtn" class="btn btn-default">Export</button>*@
     </div>
 </body>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $("#year").on("change", function () {
-            var val = $('#year').val();
-            $.ajax({
-                url: "/Admin/SelectPeriod",
-                type: "get",
-                data: { year: val }
-            })
-                .done(function (partialviewresult) {
-                    $("#perioddiv").html(partialviewresult);
+@section MyScripts{
+    <script>
+        var $loading = $('#loader').hide();
 
-                    // Create preview
-                    var year = $('#year').val();
-                    var period = $('#period').val();
-
-
-                });
-        });
-
-        $("#expBtn").on("click", function () {
+        function RenderPreview(currentRequest) {
             var year = $('#year').val();
             var period = $('#period').val();
-            location.href = '@Url.Action("CSVExport", "Admin")?year=' + year + '&period=' + period;
+            currentRequest = $.ajax({
+                url: "/Admin/PayrollPreview",
+                type: "get",
+                data: { year: year, period: period },
+                beforeSend: function () {
+                    if (currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                    $loading.show();
+                }
+            })
+                .done(function (partialviewresult) {
+                    $loading.hide();
+                    $("#preview").html(partialviewresult);
+                });
+        }
+
+        $(document).ready(function () {
+            var currentRequest = null;
+            $("#logo").addClass("do-not-print");
+            $("#year").on("change", function () {
+                var year = $('#year').val();
+                $.ajax({
+                    url: "/Admin/SelectPeriod",
+                    type: "get",
+                    data: { year: year }
+                })
+                    .done(function (partialviewresult) {
+                        $("#perioddiv").html(partialviewresult);
+                        RenderPreview();
+                    });
+            });
+
+            $("#period").on("change", function () {
+                RenderPreview(currentRequest);
+            });
         });
-    });
-</script>
+    </script>
+}

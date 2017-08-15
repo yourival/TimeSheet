@@ -29,7 +29,10 @@ namespace TimeSheet.Models
                 newApplication.status = (_status)(i % 4);
                 newApplication.SubmittedTime = new DateTime(2017, 2, 1);
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
-                    newApplication.ApprovedTime = new DateTime(2017, 2, 2);
+                {
+                    newApplication.ApprovedTime = new DateTime(2017, 1, 10);
+                    newApplication.ApprovedBy = newApplication.ManagerID;
+                }
                 newApplication.TotalLeaveTime = 30;
                 applications.Add(newApplication);
 
@@ -62,7 +65,10 @@ namespace TimeSheet.Models
                 newApplication.status = (_status)(i % 4 + 1);
                 newApplication.SubmittedTime = new DateTime(2017, 1, 10);
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
+                {
                     newApplication.ApprovedTime = new DateTime(2017, 1, 10);
+                    newApplication.ApprovedBy = newApplication.ManagerID;
+                }
                 newApplication.TotalLeaveTime = 22.5;
                 applications.Add(newApplication);
 
@@ -94,7 +100,10 @@ namespace TimeSheet.Models
                 newApplication.status = (_status)(i % 4 + 1);
                 newApplication.SubmittedTime = new DateTime(2017, 1, 1);
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
-                    newApplication.ApprovedTime = new DateTime(2017, 1, 2);
+                {
+                    newApplication.ApprovedTime = new DateTime(2017, 1, 10);
+                    newApplication.ApprovedBy = newApplication.ManagerID;
+                }
                 newApplication.TotalLeaveTime = 22.5;
                 applications.Add(newApplication);
 

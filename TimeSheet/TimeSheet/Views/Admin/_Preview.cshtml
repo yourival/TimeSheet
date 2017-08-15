@@ -1,24 +1,61 @@
-﻿@model System.Data.DataTable
+﻿@model DataTable
 @using System.Data;
 
-<table>
-    <thead>
-        <tr>
-            @foreach (DataColumn col in Model.Columns)
-            {
-                <th>@col.ColumnName</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (DataRow row in Model.Rows)
-        {
-            <tr>
-                @foreach (DataColumn col in Model.Columns)
+<br/>
+@if (Model.Rows.Count != 0)
+{
+    <h4 class="do-not-print">Preview</h4>
+    <div class="payroll-preview">
+        <table id="summary-table" align="center">
+            <thead>
+                <tr>
+                    <td class="title" colspan="5">
+                        Authorised Leave & Additional Hours
+                    </td>
+                    <td></td>
+                    <td colspan="2" rowspan="2">
+                        <img class="img-responsive table-logo" src="https://cdn2.hubspot.net/hub/2583754/hubfs/website/nan-tien-institute-logo.png" alt="Nan Tien Institute" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        A list of authorised leave and additional hours during the pay period used for payroll processing
+                    </td>
+                </tr>
+                <tr style="height:10px">&nbsp;</tr>
+                <tr>
+                    <td>Pay Period:</td>
+                    <td colspan="2">
+                        @if (ViewBag.Period != null)
+                        {
+                            @ViewBag.Period
+                        }
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="column-names">
+                    @foreach (DataColumn col in Model.Columns)
                 {
-                    <td>@row[col.ColumnName]</td>
+                        <th>@col.ColumnName</th>
+                    }
+                </tr>
+                @foreach (DataRow row in Model.Rows)
+                {
+                    <tr>
+                        @foreach (DataColumn col in Model.Columns)
+                    {
+                            <td>@row[col.ColumnName]</td>
+                        }
+                    </tr>
                 }
-            </tr>
-        }
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+    <button id="printBtn" class="btn btn-default do-not-print" onclick="javascript: window.print()">Print</button>
+}
+else
+{
+    @:No application found in the pay period.
+}
+

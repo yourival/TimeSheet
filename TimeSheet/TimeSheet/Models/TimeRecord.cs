@@ -51,6 +51,7 @@ namespace TimeSheet.Models
 
         // Automatically get work hours by attendence
         [NotMapped]
+        [Range(0, 24.0, ErrorMessage = "Please enter a value bigger than 0")]
         public double WorkHours
         {
             get
