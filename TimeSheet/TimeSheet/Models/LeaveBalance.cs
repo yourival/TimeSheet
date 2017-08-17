@@ -16,7 +16,8 @@ namespace TimeSheet.Models
         public _leaveType LeaveType { get; set; }
 
         public string UserName { get; set; }
-        
-        public Double AvailableLeaveHours { get; set; }
+
+        [DisplayFormat(DataFormatString="{0:0.00}", ApplyFormatInEditMode = true)]
+        public double AvailableLeaveHours { get; set; }
     }
 }

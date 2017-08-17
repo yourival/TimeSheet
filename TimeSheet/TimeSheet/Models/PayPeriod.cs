@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -138,6 +139,60 @@ namespace TimeSheet.Models
                 }
             }
             return holidayList;
+        }
+
+        static public void UpdateLeaveBalance()
+        {
+            // Only updates when it is the end day of a pay period
+            if ((DateTime.Now - FirstPayPeriod).Days % 14 == 0)
+            {
+                using (TimeSheetDb context = new TimeSheetDb())
+                {
+                    const double auunalAccuralRate = 0.076923;
+                    const double sickAccuralRate = 0.038462;
+                    _leaveType leaveType;
+                    double rate;
+                    
+                    List<ADUser> users = context.ADUsers.Where(u => u.ContractHours != 0).ToList();
+
+                    foreach(var user in users)
+                    {
+                        for (int i = 0; i < 2; i++)
+                        {
+                            if(i == 0)
+                            {
+                                leaveType = _leaveType.annual;
+                                rate = auunalAccuralRate;
+                            }
+                            else
+                            {
+                                leaveType = _leaveType.sick;
+                                rate = sickAccuralRate;
+                            }
+
+                            // Update leaves balances
+                            LeaveBalance balance = context.LeaveBalances.Find(user.Email, leaveType);
+                            if (balance == null)
+                            {
+                                balance = new LeaveBalance
+                                {
+                                    UserID = user.Email,
+                                    UserName = user.UserName,
+                                    LeaveType = leaveType,
+                                    AvailableLeaveHours = 0.0
+                                };
+                                context.LeaveBalances.Add(balance);
+                            }
+                            else
+                            {
+                                balance.AvailableLeaveHours += user.ContractHours * rate;
+                                context.Entry(balance).State = EntityState.Modified;
+                            }
+                        }                        
+                    }
+                    context.SaveChanges();
+                }
+            }
         }
     }
 }

@@ -84,6 +84,7 @@ namespace TimeSheet.Controllers
                 model.LeaveApplication = application;
                 model.TimeRecords = application.GetTimeRecords();
                 model.LeaveApplication = application;
+                ViewBag.Manager = contextDb.ADUsers.Find(application.ManagerID).UserName;
 
                 return View(model);
             }

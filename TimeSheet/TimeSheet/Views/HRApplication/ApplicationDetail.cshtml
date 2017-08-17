@@ -17,12 +17,8 @@
             <hr />
             <table class="table-responsive">
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.LeaveApplication.UserName)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.UserName)</td>
-                </tr>
-                <tr>
                     <th>@Html.DisplayNameFor(m => m.LeaveApplication.leaveType)</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.leaveType)</td>
+                    <td>@Model.LeaveApplication.leaveType.GetDisplayName()</td>
                 </tr>
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.LeaveApplication.StartTime)</th>
@@ -58,6 +54,10 @@
                         }
 
                     </td>
+                </tr>
+                <tr>
+                    <th>Manager</th>
+                    <td>@ViewBag.Manager</td>
                 </tr>
             </table>
 

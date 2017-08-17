@@ -16,7 +16,7 @@ namespace TimeSheet.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        public string username;
+        static public string username;
         public ActionResult Index()
         {
             return View();

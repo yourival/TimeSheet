@@ -11,6 +11,8 @@ namespace TimeSheet.Models
         public int RowId { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double[] Balances { get; set; }
         public string Note { get; set; }
 

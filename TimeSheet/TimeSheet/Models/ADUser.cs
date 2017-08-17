@@ -26,7 +26,9 @@ namespace TimeSheet.Models
 
         public string Department { get; set; }
 
-        public int EmployeeID { get; set; }
+        public string EmployeeID { get; set; }
+
+        public double ContractHours { get; set; }
 
         //public string Manager { get; set; }
 

@@ -52,6 +52,9 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentScheduler, Version=5.3.0.0, Culture=neutral, PublicKeyToken=b76503528a14ebd1, processorArchitecture=MSIL">
+      <HintPath>packages\FluentScheduler.5.3.0\lib\net40\FluentScheduler.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlRenderer, Version=1.5.0.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\HtmlRenderer.Core.1.5.0.5\lib\net45\HtmlRenderer.dll</HintPath>
     </Reference>
@@ -256,6 +259,7 @@
     <Compile Include="Models\AdminDb.cs" />
     <Compile Include="Models\AdminDbInitializer.cs" />
     <Compile Include="Models\ApplicationDb.cs" />
+    <Compile Include="ApplicationPreload.cs" />
     <Compile Include="Models\ApprovalViewModel.cs" />
     <Compile Include="Controllers\LeaveApprovalController.cs" />
     <Compile Include="Models\EnumExtensions.cs" />
@@ -264,6 +268,7 @@
     <Compile Include="Models\LeaveBalanceViewModel.cs" />
     <Compile Include="Models\LeaveType.cs" />
     <Compile Include="Models\Payroll.cs" />
+    <Compile Include="Models\ScheduledJob.cs" />
     <Compile Include="Models\TimeSheetInitializer.cs" />
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\LeaveApplication.cs" />
@@ -409,7 +414,6 @@
     <Content Include="Views\TimeSheetApproval\Approval.cshtml" />
     <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
     <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
-    <Content Include="Views\Admin\PayrollExport_backup.cshtml" />
     <Content Include="Views\Admin\UserRoleManager.cshtml" />
     <Content Include="Views\Admin\EditUserRole.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />
@@ -448,6 +452,7 @@
     <Content Include="Views\UserLeaves\ImportUserLeaves.cshtml" />
     <Content Include="Views\UserLeaves\_Preview.cshtml" />
     <Content Include="Views\Admin\_Preview.cshtml" />
+    <Content Include="Views\Admin\CreateUserRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

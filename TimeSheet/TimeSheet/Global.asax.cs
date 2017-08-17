@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using TimeSheet.Models;
+using FluentScheduler;
+using System.Diagnostics;
 
 namespace TimeSheet
 {
@@ -20,12 +22,22 @@ namespace TimeSheet
             Database.SetInitializer<TimeSheetDb>(new TimeSheetInitializer());
             Database.SetInitializer<AdminDb>(new AdminDbInitializer());
 
-            
+            // Register schedule events
+            var registry = new Registry();
+            registry.Schedule<ScheduledJob>().ToRunEvery(1).Weeks().On(DayOfWeek.Tuesday).At(19, 0);
+            JobManager.Initialize(registry);
+
+            // Configure application
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
+        }
+
+        protected void Application_End()
+        {
+            JobManager.Stop();
         }
     }
 }

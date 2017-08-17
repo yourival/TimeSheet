@@ -12,7 +12,7 @@
         <div id="tabs">
 
             <ul class="nav nav-tabs">
-                @if (User.IsInRole("Admin") || User.IsInRole("FullTimeWorker"))
+                @if (User.IsInRole("Admin") || User.IsInRole("FullTimeWorker") || User.IsInRole("PartTimeWorker"))
                 {
                     <li class="active">
                         <a href="#leave" data-toggle="tab">Leave Application</a>
@@ -45,7 +45,6 @@
 </body>
 
 @section Scripts {
-    @*@Scripts.Render("~/bundles/jquery")*@
     @Scripts.Render("~/bundles/jqueryval")
     
 }

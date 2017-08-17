@@ -48,6 +48,11 @@
                 .done(function (partialviewresult) {
                     $loading.hide();
                     $("#preview").html(partialviewresult);
+                })
+                .fail(function (xhr) {
+                    $loading.hide();
+                    $("#preview").html('Request Status: ' + xhr.status + '<br/>' +
+                                       'Status Text: ' + xhr.statusText +' ' + xhr.responseText);
                 });
         }
 

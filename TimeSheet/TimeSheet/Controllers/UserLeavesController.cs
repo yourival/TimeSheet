@@ -127,7 +127,7 @@ namespace TimeSheet.Controllers
             for (int i = 0; i < 3; i++)
             {
                 var leaveBalance = timesheetDb.LeaveBalances.Find(userId, (_leaveType)i);
-                balances[i] = (leaveBalance == null) ? 0 : leaveBalance.AvailableLeaveHours;
+                balances[i] = (leaveBalance == null) ? 0 : Math.Round(leaveBalance.AvailableLeaveHours, 2, MidpointRounding.AwayFromZero);
             }
 
             LeaveBalanceViewModel model = new LeaveBalanceViewModel()
@@ -157,8 +157,7 @@ namespace TimeSheet.Controllers
                         balanceVM = new LeaveBalanceViewModel();
                         string lastname = cols[0].Replace("\"", string.Empty)
                                                  .Replace(" ", string.Empty);
-                        string firstname = cols[1].Replace("\"", string.Empty)
-                                                  .Replace(" ", string.Empty);
+                        string firstname = cols[1].Replace("\"", string.Empty).Substring(1);
                         balanceVM.UserName = firstname + " " + lastname;
                     }
                     else if (cols.Length == 2)
@@ -190,8 +189,10 @@ namespace TimeSheet.Controllers
                                 balanceVM = null;
                             }
                         }
-                        else if (Double.TryParse(cols[1], out leaveHours) || cols[1] == "0.00_x000D_")
+                        else if (Double.TryParse(cols[1], out leaveHours) || cols[1].StartsWith("0.00"))
                         {
+                            if (cols[1].StartsWith("0.00"))
+                                leaveHours = 0;
                             switch (cols[0])
                             {
                                 case "Holiday Leave Accrual":
