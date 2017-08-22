@@ -22,7 +22,7 @@ namespace TimeSheet.Models
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "r.lin@m.nantien.edu.au";
                 newApplication.UserName = "Robin Lin";
-                newApplication.ManagerID = "r.lin@m.nantien.edu.au";
+                newApplication.ManagerIDs = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 4);
                 newApplication.EndTime = startDate.AddDays(i * 4 + 3);
                 newApplication.leaveType = (_leaveType)(i % 3);
@@ -31,7 +31,7 @@ namespace TimeSheet.Models
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
                 {
                     newApplication.ApprovedTime = new DateTime(2017, 1, 10);
-                    newApplication.ApprovedBy = newApplication.ManagerID;
+                    newApplication.ApprovedBy = newApplication.ManagerIDs;
                 }
                 newApplication.TotalLeaveTime = 30;
                 applications.Add(newApplication);
@@ -58,7 +58,7 @@ namespace TimeSheet.Models
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "y.ben@m.nantien.edu.au";
                 newApplication.UserName = "Rita Ben";
-                newApplication.ManagerID = "r.lin@m.nantien.edu.au";
+                newApplication.ManagerIDs = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i + 1) % 3);
@@ -67,7 +67,7 @@ namespace TimeSheet.Models
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
                 {
                     newApplication.ApprovedTime = new DateTime(2017, 1, 10);
-                    newApplication.ApprovedBy = newApplication.ManagerID;
+                    newApplication.ApprovedBy = newApplication.ManagerIDs;
                 }
                 newApplication.TotalLeaveTime = 22.5;
                 applications.Add(newApplication);
@@ -93,7 +93,7 @@ namespace TimeSheet.Models
                 LeaveApplication newApplication = new LeaveApplication();
                 newApplication.UserID = "d.yang@m.nantien.edu.au";
                 newApplication.UserName = "Dawen Yang";
-                newApplication.ManagerID = "r.lin@m.nantien.edu.au";
+                newApplication.ManagerIDs = "r.lin@m.nantien.edu.au";
                 newApplication.StartTime = startDate.AddDays(i * 3);
                 newApplication.EndTime = startDate.AddDays(i * 3 + 2);
                 newApplication.leaveType = (_leaveType)((i +1) % 3);
@@ -102,7 +102,7 @@ namespace TimeSheet.Models
                 if (newApplication.status == _status.approved || newApplication.status == _status.rejected)
                 {
                     newApplication.ApprovedTime = new DateTime(2017, 1, 10);
-                    newApplication.ApprovedBy = newApplication.ManagerID;
+                    newApplication.ApprovedBy = newApplication.ManagerIDs;
                 }
                 newApplication.TotalLeaveTime = 22.5;
                 applications.Add(newApplication);
@@ -162,6 +162,20 @@ namespace TimeSheet.Models
                 UserID = "d.yang@m.nantien.edu.au",
                 LeaveType = _leaveType.sick,
                 AvailableLeaveHours = 1.53
+            });
+            context.ADUsers.Add(new ADUser
+            {
+                UserName = "Robin Lin",
+                Email = "r.lin@m.nantien.edu.au",
+                JobCode = "Lecturer",
+                Department = "IT"
+            });
+            context.ADUsers.Add(new ADUser
+            {
+                UserName = "Dawen Yang",
+                Email = "d.yang@m.nantien.edu.au",
+                JobCode = "Lecturer",
+                Department = "IT"
             });
             context.SaveChanges();
 

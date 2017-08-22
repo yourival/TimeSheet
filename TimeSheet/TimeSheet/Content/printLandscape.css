@@ -1,0 +1,23 @@
+﻿@media print {
+    /*Printing*/
+    .do-not-print {
+        display: none;
+    }
+
+    div.payroll-preview {
+        border: none;
+        box-shadow: none;
+    }
+
+    div.payroll-preview .title {
+        color: #1382ce !important;
+    }
+
+    @page {
+        size: landscape
+    }
+
+    hr {
+        border-top: none;
+    }
+}

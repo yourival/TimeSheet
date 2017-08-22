@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
@@ -49,10 +50,10 @@ namespace TimeSheet.Models
         [Key]
         [Display(Name = "#")]
         public int id { get; set; }
-        [Display(Name = "Staff Email")]
+        [Display(Name = "Email")]
         public string UserID { get; set; }
 
-        [Display(Name = "Staff Name")]
+        [Display(Name = "Employee")]
         public string UserName { get; set; }
 
         [Required]
@@ -72,7 +73,13 @@ namespace TimeSheet.Models
         [Display(Name = "Type")]
         public _leaveType leaveType { get; set; }
 
-        public string ManagerID { get; set; }
+        [NotMapped]
+        public HashSet<string> _managerIDs { get; set; }
+        public string ManagerIDs
+        {
+            get { return string.Join("/", _managerIDs); }
+            set { _managerIDs = new HashSet<string>(value.Split('/')); }
+        }
 
         [Display(Name = "Status")]
         public _status status { get; set; }

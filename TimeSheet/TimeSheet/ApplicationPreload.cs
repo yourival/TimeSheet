@@ -14,7 +14,7 @@ namespace TimeSheet
         public void Preload(string[] parameters)
         {
             var registry = new Registry();
-            registry.Schedule<ScheduledJob>().ToRunEvery(1).Weeks().On(DayOfWeek.Tuesday).At(19,0);
+            registry.Schedule<ScheduledJob>().ToRunEvery(0).Weeks().On(DayOfWeek.Tuesday).At(19,0);
             JobManager.Initialize(registry);
         }
     }

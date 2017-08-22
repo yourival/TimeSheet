@@ -8,7 +8,7 @@
     <thead>
         <tr>
             <th>#</th>
-            <th>User</th>
+            <th>Applicant</th>
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -29,7 +29,7 @@
                 <td>@Html.DisplayFor(m => m[i].TotalLeaveTime)</td>
                 <td id="status-@Model[i].id" class=@getStatusClass(Model[i].status)>@Model[i].status.GetDisplayName()</td>
                 <td class="action">
-                    @if (User.IsInRole("Admin") || User.Identity.Name == Model[i].ManagerID)
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                     {
                         <button class="btn btn-success" value="@Model[i].id">Approve</button>
                         <button class="btn btn-danger" value="@Model[i].id">Reject</button>

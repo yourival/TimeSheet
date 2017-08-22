@@ -91,7 +91,7 @@ namespace TimeSheet.Models
                     Value = (i + 1).ToString()
                 };
 
-                if (i == currentPeriod || (currentPeriod == periodAmount && i == 0))
+                if (i == currentPeriod - 1)
                     newItem.Selected = true;
 
                 listItems.Add(newItem);

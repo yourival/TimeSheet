@@ -18,14 +18,19 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-offset-1 col-sm-2" for="casual-manager">
+            <div class="controls form-group row">
+                <label class="col-sm-offset-1 col-sm-2" for="manager">
                     @Html.Label("Manager")
                 </label>
-                <div class="col-sm-8">
-                    <p>
-                        @Html.DropDownListFor(m => m.TimeRecordForm.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control", @id = "casual-manager" })
-                    </p>
+                <div class="control col-sm-8">
+                    <div class="entry input-group">
+                        @Html.DropDownListFor(model => model.TimeRecordForm._managerIDs, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-add" type="button">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">

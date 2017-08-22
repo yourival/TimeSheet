@@ -62,6 +62,7 @@ namespace TimeSheet
                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
                            code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
 
+                           // Set up user roles
                            UserRoleSetting userRole = AADHelper.GetUserRole(context.AuthenticationTicket.Identity.Name);
                            if(userRole != null)
                            {

@@ -28,9 +28,9 @@ namespace TimeSheet.Models
                 if (_shuttingDown)
                     return;
 
-
+                PayPeriod.UpdateLeaveBalance();
                 // Keep tracks. Should be removed for production
-                File.AppendAllText(@"C:\Downloads\test.txt", DateTime.Now + Environment.NewLine);
+                //File.AppendAllText(@"C:\Downloads\test.txt", DateTime.Now + Environment.NewLine);
             }
         }
 

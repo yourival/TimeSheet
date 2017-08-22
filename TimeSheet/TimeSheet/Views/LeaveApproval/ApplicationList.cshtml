@@ -22,11 +22,11 @@
             <tr onclick="location.href = '@(Url.Action("ApprovalDetail", "LeaveApproval", new { id = item.id }))'">
                 <td>@Html.DisplayFor(m => item.id)</td>
                 <td>@Html.DisplayFor(m => item.UserID)</td>
-                <td>@Html.DisplayFor(m => item.leaveType)</td>
+                <td>@item.leaveType.GetDisplayName()</td>
                 <td>@Html.DisplayFor(m => item.StartTime)</td>
                 <td>@Html.DisplayFor(m => item.EndTime)</td>
                 <td>@Html.DisplayFor(m => item.TotalLeaveTime)</td>
-                <td class=@getStatusClass(item.status)>@Html.DisplayFor(m => item.status)</td>
+                <td class=@getStatusClass(item.status)>@item.status.GetDisplayName()</td>
             </tr>
         }
     </tbody>

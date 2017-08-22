@@ -37,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
     <IncludeIisSettings>false</IncludeIisSettings>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <DocumentationFile>bin\TimeSheet.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -285,6 +286,8 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\printLandscape.css" />
+    <Content Include="Content\printPortrait.css" />
     <Content Include="Template\LeaveApplication.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -429,15 +432,7 @@
     <Content Include="Views\ADManagement\UserCreate.cshtml" />
     <Content Include="Views\ADManagement\UserEdit.cshtml" />
     <Content Include="Views\ADManagement\UserDelete.cshtml" />
-    <Content Include="Views\ADManagement\UserGetGroups.cshtml" />
     <Content Include="Views\ADManagement\UserGetDirectReports.cshtml" />
-    <Content Include="Views\ADManagement\Group.cshtml" />
-    <Content Include="Views\ADManagement\GroupDetails.cshtml" />
-    <Content Include="Views\ADManagement\GroupCreate.cshtml" />
-    <Content Include="Views\ADManagement\GroupEdit.cshtml" />
-    <Content Include="Views\ADManagement\GroupDelete.cshtml" />
-    <Content Include="Views\ADManagement\GroupGetGroups.cshtml" />
-    <Content Include="Views\ADManagement\GroupGetMembers.cshtml" />
     <Content Include="Views\ADManagement\Role.cshtml" />
     <Content Include="Views\ADManagement\RoleDetails.cshtml" />
     <Content Include="Views\Shared\_SelectYear.cshtml" />

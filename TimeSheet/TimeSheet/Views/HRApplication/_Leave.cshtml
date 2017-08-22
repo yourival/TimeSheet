@@ -2,12 +2,12 @@
 
 @{
     string[] LeaveNames = { "Sick Leave", "Flexi Leave", "Annual Leave" };
-    string TypeExplain = "<strong>Sick Leave</strong> will take your sick leaves.<br/>" +
-                         "<strong>Annual Leave</strong> will take your holiday leaves.<br/>" +
-                         "<strong>Flexi Leave</strong> will take your flexi leaves.<br/>" +
-                         "<strong>Compassionate Pay</strong> will take your sick leaves.<br/>" +
-                         "<strong>Flexi Hour</strong> is the flexi leaves you earn.<br/>" +
-                         "<strong>Additional Hour</strong> will not take any leave but pay you in the next pay period.<br/>";
+    string TypeExplain = "<strong>Sick Leave</strong> takes your sick leaves.<br/>" +
+                         "<strong>Annual Leave</strong> takes your holiday leaves.<br/>" +
+                         "<strong>Flexi Leave</strong> takes your flexi leaves.<br/>" +
+                         "<strong>Compassionate Pay</strong> takes your sick leaves.<br/>" +
+                         "<strong>Flexi Hour</strong> is the flexi leaves you EARN.<br/>" +
+                         "<strong>Additional Hour</strong> does not take any leave but pay you in the next pay period.<br/>";
 }
 
 <div class="hrForm-content">
@@ -68,14 +68,19 @@
                     </p>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="controls form-group row">
                 <label class="col-sm-offset-1 col-sm-2" for="manager">
                     @Html.Label("Manager")
                 </label>
-                <div class="col-sm-8">
-                    <p>
-                        @Html.DropDownListFor(model => model.LeaveApplication.ManagerID, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
-                    </p>
+                <div class="control col-sm-8">
+                    <div class="entry input-group">
+                            @Html.DropDownListFor(model => model.LeaveApplication._managerIDs, (IEnumerable<SelectListItem>)ViewBag.Manager, htmlAttributes: new { @class = "form-control" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-add" type="button">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </span>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">

@@ -29,10 +29,45 @@
                         <td>@(item.WorkType.GetDisplayName())</td>
                         <td>
                             @Html.ActionLink("Edit", "EditUserRole", "Admin", new { id = item.id }, null) |
-                            @Html.ActionLink("Delete", "DeleteUserRole", "Admin", new { id = item.id }, null)
+                            <a id="delete" href="#confirm-modal" data-name="@item.UserName" data-itemid="@item.id"
+                               data-toggle="modal" data-target="#confirm-modal">Delete</a>
+                            @*@Html.ActionLink("Delete", "DeleteUserRole", "Admin", new { id = item.id }, null)*@
                         </td>
                     </tr>
                 }
         </table>
     </div>
+    <div id="confirm-modal" class="modal fade">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Warning</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the user role for <span id="username"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button id="delete-btn" type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
+@section MyScripts{
+    <script>
+        $(document).ready(function () {
+            $("#delete").click(function (e) {
+                e.preventDefault();
+                var name = $(this).data('name');
+                var id = $(this).data('itemid');
+                $("#delete-btn").attr('onclick', "location.href='@Url.Action("DeleteUserRole", "Admin")/" + id + "'");
+                $("#username").text(name);
+            });
+        });
+    </script>
+}

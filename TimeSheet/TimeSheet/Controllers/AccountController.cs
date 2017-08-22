@@ -9,8 +9,14 @@ using Microsoft.Owin.Security;
 
 namespace TimeSheet.Controllers
 {
+    /// <summary>
+    ///     Controller to manage user sign and signout with Microsoft account
+    /// </summary>
     public class AccountController : Controller
     {
+        /// <summary>
+        ///     Handle user sign-in event
+        /// </summary>
         public void SignIn()
         {
             // Send an OpenID Connect sign-in request.
@@ -21,6 +27,9 @@ namespace TimeSheet.Controllers
             }
         }
 
+        /// <summary>
+        ///     Handle user sign-out event
+        /// </summary>
         public void SignOut()
         {
             string callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
@@ -30,6 +39,9 @@ namespace TimeSheet.Controllers
                 OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
         }
 
+        /// <summary>
+        ///     Redirect to home page when a user signs out
+        /// </summary>
         public ActionResult SignOutCallback()
         {
             if (Request.IsAuthenticated)

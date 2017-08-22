@@ -1,0 +1,29 @@
+﻿@media print{
+    /*Printing*/
+    .do-not-print {
+        display: none;
+    }
+
+    div.print-form {
+        border: none;
+        box-shadow: none;
+    }
+
+        div.print-form table {
+            width: 90%;
+            font-size: 20px;
+        }
+
+        div.print-form h3 {
+            font-size: 40px;
+        }
+
+    @page {
+        size: portrait
+    }
+
+    hr {
+        border-top: none;
+    }
+}
+

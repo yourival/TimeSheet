@@ -18,15 +18,25 @@ namespace TimeSheet.Controllers
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
         private AdminDb adminDb = new AdminDb();
+        /// <summary>
+        ///     Indicates status of a submission of a HR application
+        /// </summary>
         public enum postRequestStatus { success, fail };
 
+        /// <summary>
+        ///     Create a page for user to fill and submit a HR application or casual work hours.
+        /// </summary>
+        /// <returns>A view that display different forms for different types of empolyees.</returns>
         // GET: LeaveApplication
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: LeaveApplication/Leave
+        /// <summary>
+        ///     Create a tab page for user to fill and submit a HR application.
+        /// </summary>
+        /// <returns>A partial view with details of an application.</returns>
         public ActionResult Leave()
         {
             LeaveApplicationViewModel model = new LeaveApplicationViewModel();
@@ -43,7 +53,10 @@ namespace TimeSheet.Controllers
             return PartialView("_Leave", model);
         }
 
-        // GET: LeaveApplication/Casual
+        /// <summary>
+        ///     Create a tab page for user to apply casual work hours.
+        /// </summary>
+        /// <returns>A partial view with details of an application of casual work hours.</returns>
         public ActionResult Casual()
         {
             TimeSheetContainer model = new TimeSheetContainer();
@@ -55,6 +68,10 @@ namespace TimeSheet.Controllers
             return PartialView("_Casual", model);
         }
 
+        /// <summary>
+        ///     Create a page for users to view personal application histories.
+        /// </summary>
+        /// <returns>A page of a list of personal application histories.</returns>
         // GET: LeaveApplication/ApplicationHistory
         public ActionResult ApplicationHistory()
         {
@@ -63,6 +80,11 @@ namespace TimeSheet.Controllers
             return View(applications);
         }
 
+        /// <summary>
+        ///     
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: LeaveApplication/ApplicationDetail
         public ActionResult ApplicationDetail(int? id)
         {
@@ -84,7 +106,12 @@ namespace TimeSheet.Controllers
                 model.LeaveApplication = application;
                 model.TimeRecords = application.GetTimeRecords();
                 model.LeaveApplication = application;
-                ViewBag.Manager = contextDb.ADUsers.Find(application.ManagerID).UserName;
+                List<string> managerNames = new List<string>();
+                foreach(var managerId in application._managerIDs)
+                {
+                    managerNames.Add(contextDb.ADUsers.Find(managerId).UserName);
+                }
+                ViewBag.Managers = managerNames;
 
                 return View(model);
             }
@@ -254,7 +281,7 @@ namespace TimeSheet.Controllers
                     {
                         application.status = _status.modified;
                         application.leaveType = applicationVM.LeaveApplication.leaveType;
-                        application.ManagerID = applicationVM.LeaveApplication.ManagerID;
+                        application.ManagerIDs = applicationVM.LeaveApplication.ManagerIDs;
                         application.Comment = applicationVM.LeaveApplication.Comment;
                         application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
                         contextDb.Entry(application).State = EntityState.Modified;
@@ -270,7 +297,10 @@ namespace TimeSheet.Controllers
 
                     if (applicationModel != null)
                     {
-                        Task.Run(() => EmailSetting.SendEmail(applicationModel.ManagerID, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
+                        foreach(var mangerId in applicationModel._managerIDs)
+                        {
+                            Task.Run(() => EmailSetting.SendEmail(mangerId, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
+                        }
                     }
 
                 }
@@ -334,7 +364,7 @@ namespace TimeSheet.Controllers
                     {
                         form.status = _status.modified;
                         form.TotalWorkingHours = model.TimeRecordForm.TotalWorkingHours;
-                        form.ManagerID = model.TimeRecordForm.ManagerID;
+                        form.ManagerIDs = model.TimeRecordForm.ManagerIDs;
                         contextDb.Entry(form).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
@@ -345,9 +375,13 @@ namespace TimeSheet.Controllers
                             where f.Year == model.TimeRecordForm.Year
                             where f.UserID == model.TimeRecordForm.UserID
                             select f).FirstOrDefault();
+
                     if (form != null)
                     {
-                        Task.Run(() => EmailSetting.SendEmail(form.ManagerID, string.Empty, "TimesheetApplication", form.TimeRecordFormId.ToString()));
+                        foreach (var mangerId in form._managerIDs)
+                        {
+                            Task.Run(() => EmailSetting.SendEmail(mangerId, string.Empty, "TimesheetApplication", form.TimeRecordFormId.ToString()));
+                        }
                     }
                     return RedirectToAction("PostRequest", new { status = postRequestStatus.success });
                 }

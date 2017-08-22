@@ -9,7 +9,7 @@
     <div class="container" align="center">
         <h2>Edit Manager</h2>
 
-        @using (Html.BeginForm("EditUserRoleConfirmed", "Admin",FormMethod.Post))
+        @using (Html.BeginForm("EditUserRole", "Admin",FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model=>model.id)

@@ -29,7 +29,7 @@ namespace TimeSheet.Controllers
 
         // GET: Admin/Approval/1
         // GET: Admin/Approval/ApplicationDetails/1
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult ApprovalDetail(int? id)
         {
             if (id == null)
@@ -78,7 +78,7 @@ namespace TimeSheet.Controllers
                     }
                 }
                 approvalVM.LeaveApplication = application;
-                if (User.Identity.Name == application.ManagerID)
+                if (application.ManagerIDs.Contains(User.Identity.Name))
                     ViewBag.Authorized = true;
                 else
                     ViewBag.Authorized = false;
@@ -92,9 +92,9 @@ namespace TimeSheet.Controllers
         public ActionResult ApprovalPartial(string type)
         {
             List<LeaveApplication> model = GetApplicationList(type);
-            if (User.IsInRole("Manager") && !User.IsInRole("Admin") &&
-                !(User.IsInRole("Accountant") && type == "Confirmed"))
-                model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+            // Managers can only view those applications sent to them
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin") && !User.IsInRole("Accountant"))
+                model = model.Where(a => a.ManagerIDs.Contains(User.Identity.Name)).ToList();
 
             return PartialView("_" + type, model);
         }
@@ -104,9 +104,9 @@ namespace TimeSheet.Controllers
         public ActionResult ApplicationList(string type)
         {
             List<LeaveApplication> model = GetApplicationList(type);
-            if (User.IsInRole("Manager") && !User.IsInRole("Admin") &&
-                !(User.IsInRole("Accountant") && type == "Confirmed"))
-                model = model.Where(a => a.ManagerID == User.Identity.Name).ToList();
+            // Managers can only view those applications sent to them
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin") && !User.IsInRole("Accountant"))
+                model = model.Where(a => a.ManagerIDs.Contains(User.Identity.Name)).ToList();
 
             return View(model);
         }
@@ -136,10 +136,7 @@ namespace TimeSheet.Controllers
                     ViewBag.CloseBalances = new string[] { "", "", "" };
 
                 // Get manager name
-                if(application.ApprovedBy != null)
-                    ViewBag.ManagerName = contextDb.ADUsers.Find(application.ApprovedBy).UserName;
-                else
-                    ViewBag.ManagerName = contextDb.ADUsers.Find(application.ManagerID).UserName;
+                ViewBag.ManagerName = contextDb.ADUsers.Find(application.ApprovedBy).UserName ?? string.Empty;
 
                 // Get pay period
                 int payPeriod1 = PayPeriod.GetPeriodNum(application.StartTime);
@@ -188,7 +185,7 @@ namespace TimeSheet.Controllers
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                if (!User.IsInRole("Admin") && User.Identity.Name != application.ManagerID)
+                if (!User.IsInRole("Admin") && !application.ManagerIDs.Contains(User.Identity.Name))
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
                                                     "You are not authoried to approve the application");
@@ -212,7 +209,7 @@ namespace TimeSheet.Controllers
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
             {
-                if (!User.IsInRole("Admin") && User.Identity.Name != application.ManagerID)
+                if (!User.IsInRole("Admin") && !application.ManagerIDs.Contains(User.Identity.Name))
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
                                                     "You are not authoried to approve the application");

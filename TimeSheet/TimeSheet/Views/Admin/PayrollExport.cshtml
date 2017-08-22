@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <head>
-    <link media="print" rel="Alternate" href="print.pdf">
+    <link href="~/Content/printLandscape.css" media="print" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div class="container">
@@ -18,12 +18,15 @@
                 @Html.Label("Period: ")
                 @{Html.RenderAction("SelectDefaultPeriod");}
             </div>
+            <div>
+                <label>&nbsp;</label><br />
+                <input id="preview-btn" class="btn btn-default" type="button" value="Prview"/>
+            </div>
         </div>
         <span id="loader" class="glyphicon glyphicon-refresh"></span>
         <div id="preview"></div>
 
         <br/>
-        @*<button id="expBtn" class="btn btn-default">Export</button>*@
     </div>
 </body>
 
@@ -59,6 +62,8 @@
         $(document).ready(function () {
             var currentRequest = null;
             $("#logo").addClass("do-not-print");
+            //RenderPreview(currentRequest);
+
             $("#year").on("change", function () {
                 var year = $('#year').val();
                 $.ajax({
@@ -72,7 +77,8 @@
                     });
             });
 
-            $("#period").on("change", function () {
+            $("#preview-btn").click(function (e) {
+                e.preventDefault();
                 RenderPreview(currentRequest);
             });
         });

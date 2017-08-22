@@ -13,19 +13,37 @@ using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
 {
+    /// <summary>
+    ///     A countroller handling homepage generating and user login page.
+    /// </summary>
     [Authorize]
     public class HomeController : Controller
     {
+        /// <summary>
+        ///     The user name for current user
+        /// </summary>
         static public string username;
+        static private string userid = string.Empty;
+
+        /// <summary>
+        ///     Create a Homepage for the website.
+        /// </summary>
+        /// <returns>Homepage of the website with layout and navigation bar.</returns>
+        // GET: LeaveApplication
         public ActionResult Index()
         {
             return View();
         }
 
+        /// <summary>
+        ///     Display personalised master page.
+        /// </summary>
+        /// <returns>A partial view of a link to personal profile with user name</returns>
         public async Task<ActionResult> LoginLayout()
         {
-            if (username == null)
+            if (userid != User.Identity.Name || username == null)
             {
+                userid = User.Identity.Name;
                 ActiveDirectoryClient activeDirectoryClient = UserProfileController.GetActiveDirectoryClient();
                 string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
                 try

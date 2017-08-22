@@ -201,7 +201,7 @@ namespace TimeSheet.Controllers
             }
             else
             {
-                formModel.ManagerID = managerID;
+                formModel.ManagerIDs = managerID;
                 formModel.status = _status.submited;
                 formModel.SubmittedTime = DateTime.Now;
                 timesheetDb.TimeRecordForms.Attach(formModel);

@@ -16,12 +16,19 @@ using System.Web.Configuration;
 
 namespace TimeSheet.Controllers
 {
+    /// <summary>
+    ///     Controller to 
+    /// </summary>
     [Authorize]
     public class AdminController : Controller
     {
         private TimeSheetDb timesheetDb = new TimeSheetDb();
         private AdminDb adminDb = new AdminDb();
 
+        /// <summary>
+        ///     Creates an index view to navigate features for site settings.
+        /// </summary>
+        /// <returns>A view with grid buttons of navigation.</returns>
         // GET: Admin
         [AuthorizeUser(Roles = "Manager")]
         public ActionResult Index()
@@ -29,16 +36,23 @@ namespace TimeSheet.Controllers
             return View();
         }
 
-
+        /// <summary>
+        ///     Creates a view to update holiday automatically.
+        /// </summary>
+        /// <returns>A view with detail of holidays stored in DB.</returns>
+        // GET: Admin/Holidays
         [AuthorizeUser(Roles = "Admin")]
-        //get holidays
         public ActionResult Holidays()
         {
             List<Holiday> holidayList = adminDb.Holidays.ToList();
             return View(holidayList);
         }
 
-        //Update Holidays from government website
+        /// <summary>
+        ///     Download and update <see cref="Holiday"/> from government website.
+        /// </summary>
+        /// <returns>Refreshed holidays view.</returns>
+        [ValidateAntiForgeryToken]
         public ActionResult UpdateHolidays()
         {
             List<Holiday> holidayList = adminDb.Holidays.ToList();
@@ -61,8 +75,13 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Holidays");
         }
 
+        /// <summary>
+        ///     Creates a view for an administrator to edit email settings for sending emails of
+        ///     HR applications and approvals.
+        /// </summary>
+        /// <returns>A view with details to edit <see cref="EmailSetting" />.</returns>
+        // GET: Admin/EmailSetting
         [AuthorizeUser(Roles = "Admin")]
-        //Get Email setting from AdminDb
         public ActionResult EmailSetting()
         {
             EmailSetting model = new EmailSetting();
@@ -79,7 +98,15 @@ namespace TimeSheet.Controllers
             return View(model);
         }
 
-        //Update Emailsetting 
+        /// <summary>
+        ///     Processes editing of <see cref="EmailSetting"/> for sending emails of
+        ///     HR applications and approvals.
+        /// </summary>
+        /// <param name="model">Unique identifier of the <see cref="EmailSetting" />.</param>
+        /// <returns>A view with refreshed list of <see cref="EmailSetting" />.</returns>
+        // POST: Admin/EmailSetting
+        [ValidateAntiForgeryToken]
+        [AuthorizeUser(Roles = "Admin")]
         [HttpPost]
         public ActionResult UpdateEmailSetting(EmailSetting model)
         {
@@ -108,6 +135,11 @@ namespace TimeSheet.Controllers
             }
         }
 
+        /// <summary>
+        ///     Creates a view to edit/delete all existing <see cref="UserRoleSetting" />.
+        /// </summary>
+        /// <returns>A view with list of all <see cref="UserRoleSetting" /> objects.</returns>
+        // GET: Admin/UserRoleSetting
         [AuthorizeUser(Roles = "Admin")]
         public ActionResult UserRoleSetting()
         {
@@ -115,13 +147,24 @@ namespace TimeSheet.Controllers
             return View(UserRoleList);
         }
 
-        //Get CreateUserRole view
+        /// <summary>
+        ///     Creates a view to create a <see cref="UserRoleSetting" /> (under construction).
+        /// </summary>
+        /// <returns>A view with details of <see cref="UserRoleSetting" /> to create.</returns>
+        // GET: Admin/CreateUserRole
+        [AuthorizeUser(Roles = "Admin")]
         public ActionResult CreateUserRole()
         {
             return View();
         }
 
-        //Save UserRole Info to Db
+        /// <summary>
+        ///     Processes creating of <see cref="UserRoleSetting"/>.
+        /// </summary>
+        /// <param name="model">The <see cref="UserRoleSetting"/> to be created.</param>
+        /// <returns>A view with list of all <see cref="UserRoleSetting" /> objects.</returns>
+        // POST: Admin/CreateUserRole
+        [AuthorizeUser(Roles = "Admin")]
         [HttpPost]
         public ActionResult CreateUserRole(UserRoleSetting model)
         {
@@ -143,7 +186,13 @@ namespace TimeSheet.Controllers
             return RedirectToAction("UserRoleSetting");
         }
 
-        //Get Edit UserRole view
+        /// <summary>
+        ///     Creates a view to edit an existing <see cref="UserRoleSetting" />.
+        /// </summary>
+        /// <param name="id">The identifier (email) of the <see cref="UserRoleSetting" />.</param>
+        /// <returns>A view with details of an existing <see cref="UserRoleSetting" /> to edit.</returns>
+        // GET: Admin/EditUserRole
+        [AuthorizeUser(Roles = "Admin")]
         public ActionResult EditUserRole(int id)
         {
             UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
@@ -154,9 +203,15 @@ namespace TimeSheet.Controllers
             return View(model);
         }
 
-        //Save UserRole info to Db
+        /// <summary>
+        ///     Processes editing of <see cref="UserRoleSetting"/>.
+        /// </summary>
+        /// <param name="model">The <see cref="UserRoleSetting"/> to be edited.</param>
+        /// <returns>A view with list of all <see cref="UserRoleSetting" /> objects.</returns>
+        // POST: Admin/EditUserRole
+        [AuthorizeUser(Roles = "Admin")]
         [HttpPost]
-        public ActionResult EditUserRoleConfirmed(UserRoleSetting model)
+        public ActionResult EditUserRole(UserRoleSetting model)
         {
             try
             {
@@ -174,7 +229,12 @@ namespace TimeSheet.Controllers
             }
         }
 
-        //Delete a UserRole by ID
+        /// <summary>
+        ///     Processes deleting of an exisitng <see cref="UserRoleSetting"/>.
+        /// </summary>
+        /// <param name="id">The identifier (email) of the <see cref="UserRoleSetting"/>.</param>
+        /// <returns>A refreshed view with list of all <see cref="UserRoleSetting" /> objects.</returns>
+        [AuthorizeUser(Roles = "Admin")]
         public ActionResult DeleteUserRole(int id)
         {
             UserRoleSetting model = adminDb.UserRoleSettings.Find(id);
@@ -187,6 +247,11 @@ namespace TimeSheet.Controllers
             return RedirectToAction("UserRoleSetting");
         }
 
+        /// <summary>
+        ///     Creates a view to display a payroll summary with details for a specific pay period.
+        ///     The report can also be output with a professional format.
+        /// </summary>
+        /// <returns>A payroll summary with details of HR applications.</returns>
         // GET: Admin/PayrollExport
         [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult PayrollExport()
@@ -195,22 +260,23 @@ namespace TimeSheet.Controllers
             return View();
         }
 
+        /// <summary>
+        ///     Initialise a list of pay periods.
+        /// </summary>
+        /// <returns>A dropdow list of pay periods in this year.</returns>
         public ActionResult SelectDefaultPeriod()
         {
             TimeSheetContainer model = new TimeSheetContainer();
             model.PeriodList = PayPeriod.GetPeriodItems(DateTime.Now.Year);
-            foreach (var item in model.PeriodList)
-            {
-                if (item.Selected == true)
-                {
-                    int period = Convert.ToInt32(item.Value);
-                    PeriodDetails(DateTime.Now.Year, period);
-                }
-            }
 
             return PartialView("_SelectYear", model);
         }
 
+        /// <summary>
+        ///     Dispay a list of pay periods in the seleced year.
+        /// </summary>
+        /// <param name="year">The selected year.</param>
+        /// <returns>A dropdow list of pay periods in selected year.</returns>
         public ActionResult SelectPeriod(int year)
         {
             TimeSheetContainer model = new TimeSheetContainer();
@@ -218,29 +284,13 @@ namespace TimeSheet.Controllers
             return PartialView("_SelectYear", model);
         }
 
-        public ActionResult DefaultPeriodDetails()
-        {
-            int year = DateTime.Now.Year;
-            foreach (var item in PayPeriod.GetPeriodItems(DateTime.Now.Year))
-            {
-                if (item.Selected == true)
-                {
-                    int period = Convert.ToInt32(item.Value);
-                    ViewBag.PeriodBegin = PayPeriod.GetStartDay(year, period);
-                    ViewBag.PeriodEnd = PayPeriod.GetEndDay(year, period);
-                }
-            }
-            return PartialView("_PeriodDetails");
-        }
-
-        public ActionResult PeriodDetails(int year, int period)
-        {
-            ViewBag.PeriodBegin = PayPeriod.GetStartDay(year, period);
-            ViewBag.PeriodEnd = PayPeriod.GetEndDay(year, period);
-            return PartialView("_PeriodDetails");
-        }
-
-        // Export Leave Applications in a period
+        /// <summary>
+        ///     Creates a payroll summary report with details for a specific pay period
+        ///     in CSV format.
+        /// </summary>
+        /// <param name="year">The year of pay period.</param>
+        /// <param name="period">The number of a pay period.</param>
+        /// <returns>A payroll summary with details of HR applications in CSV format.</returns>
         public async Task<FileContentResult> CSVExport(string year, string period)
         {
             // update the ADUser from AD first before exporting the csv file
@@ -250,6 +300,13 @@ namespace TimeSheet.Controllers
             return GetCSV(dt, year, period);
         }
 
+        /// <summary>
+        ///     Creates a preview of a payroll summary report with details for
+        ///     a specific pay period before output.
+        /// </summary>
+        /// <param name="year">The year of pay period.</param>
+        /// <param name="period">The number of a pay period.</param>
+        /// <returns>A partial view of payroll summary with details of HR applications.</returns>
         // GET: Admin/_Preview
         public ActionResult PayrollPreview(string year, string period)
         {
@@ -257,6 +314,13 @@ namespace TimeSheet.Controllers
             return PartialView("_Preview", dt);
         }
 
+
+        /// <summary>
+        ///     Gets the <see cref="DataTable"/> of payroll summary in a specific period.
+        /// </summary>
+        /// <param name="year">The year of pay period.</param>
+        /// <param name="period">The number of a pay period.</param>
+        /// <returns>A <see cref="DataTable"/> of payroll summary in a specific period.</returns>
         private DataTable GetDataTable(string year, string period)
         {
             int y = Convert.ToInt32(year);
@@ -274,32 +338,17 @@ namespace TimeSheet.Controllers
                                                    select a).ToList();
 
             DataTable dt = new DataTable();
+            // Initialise columns
+            dt.Columns.Add(new DataColumn("Employee Card ID", typeof(string)));
+            dt.Columns.Add(new DataColumn("Surname", typeof(string)));
+            dt.Columns.Add(new DataColumn("First Name", typeof(string)));
+            dt.Columns.Add(new DataColumn("Position", typeof(string)));
+            dt.Columns.Add(new DataColumn("Date or Period", typeof(string)));
+            dt.Columns.Add(new DataColumn("Total Hours", typeof(double)));
+            dt.Columns.Add(new DataColumn("Leave Type / Additional Hours", typeof(string)));
+            dt.Columns.Add(new DataColumn("Approved By", typeof(string)));
 
-            DataColumn employeeId_col = new DataColumn("Employee Card ID", typeof(string));
-            dt.Columns.Add(employeeId_col);
-
-            DataColumn surnaame_col = new DataColumn("Surname", typeof(string));
-            dt.Columns.Add(surnaame_col);
-
-            DataColumn firstName_col = new DataColumn("First Name", typeof(string));
-            dt.Columns.Add(firstName_col);
-
-            DataColumn position_col = new DataColumn("Position", typeof(string));
-            dt.Columns.Add(position_col);
-
-            DataColumn date_col = new DataColumn("Date or Period", typeof(string));
-            dt.Columns.Add(date_col);
-
-            DataColumn totalHours_col = new DataColumn("Total Hours", typeof(double));
-            dt.Columns.Add(totalHours_col);
-
-            DataColumn type_col = new DataColumn("Leave Type / Additional Hours", typeof(string));
-            dt.Columns.Add(type_col);
-
-            DataColumn approvedBy_col = new DataColumn("Approved By", typeof(string));
-            dt.Columns.Add(approvedBy_col);
-
-
+            // Insert rows
             if (applications != null)
             {
                 foreach (var application in applications)
@@ -312,10 +361,9 @@ namespace TimeSheet.Controllers
                                                             r.RecordDate <= endPeriod)
                                                 .OrderBy(r => r.RecordDate).ToList();
 
-                    // If the application is within the period and contains only 1 type
                     bool multiplyTypes = records.Any(r => r.LeaveType != application.leaveType);
-                    if (application.StartTime >= startPeriod &&
-                        application.EndTime <= endPeriod &&
+                    // If the application is within the period and contains only 1 type
+                    if (application.StartTime >= startPeriod && application.EndTime <= endPeriod &&
                         !multiplyTypes)
                     {
                         DataRow dr = dt.NewRow();
@@ -366,7 +414,7 @@ namespace TimeSheet.Controllers
 
                                 dt.Rows.Add(dr);
 
-                                // initialise variables
+                                // Initialise variables for comparison
                                 totalHours = records[i].LeaveTime;
                                 previousType = records[i].LeaveType.Value;
                                 startDate = String.Format("{0:dd/MM/yy}", records[i].RecordDate);
@@ -382,6 +430,13 @@ namespace TimeSheet.Controllers
             return dt;
         }
 
+        /// <summary>
+        ///     Converts a <see cref="DataTable"/> of payroll summary into a CSV file.
+        /// </summary>
+        /// <param name="dt">The <see cref="DataTable"/> of the file.</param>
+        /// <param name="year">The year of pay period.</param>
+        /// <param name="period">The number of a pay period.</param>
+        /// <returns>A CSV file of payroll summary.</returns>
         private FileContentResult GetCSV(DataTable dt, string year, string period)
         {
             StringBuilder sb = new StringBuilder();
@@ -395,13 +450,12 @@ namespace TimeSheet.Controllers
                 sb.AppendLine(string.Join(",", fields));
             }
 
-            // Filename
+            // Sets filename
             string filename = "Payroll_" + period.PadLeft(2, '0') + year.Substring(year.Length - 2) + ".csv";
 
             return File(new UTF8Encoding().GetBytes(sb.ToString()), "text/csv", filename);
         }
 
-        // Sum
         //public async Task<FileContentResult> PayrollExportResult(int year, int period)
         //{
         //    //update the ADUser from AD first before exporting the csv file

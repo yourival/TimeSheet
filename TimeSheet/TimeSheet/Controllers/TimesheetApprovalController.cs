@@ -20,11 +20,11 @@ namespace TimeSheet.Controllers
         {
             List<TimeRecordForm> formList = new List<TimeRecordForm>();
             formList = (from f in contextDb.TimeRecordForms
-                        where f.ManagerID == User.Identity.Name
+                        where f.ManagerIDs.Contains(User.Identity.Name)
                         select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
 
             if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
-                formList = formList.Where(a => a.ManagerID == User.Identity.Name).ToList();
+                formList = formList.Where(a => a.ManagerIDs.Contains(User.Identity.Name)).ToList();
 
             return View(formList);
         }
@@ -33,7 +33,7 @@ namespace TimeSheet.Controllers
         {
             List<TimeRecordForm> formList = GetFormList(type);
             if (User.IsInRole("Manager") && !User.IsInRole("Admin"))
-                formList = formList.Where(a => a.ManagerID == User.Identity.Name).ToList();
+                formList = formList.Where(a => a.ManagerIDs.Contains(User.Identity.Name)).ToList();
 
             return PartialView(@"~/Views/TimesheetApproval/_Approval.cshtml", formList);
         }
@@ -71,7 +71,7 @@ namespace TimeSheet.Controllers
             if (type == "Waiting")
             {
                 formList = (from f in contextDb.TimeRecordForms
-                            where f.ManagerID == User.Identity.Name
+                            where f.ManagerIDs.Contains(User.Identity.Name)
                             where f.status == _status.submited ||
                                     f.status == _status.submited
                             select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
@@ -79,7 +79,7 @@ namespace TimeSheet.Controllers
             else if (type == "Confirmed")
             {
                 formList = (from f in contextDb.TimeRecordForms
-                            where f.ManagerID == User.Identity.Name
+                            where f.ManagerIDs.Contains(User.Identity.Name)
                             where f.status == _status.submited ||
                                     f.status == _status.submited
                             select f).OrderByDescending(f => f.TimeRecordFormId).ToList();
@@ -99,8 +99,8 @@ namespace TimeSheet.Controllers
                 ViewBag.RequestedHours = 7.5 * 14;
                 ViewBag.UserName = "Waiting for creating user table";
                 UserRoleSetting m = (from a in adminDb.UserRoleSettings
-                             where a.UserID == form.ManagerID
-                             select a).FirstOrDefault();
+                                     where form.ManagerIDs.Contains(a.UserID)
+                                     select a).FirstOrDefault();
                 ViewBag.ManagerName = m.UserName;
                 return View(form);
             }
@@ -120,6 +120,7 @@ namespace TimeSheet.Controllers
                     form.status = _status.approved;
                 if (decision == "Rejected")
                     form.status = _status.rejected;
+                form.ApprovedBy = User.Identity.Name;
                 contextDb.Entry(form).State = EntityState.Modified;
                 contextDb.SaveChanges();
                 Task.Run(() => EmailSetting.SendEmail(form.UserID, string.Empty, "TimesheetApproval",id));

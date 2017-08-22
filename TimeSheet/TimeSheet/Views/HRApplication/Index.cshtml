@@ -51,7 +51,7 @@
 
 @section MyScripts{
     <script>
-        /***** Leave application *****/
+        /***** Leave application functions *****/
         function renderLeaveForm(currentRequest) {
             var start = $('#start').val();
             var end = $('#end').val();
@@ -146,7 +146,7 @@
         }
 
 
-        /***** Casual application *****/
+        /***** Casual application functions *****/
         function renderCasualForm(currentRequest) {
             var year = $('#year').val();
             var period = $('#period').val();
@@ -236,6 +236,24 @@
 
         $(document).ready(function () {
             /***** Leave application *****/
+            // Dynamical input fileds for managers
+            $(document).on('click', '.btn-add',function (e) {
+                e.preventDefault();
+
+                var controlForm = $(this).parents('.controls .control:first'),
+                    currentEntry = $(this).parents('.entry:first'),
+                    newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+                controlForm.find('.entry:not(:last) .btn-add')
+                    .removeClass('btn-add').addClass('btn-remove')
+                    .removeClass('btn-default').addClass('btn-danger')
+                    .html('<span class="glyphicon glyphicon-minus"></span>');
+            }).on('click', '.btn-remove', function (e) {
+                $(this).parents('.entry:first').remove();
+
+                e.preventDefault();
+            });
+
             $("#type-popover").popover({
                 html: true,
                 container: 'body'
@@ -302,22 +320,24 @@
 
 
             /***** Casual application *****/
-            renderCasualForm(currentRequest);
-            $("#year").on("change", function () {
-                var val = $('#year').val();
-                $.ajax({
-                    url: "/HRApplication/SelectYear",
-                    type: "get",
-                    data: { year: val }
-                })
-                    .done(function (partialviewresult) {
-                        $("#periodDiv").html(partialviewresult);
-                    });
-            });
+            if (!@(User.IsInRole("FullTimeWorker")&&!User.IsInRole("Admin")).ToString().ToLower()){
+                renderCasualForm(currentRequest);
+                $("#year").on("change", function () {
+                    var val = $('#year').val();
+                    $.ajax({
+                        url: "/HRApplication/SelectYear",
+                        type: "get",
+                        data: { year: val }
+                    })
+                        .done(function (partialviewresult) {
+                            $("#periodDiv").html(partialviewresult);
+                        });
+                });
 
-            $("#periodDiv").on("change", function () {
-                renderCasualForm();
-            });
+                $("#periodDiv").on("change", function () {
+                    renderCasualForm();
+                });
+            }
         });
 
         $(document).on('change', ':file', function () {

@@ -55,7 +55,7 @@
             <div class="col-sm-offset-1 col-sm-10">
                 <a href="#approve-detail" data-toggle="collapse">
                     <p>
-                        Click here if you want to see details
+                        Click here to see details
                         <span class="glyphicon glyphicon-pencil"></span>
                     </p>
                 </a>
@@ -85,14 +85,14 @@
                             </td>
                             @foreach (var takenLeave in Model.TakenLeaves)
                             {
-                                if (takenLeave.Item1 == item.RecordDate)
-                                {
-                                    <td>
+                                <td>
+                                    @if (takenLeave.Item1 == item.RecordDate)
+                                    {
                                         <a href="#" data-toggle="tooltip" title="@takenLeave.Item2, @takenLeave.Item3 hrs">
                                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                                         </a>
-                                    </td>
-                                }
+                                    }
+                                </td>
                             }
                             
                         </tr>
@@ -101,7 +101,7 @@
             </div>
         </div>
         <hr>
-        @if (User.IsInRole("Admin") || Model.LeaveApplication.ManagerID == User.Identity.Name)
+        @if (User.IsInRole("Admin") || (User.IsInRole("Admin") && Model.LeaveApplication._managerIDs.Contains(User.Identity.Name)))
         {
             using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
             {
