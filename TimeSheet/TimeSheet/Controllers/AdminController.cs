@@ -261,26 +261,15 @@ namespace TimeSheet.Controllers
         }
 
         /// <summary>
-        ///     Initialise a list of pay periods.
-        /// </summary>
-        /// <returns>A dropdow list of pay periods in this year.</returns>
-        public ActionResult SelectDefaultPeriod()
-        {
-            TimeSheetContainer model = new TimeSheetContainer();
-            model.PeriodList = PayPeriod.GetPeriodItems(DateTime.Now.Year);
-
-            return PartialView("_SelectYear", model);
-        }
-
-        /// <summary>
-        ///     Dispay a list of pay periods in the seleced year.
+        ///     Dispay a list of pay periods when a year is selected.
+        ///     The year is set to the current year by default.
         /// </summary>
         /// <param name="year">The selected year.</param>
-        /// <returns>A dropdow list of pay periods in selected year.</returns>
-        public ActionResult SelectPeriod(int year)
+        /// <returns>A dropdown list of pay periods in the selected year.</returns>
+        public ActionResult SelectYear(int? year)
         {
             TimeSheetContainer model = new TimeSheetContainer();
-            model.PeriodList = PayPeriod.GetPeriodItems(year);
+            model.PeriodList = PayPeriod.GetPeriodItems((year == null) ? DateTime.Now.Year : year.Value);
             return PartialView("_SelectYear", model);
         }
 

@@ -1,0 +1,62 @@
+﻿@model List<TimeRecordForm>
+
+@{
+    Layout = null;
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Employee</th>
+            <th>Year</th>
+            <th>Period</th>
+            <th>Total Working Hours</th>
+            <th>Status</th>
+            <th>Output</th>
+        </tr>
+    </thead>
+    <tbody style="cursor:pointer">
+        @for (int i = 0; i < 5 && i < Model.Count; i++)
+        {
+            <tr class="table-row" onclick="location.href='@Url.Action("TimeSheetOutput", "TimesheetApproval", new { id = Model[i].TimeRecordFormId })'">
+                <td>@Html.DisplayFor(m => m[i].TimeRecordFormId)</td>
+                <td>@Html.DisplayFor(m => m[i].UserName)</td>
+                <td>@Html.DisplayFor(m => m[i].Year)</td>
+                <td>@Html.DisplayFor(m => m[i].Period)</td>
+                <td>@Html.DisplayFor(m => m[i].TotalWorkingHours)</td>
+                <td id="status-@Model[i].TimeRecordFormId" class=@getStatusClass(Model[i].status)>@Model[i].status.GetDisplayName()</td>
+                <td style="cursor:default"><span class="glyphicon glyphicon-print"></span></td>
+            </tr>
+        }
+        <tr>
+            <td colspan="7">
+            <td>
+                @if (Model.Count > 5)
+                {
+                    @Html.ActionLink("More...", "TimeSheetList", new { type = "Confirmed" })
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@functions {
+    string getStatusClass(_status status)
+    {
+        string className;
+        switch (status)
+        {
+            case _status.approved:
+                className = "text-success";
+                break;
+            case _status.rejected:
+                className = "text-danger";
+                break;
+            default:
+                className = "";
+                break;
+        }
+        return className;
+    }
+}

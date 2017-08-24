@@ -28,9 +28,14 @@ namespace TimeSheet
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/Site.css",
-                      "~/Content/Test.css"));
-            
+                      "~/Content/Site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/printPortrait").Include(
+                                        "~/Content/printPortrait.css"));
+
+            bundles.Add(new StyleBundle("~/Content/printLandscape").Include(
+                                        "~/Content/printLandscape.css"));
+
         }
     }
 }

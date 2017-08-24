@@ -142,7 +142,7 @@
             $(".leavetime").each(function (i) {
                 total += parseFloat($(this).val());
             });
-            $("#leave-total").text(total + " (" + (total / 7.5).toFixed(2) + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
+            $("#leave-total").text(total + " hrs (" + (total / 7.5).toFixed(2) + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
         }
 
 
@@ -221,7 +221,7 @@
             var total = parseFloat($("#worktime-total").text()) -
                 parseFloat(worktime_before) +
                 parseFloat(worktime_after);
-            $("#worktime-total").text(total);
+            $("#worktime-total").text(total + " hrs");
         }
         // summarise total work hours
         function sumTotalWorkHours() {
@@ -229,7 +229,7 @@
             $(".worktime").each(function (i) {
                 total += parseFloat($(this).text());
             });
-            $("#worktime-total").text(total + " (" + (total / 7.5).toFixed(2) + " days)");
+            $("#worktime-total").text(total + " hrs (" + (total / 7.5).toFixed(2) + " days)");
         }
         /***** End of Functions *****/
 
@@ -320,7 +320,7 @@
 
 
             /***** Casual application *****/
-            if (!@(User.IsInRole("FullTimeWorker")&&!User.IsInRole("Admin")).ToString().ToLower()){
+            if (@((!User.IsInRole("FullTimeWorker") || User.IsInRole("Admin")).ToString().ToLower())){
                 renderCasualForm(currentRequest);
                 $("#year").on("change", function () {
                     var val = $('#year').val();

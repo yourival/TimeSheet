@@ -40,7 +40,7 @@ namespace TimeSheet.Models
             string subject = string.Empty;
             string username = string.Empty;
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            string path = Directory.GetCurrentDirectory();// path for loading email template file
+            string path = Directory.GetCurrentDirectory();// path for loading email Templates file
 
             using(TimeSheetDb timesheetDb = new TimeSheetDb())
             {
@@ -50,7 +50,7 @@ namespace TimeSheet.Models
                         link += "TimesheetApproval/ApprovalDetail/";
                         link += id;
                         subject = "TimesheetApplicaiton";
-                        path = path + @"\Template\TimesheetApplication.txt";
+                        path = path + @"\Templates\TimesheetApplication.txt";
                         using (var sr = new StreamReader(path))
                         {
                             body = sr.ReadToEnd();
@@ -64,7 +64,7 @@ namespace TimeSheet.Models
                         link += "LeaveApproval/ApprovalDetail/";
                         link += id;
                         subject = "LeaveApplicaiton";
-                        path = path + @"\Template\LeaveApplication.txt";
+                        path = path + @"\Templates\LeaveApplication.txt";
                         using (var sr = new StreamReader(path))
                         {
                             body = sr.ReadToEnd();
@@ -77,7 +77,7 @@ namespace TimeSheet.Models
                         break;
                     case "TimesheetApproval":
                         subject = "TimesheetApproval";
-                        path = path + @"\Template\TimesheetApproval.txt";
+                        path = path + @"\Templates\TimesheetApproval.txt";
                         using (var sr = new StreamReader(path))
                         {
                             body = sr.ReadToEnd();
@@ -97,7 +97,7 @@ namespace TimeSheet.Models
                         break;
                     case "LeaveApproval":
                         subject = "LeaveApproval";
-                        path = path + @"\Template\LeaveApproval.txt";
+                        path = path + @"\Templates\LeaveApproval.txt";
                         using (var sr = new StreamReader(path))
                         {
                             body = sr.ReadToEnd();

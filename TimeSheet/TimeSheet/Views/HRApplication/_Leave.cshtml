@@ -15,6 +15,7 @@
         @using (Html.BeginForm("Leave", "HRApplication", FormMethod.Post, new { enctype = "multipart/form-data", id = "lform" }))
         {
             @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
             <div>
                 <label>Your current balance (hrs):&nbsp;</label>

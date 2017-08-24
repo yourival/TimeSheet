@@ -761,8 +761,7 @@ form p {
 
 .balance-input {
     width:6.7em;
-}   
-
+}
 
 /*Loader style start*/
 #loader {
@@ -775,3 +774,4 @@ form p {
   100% { transform: rotate(360deg); }
 }
 /*Loader style end*/
+

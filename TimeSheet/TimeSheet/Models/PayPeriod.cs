@@ -83,7 +83,7 @@ namespace TimeSheet.Models
             {
                 int period = i + 1;
                 DateTime start = GetStartDay(year, period);
-                DateTime end = GetEndDay(year, period); 
+                DateTime end = GetEndDay(year, period);
                 SelectListItem newItem = new SelectListItem
                 {
                     Text = period.ToString() +
@@ -171,6 +171,7 @@ namespace TimeSheet.Models
                             }
 
                             // Update leaves balances
+                            // Formula: Current leaves - leaves taken in the pay period + (accural Rate * contract hours)
                             LeaveBalance balance = context.LeaveBalances.Find(user.Email, leaveType);
                             if (balance == null)
                             {

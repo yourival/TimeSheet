@@ -1,6 +1,7 @@
 ﻿<div class="container">
     <h2>@ViewBag.Title </h2>
     <p>@Html.Raw(ViewBag.Body)</p>
+    @Html.ValidationSummary(false)
     <input type="button" class="btn btn-primary" onclick="JavaScript:window.history.back(1);return false;" value="Go Back" />
 </div>
 

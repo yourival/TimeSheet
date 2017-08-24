@@ -17,3 +17,40 @@
         @Html.Action("ApprovalPartial", "TimeSheetApproval", new { type = "Confirmed" })
     </div>
 </div>
+
+@section MyScripts{
+    <script>
+        $(document).ready(function () {
+            $("button").on("click", function (e) {
+                e.stopPropagation();
+                var id = $(this).val();
+                var decision = $(this).text();
+                $(this).closest("tr").fadeOut(500, function () {
+                    $.ajax({
+                        url: "/TimesheetApproval/ApprovalWaiting/",
+                        type: "POST",
+                        data: { id: id, decision: decision }
+                    })
+                        .done(function (result) {
+                            $("#waiting-apps").html(result);
+                            $.ajax({
+                                url: "/TimesheetApproval/ApprovalPartial/",
+                                type: "GET",
+                                data: { type: "Confirmed" }
+                            })
+                                .done(function (result) {
+                                    $("#confirmed-apps").html(result);
+                                })
+                                .fail(function (xmlHttpRequest, textStatus, errorThrown) {
+                                    $("#error").html(xmlHttpRequest.responseText);
+                                });
+                        })
+                        .fail(function (xmlHttpRequest, textStatus, errorThrown) {
+                            $("#error").html(xmlHttpRequest.responseText);
+                        });
+
+                });
+            });
+        });
+    </script>    
+}

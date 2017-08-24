@@ -40,13 +40,13 @@ namespace TimeSheet.Models
         [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true, NullDisplayText = "None")]
         public TimeSpan? EndTime { get; set; }
 
-        [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "Fill in a number that is a multiple of 0.5 and not larger than 7.5")]
+        [RegularExpression(@"^([0-7](\.\d)?)$", ErrorMessage = "Fill in a number between 0 and 7.5")]
         public double LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
         public _leaveType? LeaveType { get; set; }
 
-        [RegularExpression(@"^([0-7](\.[05])?)$", ErrorMessage = "Fill in a number that is a multiple of 0.5 and not larger than 7.5")]
+        [RegularExpression(@"^([0-7](\.\d)?)$", ErrorMessage = "Fill in a number between 0 and 7.5")]
         public double LeaveTime { get; set; }
 
         // Automatically get work hours by attendence

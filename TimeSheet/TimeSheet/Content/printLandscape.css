@@ -1,20 +1,25 @@
-﻿@media print {
-    /*Printing*/
+﻿/*printing*/
+@media print {
     .do-not-print {
-        display: none;
+        display: none !important;
+    }
+
+    @page {
+        size: landscape
+    }
+
+    div.container {
+        width: 100%;
     }
 
     div.payroll-preview {
         border: none;
+        font-size: 11px;
         box-shadow: none;
     }
 
     div.payroll-preview .title {
         color: #1382ce !important;
-    }
-
-    @page {
-        size: landscape
     }
 
     hr {

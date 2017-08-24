@@ -13,6 +13,9 @@ using System.Data.Entity.Infrastructure;
 
 namespace TimeSheet.Controllers
 {
+    /// <summary>
+    ///     A controller processing users' submission of HR applications and casual work hours.
+    /// </summary>
     [Authorize]
     public class HRApplicationController : Controller
     {
@@ -21,7 +24,16 @@ namespace TimeSheet.Controllers
         /// <summary>
         ///     Indicates status of a submission of a HR application
         /// </summary>
-        public enum postRequestStatus { success, fail };
+        public enum postRequestStatus {
+            /// <summary>
+            ///     Successful submission.
+            /// </summary>
+            success,
+            /// <summary>
+            ///     Failed submission.
+            /// </summary>
+            fail
+        };
 
         /// <summary>
         ///     Create a page for user to fill and submit a HR application or casual work hours.
@@ -41,7 +53,7 @@ namespace TimeSheet.Controllers
         {
             LeaveApplicationViewModel model = new LeaveApplicationViewModel();
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
-            //get manager droplist
+            //get manager dropdown list
             ViewBag.Manager = UserRoleSetting.GetManagerItems();
             for (int i = 0; i < 3; i++)
             {
@@ -69,7 +81,7 @@ namespace TimeSheet.Controllers
         }
 
         /// <summary>
-        ///     Create a page for users to view personal application histories.
+        ///     Create a page for a user to view personal application histories.
         /// </summary>
         /// <returns>A page of a list of personal application histories.</returns>
         // GET: LeaveApplication/ApplicationHistory
@@ -81,10 +93,10 @@ namespace TimeSheet.Controllers
         }
 
         /// <summary>
-        ///     
+        ///     Create a page for a user to view details of a personal application.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The identifier of the <see cref="LeaveApplication"/>.</param>
+        /// <returns>A view with details of an application.</returns>
         // GET: LeaveApplication/ApplicationDetail
         public ActionResult ApplicationDetail(int? id)
         {
@@ -106,6 +118,8 @@ namespace TimeSheet.Controllers
                 model.LeaveApplication = application;
                 model.TimeRecords = application.GetTimeRecords();
                 model.LeaveApplication = application;
+
+                // Get manager names for dropdown list
                 List<string> managerNames = new List<string>();
                 foreach(var managerId in application._managerIDs)
                 {
@@ -117,8 +131,12 @@ namespace TimeSheet.Controllers
             }
         }
 
-        // GET: Year
-        // POST: Year
+        /// <summary>
+        ///     Dispay a list of pay periods when a year is selected.
+        ///     The year is set to the current year by default.
+        /// </summary>
+        /// <param name="year">The selected year.</param>
+        /// <returns>A dropdown list of pay periods in the selected year.</returns>
         public ActionResult SelectYear(int? year)
         {
             TimeSheetContainer model = new TimeSheetContainer();
@@ -126,6 +144,18 @@ namespace TimeSheet.Controllers
             return PartialView("_SelectYear", model);
         }
 
+        /// <summary>
+        ///     Once all form data are validated, the method will create/update <see cref="LeaveApplication"/>
+        ///     and <see cref="TimeRecord"/> in the database, and then update the user's <see cref="LeaveBalance"/>
+        ///     accordingly. After all the operations completed successfully, the system will send emails to
+        ///     managers specified in the application.
+        ///     
+        ///     If any error happened, changes will be safely aborted and have no effects on database.
+        /// </summary>
+        /// <param name="applicationVM">The view model combine with <see cref="LeaveApplication"/>,
+        ///     <see cref="LeaveBalance"/>, and <see cref="TimeRecord"/>.
+        /// </param>
+        /// <returns>A response view with messages of success or failure of the application.</returns>
         // POST: LeaveApplication/Leave
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -209,7 +239,6 @@ namespace TimeSheet.Controllers
                             timeRecord.LeaveType = r.LeaveType;
                             contextDb.Entry(timeRecord).State = EntityState.Modified;
                         }
-                        //contextDb.SaveChanges();
                     }
 
                     // Transfer attachments to ViewModel
@@ -303,8 +332,10 @@ namespace TimeSheet.Controllers
                         }
                     }
 
+                    return RedirectToAction("PostRequest", new { status = postRequestStatus.success });
                 }
-                return RedirectToAction("PostRequest", new { status = postRequestStatus.success });
+                //TempData["ErrorModel"] = ModelState.Values;
+                return RedirectToAction("PostRequest", new { status = postRequestStatus.fail });
             }
             catch (RetryLimitExceededException /* dex */)
             {
@@ -314,6 +345,17 @@ namespace TimeSheet.Controllers
             return RedirectToAction("PostRequest", new { status = postRequestStatus.fail });
         }
 
+        /// <summary>
+        ///     Once all form data are validated, the method will create/update <see cref="TimeRecordForm"/>
+        ///     and <see cref="TimeRecord"/>s in the database to be approved by a manager.
+        ///     After all the operations completed successfully, the system will send emails to
+        ///     managers specified in the application of casual hours.
+        ///     
+        ///     If any error happened, changes will be safely aborted and have no effects on database.
+        /// </summary>
+        /// <param name="model">The view model combine with <see cref="TimeRecordForm"/> and <see cref="TimeRecord"/>.
+        /// </param>
+        /// <returns>A response view with messages of success or failure of the application.</returns>
         // POST: LeaveApplication/Casual
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -348,7 +390,6 @@ namespace TimeSheet.Controllers
                     }
                     model.TimeRecordForm.TotalWorkingHours = workingHours;
                     model.TimeRecordForm.SubmittedTime = DateTime.Now;
-                    contextDb.SaveChanges();
 
                     // Add/Update TimeSheetForm data
                     var form = contextDb.TimeRecordForms.Where(t => t.UserID == userId &&
@@ -358,6 +399,7 @@ namespace TimeSheet.Controllers
                     {
                         model.TimeRecordForm.status = _status.submited;
                         model.TimeRecordForm.UserID = User.Identity.Name;
+                        model.TimeRecordForm.UserName = contextDb.ADUsers.Find(User.Identity.Name).UserName;
                         contextDb.TimeRecordForms.Add(model.TimeRecordForm);
                     }
                     else
@@ -365,11 +407,12 @@ namespace TimeSheet.Controllers
                         form.status = _status.modified;
                         form.TotalWorkingHours = model.TimeRecordForm.TotalWorkingHours;
                         form.ManagerIDs = model.TimeRecordForm.ManagerIDs;
+                        form.Comments = model.TimeRecordForm.Comments;
                         contextDb.Entry(form).State = EntityState.Modified;
                     }
                     contextDb.SaveChanges();
 
-                    ////send email to manager
+                    // send email to manager
                     form = (from f in contextDb.TimeRecordForms
                             where f.Period == model.TimeRecordForm.Period
                             where f.Year == model.TimeRecordForm.Year
@@ -394,7 +437,15 @@ namespace TimeSheet.Controllers
             }
         }
 
-        // GET: LeaveApplication/CreateLeaveList
+        /// <summary>
+        ///     Create a list of <see cref="TimeRecord"/> for the applicant to edit details
+        ///     on each day of an HR application.
+        /// </summary>
+        /// <param name="start">The start day of the HR application</param>
+        /// <param name="end">The end day of the HR application</param>
+        /// <param name="leaveType">The main leave type of the application. It is also the default
+        ///     leave type of each <see cref="TimeRecord"/> in the period.</param>
+        /// <returns>A partial view with a list of <see cref="TimeRecord"/> to edit leave details.</returns>
         public ActionResult CreateLeaveList(DateTime start, DateTime end, _leaveType leaveType)
         {
             // Create new Leaveapplication
@@ -421,7 +472,13 @@ namespace TimeSheet.Controllers
             return PartialView("_LeaveList", model);
         }
 
-        // Get time records based on year period
+        /// <summary>
+        ///     Create a list of <see cref="TimeRecord"/> for the applicant to edit details
+        ///     on each day.
+        /// </summary>
+        /// <param name="year">The year of a pay period.</param>
+        /// <param name="period">The pay period in a year.</param>
+        /// <returns>A partial view with a list of <see cref="TimeRecord"/> to edit work hours.</returns>
         public ActionResult CreateCasualList(int year, int period)
         {
             TimeSheetContainer model = new TimeSheetContainer();
@@ -474,6 +531,11 @@ namespace TimeSheet.Controllers
             return PartialView("_CasualList", model);
         }
 
+        /// <summary>
+        ///     Create a view to inform whether an application is submitted succesfully or not.
+        /// </summary>
+        /// <param name="status">Indicate the success/failure of submission.</param>
+        /// <returns>A view to inform whether an application is submitted succesfully or not.</returns>
         public ActionResult PostRequest(postRequestStatus status)
         {
             switch (status)
@@ -482,7 +544,7 @@ namespace TimeSheet.Controllers
                     ViewBag.Title = "INVAILD APPLICATION";
                     ViewBag.Body = "Some data in the application are not valid.<br />" +
                                    "Please try again and check them before submitting.<br />" +
-                                   "If the problem keeps occurring, please contact our IT support.";
+                                   "If the problem persists, please contact our IT support.";
                     break;
                 case postRequestStatus.success:
                     ViewBag.Title = "DONE!";

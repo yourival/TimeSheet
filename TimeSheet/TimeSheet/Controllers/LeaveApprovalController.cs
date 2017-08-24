@@ -11,15 +11,17 @@ using System.Diagnostics;
 
 namespace TimeSheet.Controllers
 {
+    /// <summary>
+    ///     A controller proccessing approval of HR applications.
+    /// </summary>
     public class LeaveApprovalController : Controller
     {
         private TimeSheetDb contextDb = new TimeSheetDb();
-        // GET: LeaveApproval
-        public ActionResult Index()
-        {
-            return View();
-        }
 
+        /// <summary>
+        ///     
+        /// </summary>
+        /// <returns></returns>
         // GET: Admin/Approval
         [AuthorizeUser(Roles = "Manager, Accountant")]
         public ActionResult Approval()
@@ -161,22 +163,7 @@ namespace TimeSheet.Controllers
             var fileToRetrieve = contextDb.Attachments.Find(id);
             return File(fileToRetrieve.Content, fileToRetrieve.ContentType);
         }
-
-        // GET: /DownloadPdf/1
-        //[ValidateInput(false)]
-        //[AuthorizeUser(Roles = "Manager, Accountant")]
-        //public ActionResult DownloadPdf(string html)
-        //{
-        //    Byte[] res = null;
-        //    using (MemoryStream ms = new MemoryStream())
-        //    {
-        //        PdfDocument pdf = PdfGenerator.GeneratePdf(html, PageSize.A4);
-        //        pdf.Save(ms);
-        //        res = ms.ToArray();
-        //    }
-        //    return File(res, "application/pdf");
-        //}
-
+        
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
         [AuthorizeUser(Roles = "Manager")]

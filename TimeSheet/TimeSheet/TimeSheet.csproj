@@ -141,6 +141,9 @@
     <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <HintPath>packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
     </Reference>
+    <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -288,16 +291,16 @@
   <ItemGroup>
     <Content Include="Content\printLandscape.css" />
     <Content Include="Content\printPortrait.css" />
-    <Content Include="Template\LeaveApplication.txt">
+    <Content Include="Templates\LeaveApplication.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Template\LeaveApproval.txt">
+    <Content Include="Templates\LeaveApproval.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Template\TimesheetApplication.txt">
+    <Content Include="Templates\TimesheetApplication.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Template\TimesheetApproval.txt">
+    <Content Include="Templates\TimesheetApproval.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\bootstrap-theme.css" />
@@ -415,8 +418,6 @@
     <Content Include="Views\TimeSheetApproval\_Approval.cshtml" />
     <Content Include="Views\TimeSheetApproval\TimeSheetList.cshtml" />
     <Content Include="Views\TimeSheetApproval\Approval.cshtml" />
-    <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
-    <Content Include="Views\TimeSheetApproval\_TimesheetDetail.cshtml" />
     <Content Include="Views\Admin\UserRoleManager.cshtml" />
     <Content Include="Views\Admin\EditUserRole.cshtml" />
     <Content Include="Views\Admin\EmailSetting.cshtml" />
@@ -448,6 +449,11 @@
     <Content Include="Views\UserLeaves\_Preview.cshtml" />
     <Content Include="Views\Admin\_Preview.cshtml" />
     <Content Include="Views\Admin\CreateUserRole.cshtml" />
+    <Content Include="Templates\EmailApplicationToApplicant.cshtml" />
+    <Content Include="Views\TimeSheetApproval\ApprovalDetail.cshtml" />
+    <Content Include="Views\TimeSheetApproval\TimeSheetOutput.cshtml" />
+    <Content Include="Views\TimeSheetApproval\_Waiting.cshtml" />
+    <Content Include="Views\TimeSheetApproval\_Confirmed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -467,7 +473,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <PropertyGroup>
