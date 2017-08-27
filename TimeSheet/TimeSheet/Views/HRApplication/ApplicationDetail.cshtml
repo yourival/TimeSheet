@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Application Detail";
+    string[] LeaveNames = { "Sick Leave", "Flexi Leave", "Annual Leave" };
 }
 
 <head>
@@ -33,6 +34,10 @@
                     <td>@Html.DisplayFor(m => m.LeaveApplication.TotalLeaveTime)</td>
                 </tr>
                 <tr>
+                    <td>@Html.DisplayNameFor(m => m.LeaveApplication.status)</td>
+                    <td class=@getStatusClass(Model.LeaveApplication.status)>@Model.LeaveApplication.status.GetDisplayName()</td>
+                </tr>
+                <tr>
                     <th>Reason</th>
                     <td>@Html.DisplayFor(m => m.LeaveApplication.Comment)</td>
                 </tr>
@@ -56,9 +61,59 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>Manager</th>
-                    <td>@ViewBag.Manager</td>
+                    <th style="vertical-align: top">Send To</th>
+                    <td>
+                        @foreach (var manager in ViewBag.Managers)
+                        {
+                            <p>@manager</p>
+                        }
+                    </td>
                 </tr>
+                @if (@Model.LeaveApplication.ApprovedTime != null)
+                {
+                    <tr>
+                        <th>Signed&nbsp;At</th>
+                        <td>@Html.DisplayFor(m => m.LeaveApplication.ApprovedTime)</td>
+                    </tr>
+                    <tr>
+                        <th>Signed&nbsp;By</th>
+                        <td>@ViewBag.SignedManager</td>
+                    </tr>
+                    <tr>
+                        <th>Original Balance (hrs)</th>
+                        <td>
+                            @for (int i = 0; i < LeaveNames.Length; i++)
+                            {
+                                @LeaveNames[i]
+                                @:   :&nbsp;
+
+                                <span>@ViewBag.OriginalBalances[i]</span>
+
+                                if (i != LeaveNames.Length - 1)
+                                {
+                                    @: ,&nbsp;&nbsp;
+                            }
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Close Balance (hrs)</th>
+                        <td>
+                            @for (int i = 0; i < LeaveNames.Length; i++)
+                            {
+                                @LeaveNames[i]
+                                @:   :&nbsp;
+
+                                <span>@ViewBag.CloseBalances[i]</span>
+
+                                if (i != LeaveNames.Length - 1)
+                                {
+                                    @: ,&nbsp;&nbsp;
+                            }
+                            }
+                        </td>
+                    </tr>
+                }
             </table>
 
             <hr>

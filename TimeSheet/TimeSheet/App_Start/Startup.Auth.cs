@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
 using TimeSheet.Models;
 using Microsoft.Azure.ActiveDirectory.GraphClient;
+using Microsoft.Owin.Security.Notifications;
+using Microsoft.IdentityModel.Protocols;
 
 namespace TimeSheet
 {
@@ -53,7 +55,20 @@ namespace TimeSheet
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
                         // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
-                       AuthorizationCodeReceived = (context) => 
+
+                        RedirectToIdentityProvider = ctx =>
+                        {
+                            bool isAjaxRequest = (ctx.Request.Headers != null && ctx.Request.Headers["X-Requested-With"] == "XMLHttpRequest");
+
+                            if (isAjaxRequest)
+                            {
+                                ctx.Response.Headers.Remove("Set-Cookie");
+                                ctx.State = NotificationResultState.HandledResponse;
+                            }
+
+                            return Task.FromResult(0);
+                        },
+                       AuthorizationCodeReceived = (context) =>
                        {
                            var code = context.Code;
                            ClientCredential credential = new ClientCredential(clientId, appKey);

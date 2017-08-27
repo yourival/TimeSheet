@@ -19,19 +19,24 @@ namespace TimeSheet.Controllers
         private TimeSheetDb contextDb = new TimeSheetDb();
 
         /// <summary>
-        ///     
+        ///     Create a breif view of list of <see cref="LeaveApplication"/> and sorted into two groups:
+        ///     applictions have been signed and those are not.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A breif view of list of <see cref="LeaveApplication"/>.</returns>
         // GET: Admin/Approval
-        [AuthorizeUser(Roles = "Manager, Accountant")]
+        [AuthorizeUser(Roles = "Admin, Manager, Accountant")]
         public ActionResult Approval()
         {
             return View();
         }
 
-        // GET: Admin/Approval/1
+        /// <summary>
+        ///     Create a view of an HR application for assigned managers to approve/reject.
+        /// </summary>
+        /// <param name="id">The identity of <see cref="LeaveApplication"/>.</param>
+        /// <returns>A view of a HR application</returns>
         // GET: Admin/Approval/ApplicationDetails/1
-        [AuthorizeUser(Roles = "Manager, Accountant")]
+        [AuthorizeUser(Roles = "Admin, Manager, Accountant")]
         public ActionResult ApprovalDetail(int? id)
         {
             if (id == null)
@@ -89,8 +94,15 @@ namespace TimeSheet.Controllers
             }
         }
 
+        /// <summary>
+        ///     Create a list of applications for either waiting or confirmed applications.
+        ///     It displays up to 5 applications for a group in a page.
+        /// </summary>
+        /// <param name="type">"Waiting" means <c>_leaveType.submitted</c> and <c>_leaveType.modified</c>
+        ///                    "Confirmed" means <c>_leaveType.approved</c> and <c>_leaveType.rejected</c></param>
+        /// <returns>A view with a list of applications of either waiting or confirmed applications </returns>
         // GET: Admin/ApprovalPartial
-        [AuthorizeUser(Roles = "Manager, Accountant")]
+        [AuthorizeUser(Roles = "Admin, Manager, Accountant")]
         public ActionResult ApprovalPartial(string type)
         {
             List<LeaveApplication> model = GetApplicationList(type);
@@ -101,8 +113,15 @@ namespace TimeSheet.Controllers
             return PartialView("_" + type, model);
         }
 
+        /// <summary>
+        ///     Create a list of applications for either waiting or confirmed applications.
+        ///     It displays all applications in for a group in a page.
+        /// </summary>
+        /// <param name="type">"Waiting" means <c>_leaveType.submitted</c> and <c>_leaveType.modified</c>
+        ///                    "Confirmed" means <c>_leaveType.approved</c> and <c>_leaveType.rejected</c></param>
+        /// <returns>A view with a list of all applications of either waiting or confirmed applications \.</returns>
         // GET: Admin/ApplicationList
-        [AuthorizeUser(Roles = "Manager, Accountant")]
+        [AuthorizeUser(Roles = "Admin, Manager, Accountant")]
         public ActionResult ApplicationList(string type)
         {
             List<LeaveApplication> model = GetApplicationList(type);
@@ -113,8 +132,14 @@ namespace TimeSheet.Controllers
             return View(model);
         }
 
+        /// <summary>
+        ///     Create a view to display details of a confirmed application and
+        ///     allow a user to print it out easily.
+        /// </summary>
+        /// <param name="id">The identity of <see cref="LeaveApplication"/>.</param>
+        /// <returns>A view with details of a confirmed application.</returns>
         // GET: Admin/ApplicationList
-        [AuthorizeUser(Roles = "Manager, Accountant")]
+        [AuthorizeUser(Roles = "Admin, Manager, Accountant")]
         public ActionResult ApplicationOutput(int? id)
         {
             if (id == null)
@@ -140,7 +165,7 @@ namespace TimeSheet.Controllers
                 // Get manager name
                 ViewBag.ManagerName = contextDb.ADUsers.Find(application.ApprovedBy).UserName ?? string.Empty;
 
-                // Get pay period
+                // Get pay period and format it
                 int payPeriod1 = PayPeriod.GetPeriodNum(application.StartTime);
                 int payPeriod2 = PayPeriod.GetPeriodNum(application.EndTime);
                 string period = "Pay Period " + payPeriod1;
@@ -156,17 +181,28 @@ namespace TimeSheet.Controllers
             }
         }
 
+        /// <summary>
+        ///     Download an attachment when a manager is confirming an application.
+        /// </summary>
+        /// <param name="id">The identity of an attached file.</param>
+        /// <returns>A file that is attahced.</returns>
         // GET: /DownloadAttachment/1
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Admin, Manager")]
         public ActionResult DownloadAttachment(int id)
         {
             var fileToRetrieve = contextDb.Attachments.Find(id);
             return File(fileToRetrieve.Content, fileToRetrieve.ContentType);
         }
-        
+
+        /// <summary>
+        ///     Process approval/rejection of an application via the detail page.
+        /// </summary>
+        /// <param name="id">The identity of the application</param>
+        /// <param name="decision">The decision made by the manager, i.e. confirm or reject.</param>
+        /// <returns>A breif view of list of <see cref="LeaveApplication"/>.</returns>
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Admin, Manager")]
         public ActionResult ApprovalDetail(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
@@ -190,7 +226,7 @@ namespace TimeSheet.Controllers
 
         // POST: Admin/ApprovalPartial
         [HttpPost]
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Admin, Manager")]
         public ActionResult ApprovalWaiting(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);

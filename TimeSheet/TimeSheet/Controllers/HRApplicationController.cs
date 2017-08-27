@@ -87,13 +87,14 @@ namespace TimeSheet.Controllers
         // GET: LeaveApplication/ApplicationHistory
         public ActionResult ApplicationHistory()
         {
-            List<LeaveApplication> applications = contextDb.LeaveApplications.Where(
-                                                        a => a.UserID == User.Identity.Name).ToList();
+            List<LeaveApplication> applications = contextDb.LeaveApplications
+                                                           .Where(a => a.UserID == User.Identity.Name)
+                                                           .OrderByDescending(a => a.id).ToList();
             return View(applications);
         }
 
         /// <summary>
-        ///     Create a page for a user to view details of a personal application.
+        ///     Create a page for a user to view details of a submitted application.
         /// </summary>
         /// <param name="id">The identifier of the <see cref="LeaveApplication"/>.</param>
         /// <returns>A view with details of an application.</returns>
@@ -127,6 +128,26 @@ namespace TimeSheet.Controllers
                 }
                 ViewBag.Managers = managerNames;
 
+                if(application.ApprovedTime != null)
+                {
+                    // Get leave balance
+                    List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
+                    if (application.OriginalBalances != null)
+                        ViewBag.OriginalBalances = application.OriginalBalances.Split('/');
+                    else
+                        ViewBag.OriginalBalances = new string[] { "", "", "" };
+
+                    if (application.CloseBalances != null)
+                        ViewBag.CloseBalances = application.CloseBalances.Split('/');
+                    else
+                        ViewBag.CloseBalances = new string[] { "", "", "" };
+
+                    // Get the manager who signed, if it is singed
+                    if (application.ApprovedBy != null)
+                        ViewBag.SignedManager = contextDb.ADUsers.Find(application.ApprovedBy).UserName;
+                    else
+                        ViewBag.SignedManager = string.Empty;
+                }
                 return View(model);
             }
         }
