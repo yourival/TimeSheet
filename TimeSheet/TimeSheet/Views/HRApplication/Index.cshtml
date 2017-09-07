@@ -200,12 +200,14 @@
             var starttime = $("#starttime" + id).val();
             var endtime = $("#endtime" + id).val();
             if (starttime == "") {
-                starttime = "9:00";
-                $("#starttime" + id).val(starttime)
+                $("#starttime" + id).val(0);
+                $("#worktime" + id).text("0");
+                return;
             }
             if (endtime == "") {
-                endtime = "17:00";
-                $("#endtime" + id).val(enttime);
+                $("#endtime" + id).val(0);
+                $("#worktime" + id).text("0");
+                return;
             }
 
             var startdate = new Date("1970-1-1 " + starttime).getTime();

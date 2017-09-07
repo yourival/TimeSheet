@@ -17,7 +17,7 @@ using System.Web.Configuration;
 namespace TimeSheet.Controllers
 {
     /// <summary>
-    ///     Controller to 
+    ///     Controller to handle tasks other than leave application and approval
     /// </summary>
     [Authorize]
     public class AdminController : Controller
@@ -332,10 +332,12 @@ namespace TimeSheet.Controllers
             dt.Columns.Add(new DataColumn("Surname", typeof(string)));
             dt.Columns.Add(new DataColumn("First Name", typeof(string)));
             dt.Columns.Add(new DataColumn("Position", typeof(string)));
+            dt.Columns.Add(new DataColumn("Application ID", typeof(string)));
             dt.Columns.Add(new DataColumn("Date or Period", typeof(string)));
             dt.Columns.Add(new DataColumn("Total Hours", typeof(double)));
             dt.Columns.Add(new DataColumn("Leave Type / Additional Hours", typeof(string)));
             dt.Columns.Add(new DataColumn("Approved By", typeof(string)));
+            dt.Columns.Add(new DataColumn("Note", typeof(string)));
 
             // Insert rows
             if (applications != null)
@@ -359,6 +361,7 @@ namespace TimeSheet.Controllers
                         dr["Employee Card ID"] = user.EmployeeID;
                         dr["Surname"] = words[1];
                         dr["First Name"] = words[0];
+                        dr["Application ID"] = application.id;
                         dr["Position"] = user.JobCode;
                         dr["Date or Period"] = String.Format("{0:dd/MM/yy}", application.StartTime);
                         if(application.StartTime != application.EndTime)
@@ -368,6 +371,8 @@ namespace TimeSheet.Controllers
 
                         string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy).UserName.Split(' ');
                         dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                        if (application.EndTime.Date < application.ApprovedTime.Value.Date)
+                            dr["Note"] = "Retrospective Approval";
                         dt.Rows.Add(dr);
                     }
                     else
@@ -391,6 +396,7 @@ namespace TimeSheet.Controllers
                                 dr["Employee Card ID"] = user.EmployeeID;
                                 dr["Surname"] = words[1];
                                 dr["First Name"] = words[0];
+                                dr["Application ID"] = application.id;
                                 dr["Position"] = user.JobCode;
                                 dr["Leave Type / Additional Hours"] = previousType.GetDisplayName();
                                 dr["Date or Period"] = startDate;
@@ -400,6 +406,8 @@ namespace TimeSheet.Controllers
                                 string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy)
                                                                   .UserName.Split(' ');
                                 dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                                if (application.EndTime.Date < application.ApprovedTime.Value.Date)
+                                    dr["Note"] = "Retrospective Approval";
 
                                 dt.Rows.Add(dr);
 

@@ -55,6 +55,7 @@ namespace TimeSheet.Controllers
             List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
             //get manager dropdown list
             ViewBag.Manager = UserRoleSetting.GetManagerItems();
+
             for (int i = 0; i < 3; i++)
             {
                 var availableLeave = contextDb.LeaveBalances.Find(User.Identity.Name, (_leaveType)i);
@@ -216,9 +217,20 @@ namespace TimeSheet.Controllers
                     // Update TimeRecords in Db
                     foreach (var r in applicationVM.TimeRecords)
                     {
-                        // Configure Time Record if it's not a full day off
-                        if (r.LeaveTime != 7.5)
-                            r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
+                        // Configure attendance of a TimeRecord
+                        if (r.LeaveType == _leaveType.flexiHours ||
+                            r.LeaveType == _leaveType.additionalHours)
+                        {
+                            if(r.LeaveTime < 14.5)
+                                r.SetAttendence(9, 9.5 + r.LeaveTime, 0.5);
+                            else
+                                r.SetAttendence(12 - r.LeaveTime/2.0, 12 + r.LeaveTime/2.0, 0);
+                        }
+                        else
+                        {
+                            if(r.LeaveTime <= 7.5)
+                                r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
+                        }
 
                         // Sum up total leave time
                         applicationVM.LeaveApplication.TotalLeaveTime += r.LeaveTime;
@@ -254,7 +266,7 @@ namespace TimeSheet.Controllers
                                 {
                                     appliedLeaveTimes[(int)timeRecord.LeaveType] -= timeRecord.LeaveTime;
                                 }
-                            }                            
+                            }
 
                             timeRecord.LeaveTime = r.LeaveTime;
                             timeRecord.LeaveType = r.LeaveType;
@@ -362,6 +374,10 @@ namespace TimeSheet.Controllers
             {
                 //Log the error (uncomment dex variable name and add a line here to write a log.
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            }
+            catch(Exception e)
+            {
+                throw e;
             }
             return RedirectToAction("PostRequest", new { status = postRequestStatus.fail });
         }
@@ -472,6 +488,22 @@ namespace TimeSheet.Controllers
             // Create new Leaveapplication
             LeaveApplicationViewModel model = new LeaveApplicationViewModel();
             List<TimeRecord> newTimeRecords = new List<TimeRecord>();
+            //get leave type for holidays
+            IEnumerable<SelectListItem> items = new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "Flexi Hours (earned)",
+                    Value = _leaveType.flexiHours.ToString(),
+                    Selected = true
+                },
+                new SelectListItem
+                {
+                    Text = "Additional Hours",
+                    Value = _leaveType.additionalHours.ToString()
+                }
+            };
+            ViewBag.HolidayLeaveTypeItems = items;
 
             for (int i = 0; i <= (end - start).Days; i++)
             {
@@ -479,14 +511,12 @@ namespace TimeSheet.Controllers
                 DateTime currentDate = start.AddDays(i);
                 var newTimeRecord = new TimeRecord(currentDate.Date);
                 PayPeriod.SetPublicHoliday(newTimeRecord);
-                if (!newTimeRecord.IsHoliday)
-                {
-                    newTimeRecord.SetAttendence(null, null, 0);
-                    newTimeRecord.UserID = User.Identity.Name;
-                    newTimeRecord.LeaveType = leaveType;
-                    newTimeRecord.LeaveTime = 7.5;
-                    newTimeRecords.Add(newTimeRecord);
-                }
+
+                newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday) ? 0 : 7.5;
+                newTimeRecord.SetAttendence(null, null, 0);
+                newTimeRecord.UserID = User.Identity.Name;
+                newTimeRecord.LeaveType = leaveType;
+                newTimeRecords.Add(newTimeRecord);
             }
             model.TimeRecords = newTimeRecords;
 

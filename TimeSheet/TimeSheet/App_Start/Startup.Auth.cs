@@ -36,7 +36,7 @@ namespace TimeSheet
             ApplicationDb db = new ApplicationDb();
 
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
-
+            app.UseKentorOwinCookieSaver();
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
             app.UseOpenIdConnectAuthentication(

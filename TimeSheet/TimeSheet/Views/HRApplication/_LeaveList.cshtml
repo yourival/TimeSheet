@@ -22,14 +22,29 @@
                         @Html.HiddenFor(m => m.TimeRecords[i].LunchBreak)
                         @Html.HiddenFor(m => m.TimeRecords[i].IsHoliday)
                         @Html.HiddenFor(m => m.TimeRecords[i].Flexi)
-                        <td>
+                        <td class="@(Model.TimeRecords[i].IsHoliday?"text-danger":"")">
                             @String.Format("{0:ddd, dd/MM/yyyy}", Model.TimeRecords[i].RecordDate)
                         </td>
                         <td>
-                            @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, new { @class = "form-control leavetype" })
+                            @if (Model.TimeRecords[i].IsHoliday)
+                            {
+                                @Html.DropDownListFor(m => m.TimeRecords[i].LeaveType, (IEnumerable<SelectListItem>)ViewBag.HolidayLeaveTypeItems, new { @class = "form-control leavetype" })
+                            }
+                            else
+                            {
+                                @Html.EnumDropDownListFor(m => m.TimeRecords[i].LeaveType, new { @class = "form-control leavetype" })
+                            }
                         </td>
                         <td class="leaveTimeColumn">
-                            @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new { htmlAttributes = new { @class = "leavetime form-control", @type = "number", @step = "0.1", @min = 0, @max = 7.5 } })
+                            @Html.EditorFor(m => m.TimeRecords[i].LeaveTime, new {
+                                htmlAttributes = new {
+                                    @class = "leavetime form-control",
+                                    @type = "number",
+                                    @step = "0.1",
+                                    @min = 0,
+                                    @max = 24
+                                }
+                            })
                             @Html.ValidationMessageFor(m => m.TimeRecords[i].LeaveTime, "", new { @class = "text-danger" })
                         </td>
                     </tr>

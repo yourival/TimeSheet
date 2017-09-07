@@ -107,7 +107,7 @@ namespace TimeSheet.Models
                                     where r.RecordDate >= StartTime &&
                                           r.RecordDate <= EndTime &&
                                           r.LeaveType != null &&
-                                         !r.IsHoliday &&
+                                          r.LeaveTime != 0 &&
                                           r.UserID == UserID
                                     select r).ToList();
 

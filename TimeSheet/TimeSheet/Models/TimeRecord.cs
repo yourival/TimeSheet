@@ -40,18 +40,20 @@ namespace TimeSheet.Models
         [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true, NullDisplayText = "None")]
         public TimeSpan? EndTime { get; set; }
 
-        [RegularExpression(@"^([0-7](\.\d)?)$", ErrorMessage = "Fill in a number between 0 and 7.5")]
+        //[RegularExpression(@"^([0-7](\.\d)?)$", ErrorMessage = "Fill in a number between 0 and 7.5")]
+        [Range(0, 24, ErrorMessage = "Lunch break must be smaller than 24.")]
         public double LunchBreak { get; set; }
 
         public bool Flexi { get; set; }
         public _leaveType? LeaveType { get; set; }
 
-        [RegularExpression(@"^([0-7](\.\d)?)$", ErrorMessage = "Fill in a number between 0 and 7.5")]
+        //[RegularExpression(@"^([0-7](\.\d)?)$", ErrorMessage = "Fill in a number between 0 and 7.5")]
+        [Range(0, 24, ErrorMessage = "Leave hours must be smaller than 24.")]
         public double LeaveTime { get; set; }
 
         // Automatically get work hours by attendence
         [NotMapped]
-        [Range(0, 24.0, ErrorMessage = "Please enter a value bigger than 0")]
+        [Range(0, 24, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public double WorkHours
         {
             get
