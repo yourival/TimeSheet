@@ -319,20 +319,22 @@ namespace TimeSheet.Controllers
             ViewBag.Period = String.Format("{0:dd/MM/yy}", startPeriod) + " - " +
                              String.Format("{0:dd/MM/yy}", endPeriod);
 
+            // Select applications that's in this period, or has been approved in this period
             List<LeaveApplication> applications = (from a in timesheetDb.LeaveApplications
-                                                  where !(a.EndTime < startPeriod ||
-                                                          a.StartTime > endPeriod) &&
-                                                         (a.status == _status.approved ||
-                                                          a.status == _status.rejected)
+                                                  where a.status != _status.rejected &&
+                                                        (!(a.EndTime < startPeriod ||
+                                                           a.StartTime > endPeriod) ||
+                                                          (a.ApprovedTime >= startPeriod &&
+                                                           a.ApprovedTime <= endPeriod))
                                                    select a).ToList();
 
             DataTable dt = new DataTable();
             // Initialise columns
+            dt.Columns.Add(new DataColumn("Application ID", typeof(string)));
             dt.Columns.Add(new DataColumn("Employee Card ID", typeof(string)));
             dt.Columns.Add(new DataColumn("Surname", typeof(string)));
             dt.Columns.Add(new DataColumn("First Name", typeof(string)));
             dt.Columns.Add(new DataColumn("Position", typeof(string)));
-            dt.Columns.Add(new DataColumn("Application ID", typeof(string)));
             dt.Columns.Add(new DataColumn("Date or Period", typeof(string)));
             dt.Columns.Add(new DataColumn("Total Hours", typeof(double)));
             dt.Columns.Add(new DataColumn("Leave Type / Additional Hours", typeof(string)));
@@ -354,7 +356,7 @@ namespace TimeSheet.Controllers
 
                     bool multiplyTypes = records.Any(r => r.LeaveType != application.leaveType);
                     // If the application is within the period and contains only 1 type
-                    if (application.StartTime >= startPeriod && application.EndTime <= endPeriod &&
+                    if ((PayPeriod.GetPeriodNum(application.StartTime) == PayPeriod.GetPeriodNum(application.EndTime)) &&
                         !multiplyTypes)
                     {
                         DataRow dr = dt.NewRow();
@@ -369,10 +371,24 @@ namespace TimeSheet.Controllers
                         dr["Total Hours"] = application.TotalLeaveTime;
                         dr["Leave Type / Additional Hours"] = application.leaveType.GetDisplayName();
 
-                        string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy).UserName.Split(' ');
-                        dr["Approved By"] = managerName[1] + ", " + managerName[0];
-                        if (application.EndTime.Date < application.ApprovedTime.Value.Date)
-                            dr["Note"] = "Retrospective Approval";
+                        if (application.status == _status.approved)
+                        {
+                            string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy).UserName.Split(' ');
+                            dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                            if (PayPeriod.GetPeriodNum(application.EndTime) < PayPeriod.GetPeriodNum(application.ApprovedTime.Value))
+                            {
+                                if(PayPeriod.GetPeriodNum(application.ApprovedTime.Value) == p)
+                                    dr["Note"] = "Approved in this pay period";
+                                else
+                                {
+                                    dr["Note"] = "Not approved yet";
+                                    dr["Approved By"] = "";
+                                }
+                            }
+                        }
+                        else
+                            dr["Note"] = "Not approved yet";
+
                         dt.Rows.Add(dr);
                     }
                     else
@@ -403,11 +419,16 @@ namespace TimeSheet.Controllers
                                 if (startDate != endDate)
                                     dr["Date or Period"] += " - " + endDate;
                                 dr["Total Hours"] = totalHours;
-                                string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy)
-                                                                  .UserName.Split(' ');
-                                dr["Approved By"] = managerName[1] + ", " + managerName[0];
-                                if (application.EndTime.Date < application.ApprovedTime.Value.Date)
-                                    dr["Note"] = "Retrospective Approval";
+                                if(application.ApprovedBy != null)
+                                {
+                                    string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy)
+                                                                      .UserName.Split(' ');
+                                    dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                                }
+                                if (application.ApprovedTime == null)
+                                    dr["Note"] = "Not approved yet";
+                                else if (PayPeriod.GetPeriodNum(application.EndTime) < PayPeriod.GetPeriodNum(application.ApprovedTime.Value))
+                                    dr["Note"] = "Approved in this pay period";
 
                                 dt.Rows.Add(dr);
 

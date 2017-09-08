@@ -345,6 +345,8 @@ namespace TimeSheet.Controllers
                         application.leaveType = applicationVM.LeaveApplication.leaveType;
                         application.ManagerIDs = applicationVM.LeaveApplication.ManagerIDs;
                         application.Comment = applicationVM.LeaveApplication.Comment;
+                        application.ApprovedBy = null;
+                        application.ApprovedTime = null;
                         application.TotalLeaveTime = applicationVM.LeaveApplication.TotalLeaveTime;
                         contextDb.Entry(application).State = EntityState.Modified;
                     }
