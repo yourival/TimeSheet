@@ -52,7 +52,7 @@ namespace TimeSheet.Controllers
         ///     Download and update <see cref="Holiday"/> from government website.
         /// </summary>
         /// <returns>Refreshed holidays view.</returns>
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult UpdateHolidays()
         {
             List<Holiday> holidayList = adminDb.Holidays.ToList();
@@ -229,6 +229,11 @@ namespace TimeSheet.Controllers
             }
         }
 
+        public void UpdateAdUser()
+        {
+            ADUser.GetADUser();
+        }
+
         /// <summary>
         ///     Processes deleting of an exisitng <see cref="UserRoleSetting"/>.
         /// </summary>
@@ -253,7 +258,7 @@ namespace TimeSheet.Controllers
         /// </summary>
         /// <returns>A payroll summary with details of HR applications.</returns>
         // GET: Admin/PayrollExport
-        [AuthorizeUser(Roles = "Manager, Accountant")]
+        [AuthorizeUser(Roles = "Admin, Accountant")]
         public ActionResult PayrollExport()
         {
             ViewBag.Year = PayPeriod.GetYearItems();
@@ -319,14 +324,20 @@ namespace TimeSheet.Controllers
             ViewBag.Period = String.Format("{0:dd/MM/yy}", startPeriod) + " - " +
                              String.Format("{0:dd/MM/yy}", endPeriod);
 
-            // Select applications that's in this period, or has been approved in this period
+            //Select applications that's in this period, or has been approved in this period - old version
             List<LeaveApplication> applications = (from a in timesheetDb.LeaveApplications
-                                                  where a.status != _status.rejected &&
-                                                        (!(a.EndTime < startPeriod ||
-                                                           a.StartTime > endPeriod) ||
-                                                          (a.ApprovedTime >= startPeriod &&
-                                                           a.ApprovedTime <= endPeriod))
+                                                   where a.status != _status.rejected &&
+                                                         (!(a.EndTime < startPeriod ||
+                                                            a.StartTime > endPeriod) ||
+                                                           (a.ApprovedTime >= startPeriod &&
+                                                            a.ApprovedTime <= endPeriod) && a.StartTime <= endPeriod)
                                                    select a).ToList();
+
+            //select timesheet record forms that's in this period, or has been approved in this period
+            List<TimeRecordForm> timeRecordForms = (from a in timesheetDb.TimeRecordForms
+                                                    where a.status != _status.rejected &&
+                                                          (a.Year == y && a.Period == p)
+                                                    select a).ToList();
 
             DataTable dt = new DataTable();
             // Initialise columns
@@ -349,51 +360,24 @@ namespace TimeSheet.Controllers
                     ADUser user = timesheetDb.ADUsers.Find(application.UserID);
                     string[] words = user.UserName.Split(' ');
 
-                    List<TimeRecord> records = application.GetTimeRecords()
-                                                .Where(r => r.RecordDate >= startPeriod &&
-                                                            r.RecordDate <= endPeriod)
-                                                .OrderBy(r => r.RecordDate).ToList();
-
-                    bool multiplyTypes = records.Any(r => r.LeaveType != application.leaveType);
-                    // If the application is within the period and contains only 1 type
-                    if ((PayPeriod.GetPeriodNum(application.StartTime) == PayPeriod.GetPeriodNum(application.EndTime)) &&
-                        !multiplyTypes)
+                    List<TimeRecord> records;
+                    if (application.ApprovedTime >= startPeriod && application.ApprovedTime <= endPeriod)
                     {
-                        DataRow dr = dt.NewRow();
-                        dr["Employee Card ID"] = user.EmployeeID;
-                        dr["Surname"] = words[1];
-                        dr["First Name"] = words[0];
-                        dr["Application ID"] = application.id;
-                        dr["Position"] = user.JobCode;
-                        dr["Date or Period"] = String.Format("{0:dd/MM/yy}", application.StartTime);
-                        if(application.StartTime != application.EndTime)
-                            dr["Date or Period"] += " - " + String.Format("{0:dd/MM/yy}", application.EndTime);
-                        dr["Total Hours"] = application.TotalLeaveTime;
-                        dr["Leave Type / Additional Hours"] = application.leaveType.GetDisplayName();
-
-                        if (application.status == _status.approved)
-                        {
-                            string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy).UserName.Split(' ');
-                            dr["Approved By"] = managerName[1] + ", " + managerName[0];
-                            if (PayPeriod.GetPeriodNum(application.EndTime) < PayPeriod.GetPeriodNum(application.ApprovedTime.Value))
-                            {
-                                if(PayPeriod.GetPeriodNum(application.ApprovedTime.Value) == p)
-                                    dr["Note"] = "Approved in this pay period";
-                                else
-                                {
-                                    dr["Note"] = "Not approved yet";
-                                    dr["Approved By"] = "";
-                                }
-                            }
-                        }
-                        else
-                            dr["Note"] = "Not approved yet";
-
-                        dt.Rows.Add(dr);
+                        records = application.GetTimeRecords()
+                                .Where(r => r.RecordDate <= endPeriod)
+                                .OrderBy(r => r.RecordDate).ToList();
                     }
                     else
                     {
-                        _leaveType previousType = records.First().LeaveType.Value;
+                        records = application.GetTimeRecords()
+                                .Where(r => r.RecordDate >= startPeriod &&
+                                            r.RecordDate <= endPeriod)
+                                .OrderBy(r => r.RecordDate).ToList();
+                    }
+
+                    if (records.Count > 0)
+                    {
+                        _leaveType previousType = records.FirstOrDefault().LeaveType.Value;
                         string startDate = String.Format("{0:dd/MM/yy}", records.First().RecordDate);
                         string endDate = string.Empty;
                         double totalHours = 0.0;
@@ -419,16 +403,24 @@ namespace TimeSheet.Controllers
                                 if (startDate != endDate)
                                     dr["Date or Period"] += " - " + endDate;
                                 dr["Total Hours"] = totalHours;
-                                if(application.ApprovedBy != null)
+                                if (application.status == _status.approved)
                                 {
-                                    string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy)
-                                                                      .UserName.Split(' ');
+                                    string[] managerName = timesheetDb.ADUsers.Find(application.ApprovedBy).UserName.Split(' ');
                                     dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                                    dr["Note"] = "";
+                                    if (PayPeriod.GetPeriodNum(application.EndTime) < PayPeriod.GetPeriodNum(application.ApprovedTime.Value))
+                                    {
+                                        if (PayPeriod.GetPeriodNum(application.ApprovedTime.Value) == p)
+                                            dr["Note"] = "Approved in this pay period";
+                                        else
+                                        {
+                                            var approvedDate = application.ApprovedTime != null ? application.ApprovedTime.Value.ToString("dd/MM/yy") : "";
+                                            dr["Note"] = "Not approved within this period, Approved on " + approvedDate;
+                                        }
+                                    }
                                 }
-                                if (application.ApprovedTime == null)
+                                else
                                     dr["Note"] = "Not approved yet";
-                                else if (PayPeriod.GetPeriodNum(application.EndTime) < PayPeriod.GetPeriodNum(application.ApprovedTime.Value))
-                                    dr["Note"] = "Approved in this pay period";
 
                                 dt.Rows.Add(dr);
 
@@ -440,6 +432,38 @@ namespace TimeSheet.Controllers
                             }
                         }
                     }
+                }
+            
+
+                //for time record forms
+                foreach (var form in timeRecordForms)
+                {
+                    ADUser user = timesheetDb.ADUsers.Find(form.UserID);
+                    string[] words = user.UserName.Split(' ');
+
+                    DataRow dr = dt.NewRow();
+                    dr["Employee Card ID"] = user.EmployeeID;
+                    dr["Surname"] = words[1];
+                    dr["First Name"] = words[0];
+                    dr["Application ID"] = form.TimeRecordFormId;
+                    dr["Position"] = user.JobCode;
+                    dr["Date or Period"] = form.Year + " - " + form.Period;
+                    dr["Total Hours"] = form.TotalWorkingHours;
+                    dr["Leave Type / Additional Hours"] = "Casual";
+
+                    if (form.status == _status.approved)
+                    {
+                        string[] managerName = timesheetDb.ADUsers.Find(form.ApprovedBy).UserName.Split(' ');
+                        dr["Approved By"] = managerName[1] + ", " + managerName[0];
+                        dr["Note"] = "Approved in this pay period";
+                    }
+                    else
+                    {
+                        dr["Approved By"] = "";
+                        dr["Note"] = "Not approved yet";
+                    }
+
+                    dt.Rows.Add(dr);
                 }
             }
             dt.DefaultView.Sort = "Surname";

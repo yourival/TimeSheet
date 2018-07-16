@@ -122,7 +122,7 @@ namespace TimeSheet.Models
         // Get holiday list from online source
         public static List<Holiday> GetHoliday()
         {
-            String RequestString = "http://data.gov.au/api/action/datastore_search_sql?sql=SELECT \"Date\", \"HolidayName\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"ApplicableTo\" LIKE '%NSW%' OR \"ApplicableTo\" LIKE 'NAT'";
+            String RequestString = "http://data.gov.au/api/3/action/datastore_search_sql?sql=SELECT \"Date\", \"Holiday Name\" from \"31eec35e-1de6-4f04-9703-9be1d43d405b\" WHERE \"Applicable To\" LIKE '%NSW%' OR \"Applicable To\" LIKE 'NAT'";
             List<Holiday> holidayList = new List<Holiday>();
             using (WebClient webClient = new System.Net.WebClient())
             {
@@ -135,7 +135,7 @@ namespace TimeSheet.Models
                 foreach (Dictionary<string,string> item in results)
                 {
                     DateTime holiday = DateTime.ParseExact(item["Date"], "yyyyMMdd", CultureInfo.InvariantCulture);//convert string to datetime
-                    holidayList.Add(new Holiday { HolidayDate = holiday, HolidayName =  item["HolidayName"] });
+                    holidayList.Add(new Holiday { HolidayDate = holiday, HolidayName =  item["Holiday Name"] });
                 }
             }
             return holidayList;

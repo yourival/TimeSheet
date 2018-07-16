@@ -114,21 +114,28 @@
                 </div>
             </div>
             <hr>
-            @if (User.IsInRole("Admin") || (User.IsInRole("Manager") && Model.LeaveApplication._managerIDs.Contains(User.Identity.Name)))
+            @if (Model.LeaveApplication.status != _status.approved && Model.LeaveApplication.status != _status.rejected)
             {
-                using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
+                if (User.IsInRole("Admin") || (User.IsInRole("Manager") && Model.LeaveApplication._managerIDs.Contains(User.Identity.Name)))
                 {
-                    <row class="approve-button">
-                        <input type="hidden" name="id" value=@Model.LeaveApplication.id />
-                        <input type="submit" class="btn btn-success" name="decision" value="Approve">
-                        <input type="submit" class="btn btn-danger" name="decision" value="Reject">
-                    </row>
-                    <div class="col-sm-3"></div>
+                    using (Html.BeginForm("ApprovalDetail", "LeaveApproval", FormMethod.Post))
+                    {
+                        <row class="approve-button">
+                            <input type="hidden" name="id" value=@Model.LeaveApplication.id />
+                            <input type="submit" class="btn btn-success" name="decision" value="Approve">
+                            <input type="submit" class="btn btn-danger" name="decision" value="Reject">
+                        </row>
+                        <div class="col-sm-3"></div>
+                    }
+                }
+                else
+                {
+                    <p>You are not authorized to approve this application.</p>
                 }
             }
             else
             {
-                <p>You are not authorized to approve this application.</p>
+                <p>This application has been @Model.LeaveApplication.status.ToString()</p>
             }
         </div>
     </div>

@@ -9,6 +9,7 @@
         <tr>
             <th>#</th>
             <th>Applicant</th>
+            <th>Manager</th>
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -23,6 +24,7 @@
             <tr class="table-row" onclick="location.href='@Url.Action("ApplicationOutput", "LeaveApproval", new { id = Model[i].id })'">
                 <td>@Html.DisplayFor(m => m[i].id)</td>
                 <td>@Html.DisplayFor(m => m[i].UserName)</td>
+                <td>@Model[i].GetManagerList()</td>
                 <td>@Model[i].leaveType.GetDisplayName()</td>
                 <td>@Html.DisplayFor(m => m[i].StartTime)</td>
                 <td>@Html.DisplayFor(m => m[i].EndTime)</td>

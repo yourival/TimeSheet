@@ -142,7 +142,7 @@
             $(".leavetime").each(function (i) {
                 total += parseFloat($(this).val());
             });
-            $("#leave-total").text(total + " hrs (" + (total / 7.5).toFixed(2) + " day" + ((total / 7.5 > 1) ? "s" : "") + ")");
+            $("#leave-total").text(total + " hrs (" + (total / 7.6).toFixed(2) + " day" + ((total / 7.6 > 1) ? "s" : "") + ")");
         }
 
 
@@ -231,7 +231,7 @@
             $(".worktime").each(function (i) {
                 total += parseFloat($(this).text());
             });
-            $("#worktime-total").text(total + " hrs (" + (total / 7.5).toFixed(2) + " days)");
+            $("#worktime-total").text(total + " hrs (" + (total / 7.6).toFixed(2) + " days)");
         }
         /***** End of Functions *****/
 
@@ -283,24 +283,25 @@
             });
 
             // When the form is submitted
-            $("#lform").submit(function (e) {
-                // Test if applied leave times excess available leave balance
-                var isValid = true;
-                $(".textStyleAfter").children(".lefthours").each(function (i) {
-                    if ($(this).text() < 0) {
-                        isValid = false;
-                    }
-                });
+            
+            //$("#lform").submit(function (e) {
+            //    // Test if applied leave times excess available leave balance
+            //    var isValid = true;
+            //    $(".textStyleAfter").children(".lefthours").each(function (i) {
+            //        if ($(this).text() < 0) {
+            //            isValid = false;
+            //        }
+            //    });
 
-                if (!isValid) {
-                    $("#alert").attr('class', "alert alert-danger");
-                    $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
-                        " The leaves you applied excess your leave balances.");
-                    e.preventDefault(e);
-                    return false;
-                }
+            //    if (!isValid) {
+            //        $("#alert").attr('class', "alert alert-danger");
+            //        $("#alert").html('<span class="glyphicon glyphicon-exclamation-sign" style="color:#a94442""></span>' +
+            //            " The leaves you applied excess your leave balances.");
+            //        e.preventDefault(e);
+            //        return false;
+            //    }
 
-            });
+            //});
 
             // If there is any file attached
             $(':file').on('fileselect', function (event, numFiles, label) {

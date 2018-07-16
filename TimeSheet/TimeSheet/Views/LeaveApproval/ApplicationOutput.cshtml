@@ -28,8 +28,10 @@
                 </tr>
                 <tr>
                     <th>Period</th>
-                    <td>@Html.DisplayFor(m => m.LeaveApplication.StartTime)&nbsp;-&nbsp;
-                        @Html.DisplayFor(m => m.LeaveApplication.EndTime)</td>
+                    <td>
+                        @Html.DisplayFor(m => m.LeaveApplication.StartTime)&nbsp;-&nbsp;
+                        @Html.DisplayFor(m => m.LeaveApplication.EndTime)
+                    </td>
                 </tr>
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.LeaveApplication.TotalLeaveTime)</th>
@@ -47,42 +49,44 @@
                     <th>Signed&nbsp;At</th>
                     <td>@Html.DisplayFor(m => m.LeaveApplication.ApprovedTime)</td>
                 </tr>
-                <tr>
-                    <th>Original Balance (hrs)</th>
-                    <td>
-                        @for (int i = 0; i < LeaveNames.Length; i++)
-                        {
-                            @LeaveNames[i]
-                            @:   :&nbsp;
-
-                            <span>@ViewBag.OriginalBalances[i]</span>
-
-                            if (i != LeaveNames.Length - 1)
-                            {
-                                @: ,&nbsp;&nbsp;
-                            }
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <th>Close Balance (hrs)</th>
-                    <td>
-                        @for (int i = 0; i < LeaveNames.Length; i++)
-                        {
-                            @LeaveNames[i]
-                            @:   :&nbsp;
-
-                            <span>@ViewBag.CloseBalances[i]</span>
-
-                            if (i != LeaveNames.Length - 1)
-                            {
-                                @: ,&nbsp;&nbsp;
-                            }
-                        }
-                    </td>
-                </tr>
             </table>
-            <div class="col-sm-3"></div>
+            <hr>
+            <div class="row" align="right">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <a href="#approve-detail" data-toggle="collapse">
+                        <p>
+                            Click here if you want to see details
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div align="center" class="approve-detail">
+                <div id="approve-detail" class="collapse row">
+                    <table class="table table-responsive">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Detail Hours</th>
+                        </tr>
+                        @foreach (var item in Model.TimeRecords)
+                        {
+                            <tr>
+                                <td>
+                                    @String.Format("{0:ddd, dd/MM/yyyy}", item.RecordDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => item.LeaveType, new { htmlAttributes = new { @class = "leavetype" } })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => item.LeaveTime, new { htmlAttributes = new { @class = "leavetime" } })
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <div>

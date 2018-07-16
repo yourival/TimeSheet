@@ -228,7 +228,7 @@ namespace TimeSheet.Controllers
                         }
                         else
                         {
-                            if(r.LeaveTime <= 7.5)
+                            if(r.LeaveTime <= 7.6)
                                 r.SetAttendence(9, 17 - r.LeaveTime, 0.5);
                         }
 
@@ -363,7 +363,7 @@ namespace TimeSheet.Controllers
                     {
                         foreach(var mangerId in applicationModel._managerIDs)
                         {
-                            Task.Run(() => EmailSetting.SendEmail(mangerId, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
+                            await Task.Run(() => EmailSetting.SendEmail(mangerId, string.Empty, "LeaveApplication", applicationModel.id.ToString()));
                         }
                     }
 
@@ -377,7 +377,7 @@ namespace TimeSheet.Controllers
                 //Log the error (uncomment dex variable name and add a line here to write a log.
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -514,7 +514,7 @@ namespace TimeSheet.Controllers
                 var newTimeRecord = new TimeRecord(currentDate.Date);
                 PayPeriod.SetPublicHoliday(newTimeRecord);
 
-                newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday) ? 0 : 7.5;
+                newTimeRecord.LeaveTime = (newTimeRecord.IsHoliday) ? 0 : 7.60;
                 newTimeRecord.SetAttendence(null, null, 0);
                 newTimeRecord.UserID = User.Identity.Name;
                 newTimeRecord.LeaveType = leaveType;

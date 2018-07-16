@@ -8,6 +8,7 @@ using TimeSheet.Models;
 using System.Net;
 using System.IO;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace TimeSheet.Controllers
 {
@@ -150,6 +151,7 @@ namespace TimeSheet.Controllers
             if (application != null)
             {
                 applicationVM.LeaveApplication = application;
+                applicationVM.TimeRecords = application.GetTimeRecords();
                 // Get leave balance
                 List<LeaveBalance> LeaveBalances = new List<LeaveBalance>();
                 if (application.OriginalBalances != null)
@@ -203,7 +205,7 @@ namespace TimeSheet.Controllers
         // POST: Admin/Approval/ApplicationDetails/1
         [HttpPost]
         [AuthorizeUser(Roles = "Admin, Manager")]
-        public ActionResult ApprovalDetail(int id, string decision)
+        public async Task<ActionResult> ApprovalDetail(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
@@ -214,7 +216,7 @@ namespace TimeSheet.Controllers
                                                     "You are not authoried to approve the application");
                 }
                 else
-                    ApproveApplication(application, decision);
+                    await ApproveApplication(application, decision);
             }
             else
             {
@@ -227,7 +229,7 @@ namespace TimeSheet.Controllers
         // POST: Admin/ApprovalPartial
         [HttpPost]
         [AuthorizeUser(Roles = "Admin, Manager")]
-        public ActionResult ApprovalWaiting(int id, string decision)
+        public async Task<ActionResult> ApprovalWaiting(int id, string decision)
         {
             LeaveApplication application = contextDb.LeaveApplications.Find(id);
             if (application != null)
@@ -238,7 +240,7 @@ namespace TimeSheet.Controllers
                                                     "You are not authoried to approve the application");
                 }
                 else
-                    ApproveApplication(application, decision);
+                    await ApproveApplication(application, decision);
             }
             else
             {
@@ -266,70 +268,85 @@ namespace TimeSheet.Controllers
                                          a.status == _status.approved
                                 select a).OrderByDescending(a => a.id).ToList();
             }
+            if (User.IsInRole("Manager") && !User.IsInRole("Admin") && !User.IsInRole("Accountant"))
+                applications = applications.Where(a => a.ManagerIDs.Contains(User.Identity.Name)).ToList();
 
             return applications;
         }
 
         // Convinence function: Approve/Reject an application
-        private void ApproveApplication(LeaveApplication application, string decision)
+        private async Task ApproveApplication(LeaveApplication application, string decision)
         {
-            List<LeaveBalance> userLeaveBalances = (from l in contextDb.LeaveBalances
-                                                    where l.UserID == application.UserID
-                                                    select l).ToList();
-            List<TimeRecord> appliedTimeRecords = application.GetTimeRecords();
+            if (application.status != _status.approved && application.status != _status.rejected)
+            {
+                List<LeaveBalance> userLeaveBalances = (from l in contextDb.LeaveBalances
+                                                        where l.UserID == application.UserID
+                                                        select l).ToList();
+                List<TimeRecord> appliedTimeRecords = application.GetTimeRecords();
 
-            string[] originalBalances = application.OriginalBalances.Split('/');
-            double[] takenLeaveTimes = new double[] { 0, 0, 0 };
-            if (decision == "Approve")
-            {
-                string closeBalances = String.Empty;
-                // Calculate taken leaves
-                foreach (var timerecord in appliedTimeRecords)
+                string[] originalBalances = application.OriginalBalances.Split('/');
+                double[] takenLeaveTimes = new double[] { 0, 0, 0 };
+                if (decision == "Approve")
                 {
-                    int index = (int)timerecord.LeaveType;
-                    if(index < 3)
-                        takenLeaveTimes[index] += timerecord.LeaveTime;
-                    else if(timerecord.LeaveType == _leaveType.compassionatePay)
-                        takenLeaveTimes[(int)_leaveType.sick] += timerecord.LeaveTime;
-                    else if(timerecord.LeaveType == _leaveType.flexiHours)
-                        takenLeaveTimes[(int)_leaveType.flexi] -= timerecord.LeaveTime;
+                    string closeBalances = String.Empty;
+                    // Calculate taken leaves
+                    foreach (var timerecord in appliedTimeRecords)
+                    {
+                        int index = (int)timerecord.LeaveType;
+                        if (index < 3)
+                            takenLeaveTimes[index] += timerecord.LeaveTime;
+                        else if (timerecord.LeaveType == _leaveType.compassionatePay)
+                            takenLeaveTimes[(int)_leaveType.sick] += timerecord.LeaveTime;
+                        else if (timerecord.LeaveType == _leaveType.flexiHours)
+                            takenLeaveTimes[(int)_leaveType.flexi] -= timerecord.LeaveTime;
+                    }
+                    // Record closed leave balances
+                    for (int i = 0; i < 3; i++)
+                    {
+                        double originalBalance = double.Parse(originalBalances[i] ?? "0");
+                        closeBalances += string.Format("{0:0.00}", originalBalance - takenLeaveTimes[i]);
+                        if (i != 2)
+                            closeBalances += "/";
+                    }
+                    application.CloseBalances = closeBalances;
+                    application.status = _status.approved;
                 }
-                // Record closed leave balances
-                for (int i = 0; i < 3; i++)
+                else
                 {
-                    double originalBalance = double.Parse(originalBalances[i] ?? "0");
-                    closeBalances += string.Format("{0:0.00}", originalBalance - takenLeaveTimes[i]);
-                    if (i != 2)
-                        closeBalances += "/";
+                    application.status = _status.rejected;
+                    // Undo leave record in each time record
+                    foreach (var record in appliedTimeRecords)
+                    {
+                        var entry = contextDb.TimeRecords.Find(record.id);
+                        entry.LeaveTime = 0;
+                        entry.LeaveType = null;
+                        contextDb.Entry(entry).State = EntityState.Modified;
+                    }
+                    // Undo leave balances for the user
+                    for (int i = 0; i < 3; i++)
+                    {
+                        LeaveBalance balance = contextDb.LeaveBalances.Find(application.UserID, (_leaveType)i);
+                        balance.AvailableLeaveHours = double.Parse(originalBalances[i] ?? "0");
+                    }
+                    // Record closed leave balances
+                    application.CloseBalances = application.OriginalBalances;
                 }
-                application.CloseBalances = closeBalances;
-                application.status = _status.approved;
+                // Record approval info
+                application.ApprovedTime = DateTime.Now;
+                application.ApprovedBy = User.Identity.Name;
+                contextDb.Entry(application).State = EntityState.Modified;
+                contextDb.SaveChanges();
+
+                // Send an email to manager
+                try
+                {
+                    await Task.Run(() => EmailSetting.SendEmail(application.UserID, string.Empty, "LeaveApproval", application.id.ToString()));
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
-            else
-            {
-                application.status = _status.rejected;
-                // Undo leave record in each time record
-                foreach (var record in appliedTimeRecords)
-                {
-                    var entry = contextDb.TimeRecords.Find(record.id);
-                    entry.LeaveTime = 0;
-                    entry.LeaveType = null;
-                    contextDb.Entry(entry).State = EntityState.Modified;
-                }
-                // Undo leave balances for the user
-                for (int i = 0; i < 3; i++)
-                {
-                    LeaveBalance balance = contextDb.LeaveBalances.Find(application.UserID, (_leaveType)i);
-                    balance.AvailableLeaveHours = double.Parse(originalBalances[i] ?? "0");
-                }
-                // Record closed leave balances
-                application.CloseBalances = application.OriginalBalances;
-            }
-            // Record approval info
-            application.ApprovedTime = DateTime.Now;
-            application.ApprovedBy = User.Identity.Name;
-            contextDb.Entry(application).State = EntityState.Modified;
-            contextDb.SaveChanges();
         }
     }
 }

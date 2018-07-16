@@ -47,17 +47,16 @@
                                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">HR Management<span class="caret"></span></a>
                                             <ul class="dropdown-menu">
                                                 <li>@Html.ActionLink("Leave Approval", "Approval", "LeaveApproval")</li>
-                                                <li>@Html.ActionLink("Payroll Export", "PayrollExport", "Admin")</li>
-                                                @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+                                                 @if (User.IsInRole("Admin") || User.IsInRole("Accountant"))
                                                 {
-                                                    <li>@Html.ActionLink("User Leaves", "Index", "UserLeaves")</li>
-                                                    <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
+                                                    <li> @Html.ActionLink("Payroll Export", "PayrollExport", "Admin") </li >
                                                 }
+                                                <li>@Html.ActionLink("Timesheet Approval", "Approval", "TimesheetApproval")</li>
                                             </ul>
                                         </li>
                                     }
-                                    
-                                    @if (User.IsInRole("Admin"))
+
+                                                     @if (User.IsInRole("Admin"))
                                     {
                                         <li class="dropdown">
                                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin<span class="caret"></span></a>
@@ -65,6 +64,7 @@
                                                 <li>@Html.ActionLink("Public Holiday", "Holidays", "Admin")</li>
                                                 <li>@Html.ActionLink("Email Setting", "EmailSetting", "Admin")</li>
                                                 <li>@Html.ActionLink("User Role Setting", "UserRoleSetting", "Admin")</li>
+                                                <li>@Html.ActionLink("AD User Update", "UpdateAdUser", "Admin")</li>
                                                 <li class="divider"></li>
                                                 <li class="nav-header">AD Management</li>
                                                 <li class="nav-header-child">@Html.ActionLink("User", "User", "ADManagement")</li>

@@ -14,7 +14,7 @@ namespace TimeSheet.Controllers
     {
         private TimeSheetDb timesheetDb = new TimeSheetDb();
         
-        [AuthorizeUser(Roles = "Manager")]
+        [AuthorizeUser(Roles = "Admin")]
         // GET: UserLeaves/Index
         public ActionResult Index()
         {

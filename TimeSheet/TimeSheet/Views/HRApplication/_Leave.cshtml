@@ -17,22 +17,6 @@
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true)
             @Html.HiddenFor(model => model.LeaveApplication.UserID)
-            <div>
-                <label>Your current balance (hrs):&nbsp;</label>
-                <text class="textStyleBefore">
-                    @for (int i = 0; i < LeaveNames.Length; i++)
-                    {
-                        @LeaveNames[i]
-                        @:&nbsp;
-                        <span class="lefthours">@Html.DisplayFor(m => m.LeaveBalances[i].AvailableLeaveHours)</span>
-
-                        if (i != LeaveNames.Length - 1)
-                        {
-                            @:,&nbsp;&nbsp;
-                        }
-                    }
-                </text>
-            </div>
             <hr>
             <div class="form-group row">
                 <label class="col-sm-offset-1 col-sm-2" for="startTime">
@@ -125,7 +109,7 @@
             </div>
             <hr />
             <div id="alert"></div>
-            <div class="row" align="right">
+            @*<div class="row" align="right">
                 <div class="col-sm-offset-1 col-sm-10">
                     <label>Balance after application (hrs):&nbsp;</label>
                     <text class="textStyleAfter">
@@ -143,7 +127,7 @@
                         }
                     </text>
                 </div>
-            </div>
+            </div>*@
             <div class="row" align="right">
                 <div class="col-sm-offset-1 col-sm-10">
                     <label>Total:</label>

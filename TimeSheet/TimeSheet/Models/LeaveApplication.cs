@@ -31,7 +31,9 @@ namespace TimeSheet.Models
         [Display(Name = "Additional Hours")]
         additionalHours,
         [Display(Name = "Flexi Hours (earned)")]
-        flexiHours
+        flexiHours,
+        [Display(Name = "Conference Leave")]
+        conference
     }
     public enum _status
     {
@@ -112,6 +114,22 @@ namespace TimeSheet.Models
                                     select r).ToList();
 
             return records ?? new List<TimeRecord>();
+        }
+
+        public string GetManagerList()
+        {
+            TimeSheetDb contextDb = new TimeSheetDb();
+            string managerNames = "";
+            var firstManager = true;
+            foreach (var managerId in _managerIDs)
+            {
+                if (!firstManager)
+                    managerNames += ", ";
+                firstManager = false;
+                managerNames += contextDb.ADUsers.Find(managerId).UserName;
+            }
+
+            return managerNames;
         }
     }
 }

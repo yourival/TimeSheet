@@ -96,7 +96,7 @@ namespace TimeSheet.Models
                         body = string.Format(body, formModel.Period, formModel.Year, formModel.status, manager.UserName, comment);
                         break;
                     case "LeaveApproval":
-                        subject = "LeaveApproval";
+                        subject = "Leave Approval";
                         path = path + @"\Templates\LeaveApproval.txt";
                         using (var sr = new StreamReader(path))
                         {
@@ -124,6 +124,7 @@ namespace TimeSheet.Models
             }
             try
             {
+                Console.WriteLine(message);
                 using (var smtp = new SmtpClient())
                 {
                     await smtp.SendMailAsync(message);
@@ -131,7 +132,9 @@ namespace TimeSheet.Models
             }
             catch (Exception ex)
             {
-                throw ex;
+                if (ex.Source != null)
+                    Console.WriteLine("IOException source: {0}", ex.Source);
+                throw;
             }
 
         }

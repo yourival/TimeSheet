@@ -18,7 +18,7 @@ namespace TimeSheet.Controllers
     [AuthorizeUser(Roles = "Admin")]
     public class ADManagementController : Controller
     {
-        // GET: ADManagement
+        /// GET: ADManagement
         /// <summary>
         ///     Indexe page of ADManagement.
         /// </summary>
